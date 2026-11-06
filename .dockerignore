@@ -1,0 +1,39 @@
+# Lo que NO entra en la imagen de Docker.
+
+# Secretos y datos locales
+.env
+.env.*
+!.env.example
+agente_secret.key
+media/
+logs/
+*.log
+*.sqlite3
+
+# Entornos y cachés
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Se regeneran dentro de la imagen
+staticfiles/
+
+# Build de escritorio (Windows)
+build/
+dist/
+exe/
+vendor/
+*.exe
+*.exe.sha256
+
+# Control de versiones y editores
+.git/
+.gitignore
+.vscode/
+.idea/
+.claude/

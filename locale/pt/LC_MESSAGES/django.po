@@ -1,0 +1,1872 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-24 22:08+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: pt\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\compras\admin.py:38 .\ventas\admin.py:277
+msgid "Total purchased ($)"
+msgstr "Total comprado ($)"
+
+#: .\compras\admin.py:43 .\ventas\admin.py:282
+msgid "Current account balance ($)"
+msgstr "Saldo de cuenta corriente ($)"
+
+#: .\compras\admin.py:67 .\ventas\admin.py:303
+msgid "Account statement"
+msgstr "Extrato da conta"
+
+#: .\compras\apps.py:8 .\gestion_de_carnicerias\settings.py:249
+msgid "Purchases"
+msgstr "Compras"
+
+#: .\compras\models.py:14 .\ventas\models.py:67
+msgid "Name"
+msgstr "Nome"
+
+#: .\compras\models.py:14
+msgid "Supplier display name."
+msgstr "Nombre visible del proveedor."
+
+#: .\compras\models.py:15 .\core\forms.py:10 .\core\models.py:283
+#: .\ventas\models.py:68
+msgid "Phone"
+msgstr "Telefone"
+
+#: .\compras\models.py:15
+msgid "Optional supplier phone number."
+msgstr "Telefono opcional del proveedor."
+
+#: .\compras\models.py:16 .\ventas\models.py:69
+msgid "Notes"
+msgstr "Notas"
+
+#: .\compras\models.py:16
+msgid "Internal notes about this supplier."
+msgstr "Notas internas sobre este proveedor."
+
+#: .\compras\models.py:17 .\ventas\models.py:70
+msgid "Active"
+msgstr "Ativo"
+
+#: .\compras\models.py:17
+msgid "Marks whether this supplier can be used in new operations."
+msgstr "Indica si este proveedor puede usarse en nuevas operaciones."
+
+#: .\compras\models.py:23 .\compras\models.py:66 .\compras\models.py:114
+msgid "Supplier"
+msgstr "Fornecedor"
+
+#: .\compras\models.py:24
+msgid "Suppliers"
+msgstr "Fornecedores"
+
+#: .\compras\models.py:31 .\compras\models.py:192
+msgid "Proveedor"
+msgstr ""
+
+#: .\compras\models.py:31
+msgid "Proveedor asociado al saldo inicial de cuenta corriente."
+msgstr ""
+
+#: .\compras\models.py:33 .\compras\models.py:194 .\ventas\models.py:86
+#: .\ventas\models.py:348 .\ventas\models.py:445
+msgid "Fecha y hora"
+msgstr ""
+
+#: .\compras\models.py:33 .\ventas\models.py:86
+msgid "Momento asignado a este saldo inicial."
+msgstr ""
+
+#: .\compras\models.py:34 .\compras\models.py:195 .\tesoreria\admin.py:143
+#: .\tesoreria\admin.py:177 .\tesoreria\models.py:187 .\tesoreria\models.py:275
+#: .\tesoreria\models.py:333 .\ventas\models.py:87 .\ventas\models.py:349
+msgid "Monto"
+msgstr ""
+
+#: .\compras\models.py:34
+msgid "Monto inicial adeudado al proveedor."
+msgstr ""
+
+#: .\compras\models.py:35 .\compras\models.py:200 .\ventas\models.py:88
+#: .\ventas\models.py:354
+#, fuzzy
+#| msgid "Description"
+msgid "Descripcion"
+msgstr "Descricao"
+
+#: .\compras\models.py:35 .\ventas\models.py:88
+msgid "Descripcion opcional del saldo inicial."
+msgstr ""
+
+#: .\compras\models.py:38 .\compras\models.py:207 .\tesoreria\models.py:196
+#: .\tesoreria\models.py:289 .\tesoreria\models.py:354 .\ventas\models.py:91
+#: .\ventas\models.py:361 .\ventas\models.py:454
+msgid "Usuario"
+msgstr ""
+
+#: .\compras\models.py:38 .\ventas\models.py:91
+msgid "Usuario que registro este saldo inicial."
+msgstr ""
+
+#: .\compras\models.py:55
+msgid "Saldo inicial de proveedor"
+msgstr ""
+
+#: .\compras\models.py:56
+msgid "Saldos iniciales de proveedores"
+msgstr ""
+
+#: .\compras\models.py:63 .\compras\models.py:110 .\gastos\models.py:32
+#: .\ventas\models.py:62 .\ventas\models.py:116 .\ventas\models.py:228
+#: .\ventas\models.py:257
+msgid "Register shift"
+msgstr "Turno de caixa"
+
+#: .\compras\models.py:63
+msgid "Open register shift where this supplier payment was recorded."
+msgstr "Turno de caja abierto donde se registro este pago a proveedor."
+
+#: .\compras\models.py:65 .\compras\models.py:116 .\gastos\models.py:34
+#: .\ventas\models.py:118 .\ventas\models.py:230 .\ventas\models.py:263
+msgid "Date and time"
+msgstr "Data e hora"
+
+#: .\compras\models.py:65
+msgid "Moment when the supplier payment was recorded."
+msgstr "Momento en que se registro el pago a proveedor."
+
+#: .\compras\models.py:66
+msgid "Supplier name snapshot kept for historical records."
+msgstr "Nombre del proveedor conservado para el historial."
+
+#: .\compras\models.py:69
+msgid "Registered supplier"
+msgstr "Proveedor registrado"
+
+#: .\compras\models.py:69
+msgid "Supplier record linked to this payment when available."
+msgstr "Registro de proveedor vinculado a este pago cuando exista."
+
+#: .\compras\models.py:72 .\gastos\models.py:41 .\ventas\models.py:120
+#: .\ventas\models.py:195 .\ventas\models.py:214 .\ventas\models.py:232
+msgid "Amount"
+msgstr "Valor"
+
+#: .\compras\models.py:72
+msgid "Total payment amount."
+msgstr "Importe total del pago."
+
+#: .\compras\models.py:75 .\compras\models.py:128 .\gastos\models.py:44
+#: .\ventas\models.py:130 .\ventas\models.py:193 .\ventas\models.py:275
+msgid "Payment method"
+msgstr "Metodo de pagamento"
+
+#: .\compras\models.py:75
+msgid "Payment method used for this supplier payment."
+msgstr "Medio de pago usado para este pago a proveedor."
+
+#: .\compras\models.py:78 .\compras\models.py:130 .\core\models.py:67
+#: .\gastos\models.py:35 .\ventas\models.py:133 .\ventas\models.py:235
+#: .\ventas\models.py:277
+msgid "Description"
+msgstr "Descricao"
+
+#: .\compras\models.py:78
+msgid "Optional payment description."
+msgstr "Descripcion opcional del pago."
+
+#: .\compras\models.py:82 .\compras\models.py:133 .\core\admin.py:84
+#: .\core\models.py:276 .\core\models.py:308 .\gastos\models.py:48
+#: .\ventas\models.py:17 .\ventas\models.py:140 .\ventas\models.py:239
+#: .\ventas\models.py:280
+msgid "User"
+msgstr "Usuario"
+
+#: .\compras\models.py:82
+#, fuzzy
+#| msgid "Payment method used for this supplier payment."
+msgid "Cashier who recorded the supplier payment."
+msgstr "Medio de pago usado para este pago a proveedor."
+
+#: .\compras\models.py:86 .\compras\models.py:137 .\compras\models.py:211
+#: .\gastos\models.py:52 .\ventas\models.py:144 .\ventas\models.py:243
+#: .\ventas\models.py:284 .\ventas\models.py:394
+msgid "Idempotency key"
+msgstr ""
+
+#: .\compras\models.py:86 .\compras\models.py:137 .\compras\models.py:211
+#: .\gastos\models.py:52 .\ventas\models.py:144 .\ventas\models.py:243
+#: .\ventas\models.py:284 .\ventas\models.py:394
+msgid "Client-generated UUID to prevent duplicate submissions."
+msgstr ""
+
+#: .\compras\models.py:103
+msgid "Supplier payment"
+msgstr "Pago a proveedor"
+
+#: .\compras\models.py:104
+msgid "Supplier payments"
+msgstr "Pagos a proveedores"
+
+#: .\compras\models.py:110
+msgid "Open register shift where this supplier debt settlement was recorded."
+msgstr ""
+"Turno de caja abierto donde se registro esta cancelacion de deuda a "
+"proveedor."
+
+#: .\compras\models.py:114
+msgid "Supplier whose debt is being settled."
+msgstr "Proveedor cuya deuda se esta cancelando."
+
+#: .\compras\models.py:116
+msgid "Moment when the settlement was recorded."
+msgstr "Momento en que se registro la cancelacion."
+
+#: .\compras\models.py:117
+msgid "Total paid"
+msgstr "Total pagado"
+
+#: .\compras\models.py:117
+msgid "Total amount applied to supplier debts."
+msgstr "Importe total aplicado a deudas de proveedor."
+
+#: .\compras\models.py:120
+#, fuzzy
+#| msgid "Amount"
+msgid "Amount paid"
+msgstr "Valor"
+
+#: .\compras\models.py:120
+#, fuzzy
+#| msgid "Amount applied to this supplier debt."
+msgid "Real amount paid in this supplier settlement."
+msgstr "Monto aplicado a esta deuda de proveedor."
+
+#: .\compras\models.py:124 .\ventas\models.py:271
+msgid "Advance amount applied"
+msgstr ""
+
+#: .\compras\models.py:124
+#, fuzzy
+#| msgid "Supplier payment debt affected by this settlement."
+msgid "Supplier advance amount consumed by this settlement."
+msgstr "Deuda de proveedor afectada por esta cancelacion."
+
+#: .\compras\models.py:128
+#, fuzzy
+#| msgid "Payment method used for this settlement."
+msgid "Payment method used for the real amount paid in this settlement."
+msgstr "Medio de pago usado para esta cancelacion."
+
+#: .\compras\models.py:130
+msgid "Optional settlement description."
+msgstr "Descripcion opcional de la cancelacion."
+
+#: .\compras\models.py:133
+#, fuzzy
+#| msgid "User who recorded the debt collection."
+msgid "Cashier who recorded the supplier debt settlement."
+msgstr "Usuario que registro el cobro de deuda."
+
+#: .\compras\models.py:153
+msgid "Supplier debt settlement"
+msgstr "Cancelacion de deuda a proveedor"
+
+#: .\compras\models.py:154
+msgid "Supplier debt settlements"
+msgstr "Cancelaciones de deuda a proveedor"
+
+#: .\compras\models.py:160
+msgid "Settlement"
+msgstr "Cancelacion"
+
+#: .\compras\models.py:160
+msgid "Supplier debt settlement that owns this detail."
+msgstr "Cancelacion de deuda a proveedor a la que pertenece este detalle."
+
+#: .\compras\models.py:164
+msgid "Debt"
+msgstr "Deuda"
+
+#: .\compras\models.py:164
+msgid "Supplier payment debt affected by this settlement."
+msgstr "Deuda de proveedor afectada por esta cancelacion."
+
+#: .\compras\models.py:166 .\ventas\models.py:313
+msgid "Applied amount"
+msgstr "Monto aplicado"
+
+#: .\compras\models.py:166
+msgid "Amount applied to this supplier debt."
+msgstr "Monto aplicado a esta deuda de proveedor."
+
+#: .\compras\models.py:169
+msgid "Supplier debt settlement detail"
+msgstr "Detalle de cancelacion de deuda a proveedor"
+
+#: .\compras\models.py:170
+msgid "Supplier debt settlement details"
+msgstr "Detalles de cancelacion de deuda a proveedor"
+
+#: .\compras\models.py:176
+msgid "Cancelación"
+msgstr ""
+
+#: .\compras\models.py:176
+msgid "Cancelación de deuda que contiene este detalle de saldo inicial."
+msgstr ""
+
+#: .\compras\models.py:180 .\ventas\models.py:327
+msgid "Saldo inicial"
+msgstr ""
+
+#: .\compras\models.py:180
+msgid "Saldo inicial de proveedor afectado por esta cancelación."
+msgstr ""
+
+#: .\compras\models.py:182 .\compras\models.py:242 .\ventas\models.py:329
+#: .\ventas\models.py:428
+msgid "Monto aplicado"
+msgstr ""
+
+#: .\compras\models.py:182
+msgid "Monto aplicado a este saldo inicial de proveedor."
+msgstr ""
+
+#: .\compras\models.py:185
+msgid "Detalle de pago de saldo inicial de proveedor"
+msgstr ""
+
+#: .\compras\models.py:186
+msgid "Detalles de pago de saldos iniciales de proveedores"
+msgstr ""
+
+#: .\compras\models.py:192
+msgid "Proveedor que recibe saldo a favor."
+msgstr ""
+
+#: .\compras\models.py:194 .\ventas\models.py:348
+msgid "Momento en que se registro el adelanto."
+msgstr ""
+
+#: .\compras\models.py:195
+msgid "Monto pagado como adelanto."
+msgstr ""
+
+#: .\compras\models.py:198 .\tesoreria\models.py:66 .\tesoreria\models.py:89
+#: .\tesoreria\models.py:167 .\ventas\models.py:352
+msgid "Medio de pago"
+msgstr ""
+
+#: .\compras\models.py:198
+msgid "Medio real usado para pagar el adelanto."
+msgstr ""
+
+#: .\compras\models.py:200 .\ventas\models.py:354
+msgid "Descripcion opcional del adelanto."
+msgstr ""
+
+#: .\compras\models.py:203 .\tesoreria\models.py:205 .\ventas\models.py:357
+msgid "Turno de caja"
+msgstr ""
+
+#: .\compras\models.py:203
+msgid "Turno donde se pago el adelanto."
+msgstr ""
+
+#: .\compras\models.py:207 .\ventas\models.py:361
+msgid "Usuario que registro el adelanto."
+msgstr ""
+
+#: .\compras\models.py:228 .\tesoreria\models.py:140
+msgid "Adelanto de proveedor"
+msgstr ""
+
+#: .\compras\models.py:229
+msgid "Adelantos de proveedores"
+msgstr ""
+
+#: .\compras\models.py:236
+msgid "Cancelacion"
+msgstr ""
+
+#: .\compras\models.py:236
+msgid "Cancelacion de deuda que consume este adelanto."
+msgstr ""
+
+#: .\compras\models.py:240 .\ventas\models.py:426 .\ventas\models.py:440
+msgid "Adelanto"
+msgstr ""
+
+#: .\compras\models.py:240
+msgid "Adelanto de proveedor aplicado."
+msgstr ""
+
+#: .\compras\models.py:242
+msgid "Monto del adelanto aplicado a esta cancelacion."
+msgstr ""
+
+#: .\compras\models.py:245
+msgid "Detalle de aplicacion de adelanto de proveedor"
+msgstr ""
+
+#: .\compras\models.py:246
+msgid "Detalles de aplicacion de adelantos de proveedores"
+msgstr ""
+
+#: .\core\admin.py:32
+msgid "Datos de la empresa"
+msgstr ""
+
+#: .\core\admin.py:35
+msgid "POS — General"
+msgstr ""
+
+#: .\core\admin.py:38
+msgid "Tesorería — Cuentas del sistema"
+msgstr ""
+
+#: .\core\admin.py:47
+msgid "POS — Apertura de caja"
+msgstr ""
+
+#: .\core\admin.py:54
+msgid "Cuenta corriente — Clientes"
+msgstr ""
+
+#: .\core\admin.py:61
+msgid "Cuenta corriente — Proveedores"
+msgstr ""
+
+#: .\core\admin.py:85 .\core\admin.py:114
+msgid "Register operations"
+msgstr "Operaciones de caja"
+
+#: .\core\admin.py:97 .\core\admin.py:126
+msgid "Data administration"
+msgstr "Administracion de datos"
+
+#: .\core\admin.py:112 .\core\models.py:328 .\core\models.py:329
+msgid "Cashier permissions"
+msgstr "Permissoes de caixa"
+
+#: .\core\apps.py:8 .\gestion_de_carnicerias\settings.py:239
+msgid "Core"
+msgstr "Core"
+
+#: .\core\forms.py:8
+msgid "you@example.com"
+msgstr "tu@email.com"
+
+#: .\core\forms.py:9
+msgid "username"
+msgstr "usuario"
+
+#: .\core\forms.py:11 .\core\models.py:290
+msgid "Full name"
+msgstr "Nombre completo"
+
+#: .\core\forms.py:11
+msgid "First and last name"
+msgstr "Nombre y apellido"
+
+#: .\core\models.py:19
+msgid "Company name"
+msgstr "Nombre de la empresa"
+
+#: .\core\models.py:20
+msgid "Commercial name or legal business name."
+msgstr "Nombre comercial o razon social."
+
+#: .\core\models.py:26
+msgid "Address"
+msgstr "Direccion"
+
+#: .\core\models.py:27
+msgid "Street, number, city, and state or province."
+msgstr "Calle, numero, ciudad y provincia o estado."
+
+#: .\core\models.py:33
+msgid "Contact phone"
+msgstr "Telefono de contacto"
+
+#: .\core\models.py:34
+msgid "Area code and phone number."
+msgstr "Codigo de area y numero telefonico."
+
+#: .\core\models.py:40
+msgid "Instagram"
+msgstr "Instagram"
+
+#: .\core\models.py:41
+msgid "Instagram username or URL."
+msgstr "Usuario o URL de Instagram."
+
+#: .\core\models.py:47
+msgid "Facebook"
+msgstr "Facebook"
+
+#: .\core\models.py:48
+msgid "Facebook page or URL."
+msgstr "Pagina o URL de Facebook."
+
+#: .\core\models.py:54
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+#: .\core\models.py:55
+msgid "WhatsApp number including country code."
+msgstr "Numero de WhatsApp con codigo de pais."
+
+#: .\core\models.py:61
+msgid "Website"
+msgstr "Sitio web"
+
+#: .\core\models.py:62
+msgid "Business website URL."
+msgstr "URL del sitio web del negocio."
+
+#: .\core\models.py:68
+msgid "Short business description."
+msgstr "Descripcion breve del negocio."
+
+#: .\core\models.py:74
+#, fuzzy
+#| msgid "POS terminal"
+msgid "POS printer name"
+msgstr "Terminal POS"
+
+#: .\core\models.py:76
+msgid ""
+"Nombre exacto de la impresora térmica en Windows (ej: \"Xprinter XP-80\"). "
+"Dejá en blanco para imprimir desde el navegador."
+msgstr ""
+
+#: .\core\models.py:83
+#, fuzzy
+#| msgid "Allows opening and closing cash register shifts."
+msgid "Allow multi-day register shifts"
+msgstr "Permite abrir y cerrar turnos de caja."
+
+#: .\core\models.py:85
+msgid ""
+"Si está activo, un turno abierto puede seguir vigente después de las 00:00. "
+"Si se desactiva, el cajero debe cerrar caja al cambiar el día local."
+msgstr ""
+
+#: .\core\models.py:93
+msgid "Importes rápidos de venta"
+msgstr ""
+
+#: .\core\models.py:94
+msgid ""
+"Importes favoritos del modal de venta rápida, separados por coma. Ej: "
+"500,1000,2000,5000."
+msgstr ""
+
+#: .\core\models.py:99
+msgid "Cobro automático de deudas"
+msgstr ""
+
+#: .\core\models.py:101
+msgid ""
+"Si está activo, al recibir un adelanto se aplicará automáticamente para "
+"cancelar las deudas (saldos iniciales o ventas fiadas) más antiguas del "
+"cliente."
+msgstr ""
+
+#: .\core\models.py:107
+msgid "Pago automático de deudas a proveedores"
+msgstr ""
+
+#: .\core\models.py:109
+msgid ""
+"Si está activo, al registrar un adelanto a proveedor se aplicará "
+"automáticamente para cancelar las deudas más antiguas que se posean con el "
+"mismo."
+msgstr ""
+
+#: .\core\models.py:115
+msgid "Compensar deudas más antiguas primero"
+msgstr ""
+
+#: .\core\models.py:117
+msgid ""
+"Si está activo, la compensación usa orden cronológico estricto y no intenta "
+"deudas posteriores si una deuda anterior no puede cubrirse completa. Si se "
+"desactiva, puede saltear deudas anteriores no cubribles para compensar "
+"deudas posteriores siempre que se cubran completas (sin parciales)."
+msgstr ""
+
+#: .\core\models.py:125
+msgid "Ticket CC: mostrar importe pendiente"
+msgstr ""
+
+#: .\core\models.py:127
+msgid ""
+"Si está activo, el ticket de estado de cuenta muestra tanto el importe "
+"original como el importe pendiente por cada deuda. Si se desactiva, solo "
+"muestra el importe original, ahorrando espacio en el ticket."
+msgstr ""
+
+#: .\core\models.py:140
+msgid "Cuenta caja POS (drawer)"
+msgstr ""
+
+#: .\core\models.py:142
+msgid ""
+"Cuenta Efectivo que representa el cajón físico de la terminal. Recibe el "
+"fondo inicial al abrir turno y queda en $0 tras cada cierre. Si se deja "
+"vacío se usa la primera cuenta Efectivo del sistema."
+msgstr ""
+
+#: .\core\models.py:153
+msgid "Cuenta caja central"
+msgstr ""
+
+#: .\core\models.py:155
+msgid ""
+"Cuenta Efectivo donde vive el dinero fuera de los turnos (tesorería/caja "
+"fuerte). Es el origen por defecto del fondo de apertura y el destino del "
+"efectivo declarado al cierre."
+msgstr ""
+
+#: .\core\models.py:165
+msgid "Cuenta diferencias de caja"
+msgstr ""
+
+#: .\core\models.py:167
+msgid ""
+"Cuenta virtual que acumula faltantes/sobrantes de arqueo al cierre de cada "
+"turno (el 'ticket de diferencia'). Saldo positivo = faltantes a regularizar "
+"con Ajustes de cuenta."
+msgstr ""
+
+#: .\core\models.py:177
+msgid "Cuenta Mercado Pago"
+msgstr ""
+
+#: .\core\models.py:179
+msgid ""
+"Cuenta usada para el control informativo de Mercado Pago en apertura/cierre "
+"de caja. Si se deja vacío se busca por nombre 'Mercado Pago'."
+msgstr ""
+
+#: .\core\models.py:191
+msgid "Cuenta de origen por defecto (apertura)"
+msgstr ""
+
+#: .\core\models.py:193
+msgid ""
+"Cuenta desde donde se extrae el efectivo inicial al abrir caja (ej: RESERVA, "
+"CAJA FUERTE). No puede ser la misma cuenta caja POS. Si se deja vacío se usa "
+"la cuenta caja central."
+msgstr ""
+
+#: .\core\models.py:200
+msgid "Cajero puede cambiar la cuenta de origen"
+msgstr ""
+
+#: .\core\models.py:202
+msgid ""
+"Si está activo, el cajero ve el selector de cuenta de origen y puede "
+"cambiarlo. Si se desactiva, el selector queda oculto y se usa siempre la "
+"cuenta por defecto (sin opción de modificar). La cuenta de origen es siempre "
+"obligatoria si se declara efectivo."
+msgstr ""
+
+#: .\core\models.py:215
+msgid "Solo se permite una cuenta de tipo Efectivo."
+msgstr ""
+
+#: .\core\models.py:226
+msgid "No puede ser la misma cuenta que la caja POS (drawer)."
+msgstr ""
+
+#: .\core\models.py:244
+msgid "Usá solo números separados por coma."
+msgstr ""
+
+#: .\core\models.py:248
+msgid "Los importes rápidos deben ser mayores a cero."
+msgstr ""
+
+#: .\core\models.py:253
+msgid "Ingresá al menos un importe válido o dejá el campo vacío."
+msgstr ""
+
+#: .\core\models.py:261
+msgid "Unnamed configuration"
+msgstr "Configuracion sin nombre"
+
+#: .\core\models.py:264
+msgid "Configuration"
+msgstr "Configuracion"
+
+#: .\core\models.py:265
+msgid "Configurations"
+msgstr "Configuraciones"
+
+#: .\core\models.py:277
+msgid "User account linked to this profile."
+msgstr "Cuenta de usuario vinculada a este perfil."
+
+#: .\core\models.py:284
+msgid "Optional contact phone number."
+msgstr "Telefono de contacto opcional."
+
+#: .\core\models.py:291
+msgid "Person's full display name."
+msgstr "Nombre completo visible de la persona."
+
+#: .\core\models.py:298
+msgid "User profile"
+msgstr "Perfil de usuario"
+
+#: .\core\models.py:299
+msgid "User profiles"
+msgstr "Perfiles de usuario"
+
+#: .\core\models.py:309
+msgid "Cashier user affected by these permissions."
+msgstr "Usuario cajero afectado por estos permisos."
+
+#: .\core\models.py:311
+msgid "Register sale"
+msgstr "Registrar venta"
+
+#: .\core\models.py:311
+msgid "Allows the user to create POS sales."
+msgstr "Permite al usuario crear ventas en el POS."
+
+#: .\core\models.py:312
+msgid "Register expense"
+msgstr "Registrar gasto"
+
+#: .\core\models.py:312
+msgid "Allows the user to record business expenses."
+msgstr "Permite al usuario registrar gastos del negocio."
+
+#: .\core\models.py:313
+msgid "Pay supplier or settle account"
+msgstr "Pagar a proveedor o cancelar cuenta"
+
+#: .\core\models.py:313
+msgid "Allows supplier payments and supplier debt settlement."
+msgstr "Permite pagos a proveedores y cancelacion de deudas de proveedor."
+
+#: .\core\models.py:314
+msgid "Withdraw cash"
+msgstr "Retirar efectivo"
+
+#: .\core\models.py:314
+msgid "Allows cash withdrawals from the register."
+msgstr "Permite retiros de efectivo de la caja."
+
+#: .\core\models.py:315
+msgid "Collect customer debt"
+msgstr "Cobrar deuda de cliente"
+
+#: .\core\models.py:315
+msgid "Allows customer current-account debt collection."
+msgstr "Permite cobrar deuda de cuenta corriente de clientes."
+
+#: .\core\models.py:316
+msgid "Registrar adelanto de cliente"
+msgstr ""
+
+#: .\core\models.py:316
+msgid "Permite registrar adelantos de clientes desde el POS."
+msgstr ""
+
+#: .\core\models.py:317
+msgid "Registrar adelanto a proveedor"
+msgstr ""
+
+#: .\core\models.py:317
+msgid "Permite registrar adelantos a proveedores desde el POS."
+msgstr ""
+
+#: .\core\models.py:318
+msgid "Create or edit customers"
+msgstr "Crear o editar clientes"
+
+#: .\core\models.py:318
+msgid "Allows customer creation and updates from the POS."
+msgstr "Permite crear y actualizar clientes desde el POS."
+
+#: .\core\models.py:319
+msgid "Create or edit suppliers"
+msgstr "Crear o editar proveedores"
+
+#: .\core\models.py:319
+msgid "Allows supplier creation and updates from the POS."
+msgstr "Permite crear y actualizar proveedores desde el POS."
+
+#: .\core\models.py:320
+msgid "Create sale categories"
+msgstr "Crear categorias de venta"
+
+#: .\core\models.py:320
+msgid "Allows creation of inventory categories from the POS."
+msgstr "Permite crear categorias de inventario desde el POS."
+
+#: .\core\models.py:321
+msgid "Open or close register"
+msgstr "Abrir o cerrar caja"
+
+#: .\core\models.py:321
+msgid "Allows opening and closing cash register shifts."
+msgstr "Permite abrir y cerrar turnos de caja."
+
+#: .\core\models.py:322
+msgid "Use guided sale flow"
+msgstr ""
+
+#: .\core\models.py:322
+msgid "Shows the simplified step-by-step sale modal in the POS."
+msgstr ""
+
+#: .\core\models.py:325
+#, python-format
+msgid "Permissions for %(username)s"
+msgstr "Permisos de %(username)s"
+
+#: .\gastos\apps.py:8 .\gastos\models.py:71 .\gestion_de_carnicerias\settings.py:259
+msgid "Expenses"
+msgstr "Despesas"
+
+#: .\gastos\models.py:16
+msgid "Expense category name"
+msgstr "Nombre de la categoria de gasto"
+
+#: .\gastos\models.py:17
+msgid "Unique category used to classify expenses."
+msgstr "Categoria unica usada para clasificar gastos."
+
+#: .\gastos\models.py:24
+msgid "Expense category"
+msgstr "Categoria de gasto"
+
+#: .\gastos\models.py:25
+msgid "Expense categories"
+msgstr "Categorias de gasto"
+
+#: .\gastos\models.py:32
+msgid "Open register shift where this expense was recorded."
+msgstr "Turno de caja abierto donde se registro este gasto."
+
+#: .\gastos\models.py:34
+msgid "Moment when the expense was recorded."
+msgstr "Momento en que se registro el gasto."
+
+#: .\gastos\models.py:35
+msgid "Short explanation of the expense."
+msgstr "Explicacion breve del gasto."
+
+#: .\gastos\models.py:38 .\inventario\models.py:19 .\ventas\models.py:123
+#: .\ventas\models.py:212
+msgid "Category"
+msgstr "Categoria"
+
+#: .\gastos\models.py:38
+msgid "Optional expense category."
+msgstr "Categoria opcional del gasto."
+
+#: .\gastos\models.py:41
+msgid "Total expense amount."
+msgstr "Importe total del gasto."
+
+#: .\gastos\models.py:44
+msgid "Payment method used for this expense."
+msgstr "Medio de pago usado para este gasto."
+
+#: .\gastos\models.py:48
+#, fuzzy
+#| msgid "User who recorded the debt collection."
+msgid "Cashier who recorded the expense."
+msgstr "Usuario que registro el cobro de deuda."
+
+#: .\gastos\models.py:62
+msgid "Expenses cannot be paid with current account."
+msgstr ""
+
+#: .\gastos\models.py:70
+msgid "Expense"
+msgstr "Despesa"
+
+#: .\gestion_de_carnicerias\settings.py:119
+msgid "Spanish"
+msgstr "Espanhol"
+
+#: .\gestion_de_carnicerias\settings.py:120
+msgid "English"
+msgstr "Ingles"
+
+#: .\gestion_de_carnicerias\settings.py:121
+msgid "Portuguese"
+msgstr "Portugues"
+
+#: .\gestion_de_carnicerias\settings.py:122
+msgid "Chinese"
+msgstr "Chines"
+
+#: .\gestion_de_carnicerias\settings.py:195
+msgid "Gestion de Carnicerias"
+msgstr "Gestion de Carnicerias"
+
+#: .\gestion_de_carnicerias\settings.py:232 .\gestion_de_carnicerias\settings.py:272
+msgid "Ir al POS"
+msgstr ""
+
+#: .\gestion_de_carnicerias\settings.py:244 .\inventario\apps.py:8
+msgid "Inventory"
+msgstr "Inventario"
+
+#: .\gestion_de_carnicerias\settings.py:254 .\ventas\apps.py:8
+#: .\ventas\models.py:183
+msgid "Sales"
+msgstr "Vendas"
+
+#: .\gestion_de_carnicerias\settings.py:264
+msgid "Treasury"
+msgstr ""
+
+#: .\gestion_de_carnicerias\settings.py:278
+msgid "Resetear de fabrica"
+msgstr ""
+
+#: .\gestion_de_carnicerias\settings.py:286
+#, python-brace-format
+msgid "Welcome to {project_title}"
+msgstr "Bem-vindo ao {project_title}"
+
+#: .\inventario\models.py:11
+msgid "Category name"
+msgstr "Nombre de la categoria"
+
+#: .\inventario\models.py:12
+msgid "Unique name used to classify sales and inventory movements."
+msgstr "Nombre unico usado para clasificar ventas y movimientos de inventario."
+
+#: .\inventario\models.py:20
+msgid "Categories"
+msgstr "Categorias"
+
+#: .\pos\apps.py:8
+msgid "POS terminal"
+msgstr "Terminal POS"
+
+#: .\tesoreria\admin.py:31
+msgid "Movimiento (últimos 30)"
+msgstr ""
+
+#: .\tesoreria\admin.py:32
+msgid "Últimos 30 movimientos — ver todos en Movimientos de cuenta"
+msgstr ""
+
+#: .\tesoreria\admin.py:101
+msgid "Saldo actual"
+msgstr ""
+
+#: .\tesoreria\admin.py:148 .\tesoreria\admin.py:182 .\tesoreria\models.py:211
+#: .\tesoreria\models.py:345
+#, fuzzy
+#| msgid "Description"
+msgid "Descripción"
+msgstr "Descricao"
+
+#: .\tesoreria\admin.py:192 .\tesoreria\models.py:263
+msgid "Cuenta / Medio de pago"
+msgstr ""
+
+#: .\tesoreria\admin.py:196
+msgid "Fecha desde"
+msgstr ""
+
+#: .\tesoreria\admin.py:200
+msgid "Fecha hasta"
+msgstr ""
+
+#: .\tesoreria\admin.py:209
+msgid "La fecha desde no puede ser posterior a la fecha hasta."
+msgstr ""
+
+#: .\tesoreria\admin.py:302
+msgid "Exportar reporte de cuenta"
+msgstr ""
+
+#: .\tesoreria\apps.py:8
+msgid "Tesorería"
+msgstr ""
+
+#: .\tesoreria\models.py:28
+msgid "Efectivo"
+msgstr ""
+
+#: .\tesoreria\models.py:29
+msgid "Cuenta corriente"
+msgstr ""
+
+#: .\tesoreria\models.py:30
+msgid "Tarjeta de crédito"
+msgstr ""
+
+#: .\tesoreria\models.py:31
+msgid "Tarjeta de débito"
+msgstr ""
+
+#: .\tesoreria\models.py:32
+msgid "Transferencia bancaria"
+msgstr ""
+
+#: .\tesoreria\models.py:33
+msgid "Otro"
+msgstr ""
+
+#: .\tesoreria\models.py:48
+msgid "Nombre del medio de pago"
+msgstr ""
+
+#: .\tesoreria\models.py:49
+msgid "Etiqueta interna para este medio de pago."
+msgstr ""
+
+#: .\tesoreria\models.py:57
+msgid "Tipo de medio de pago"
+msgstr ""
+
+#: .\tesoreria\models.py:58
+msgid "Seleccioná la categoría del medio de pago."
+msgstr ""
+
+#: .\tesoreria\models.py:67
+msgid "Medios de pago"
+msgstr ""
+
+#: .\tesoreria\models.py:82
+msgid "Cajero"
+msgstr ""
+
+#: .\tesoreria\models.py:83
+msgid "Cajero al que pertenece esta asignación."
+msgstr ""
+
+#: .\tesoreria\models.py:90
+msgid "Medio de pago permitido para el cajero."
+msgstr ""
+
+#: .\tesoreria\models.py:94 .\ventas\models.py:340
+#, fuzzy
+#| msgid "Active"
+msgid "Activo"
+msgstr "Ativo"
+
+#: .\tesoreria\models.py:95
+msgid "Desactivá para quitar el acceso del cajero sin eliminar la asignación."
+msgstr ""
+
+#: .\tesoreria\models.py:97 .\tesoreria\models.py:292 .\tesoreria\models.py:357
+msgid "Creado el"
+msgstr ""
+
+#: .\tesoreria\models.py:101
+msgid "Asignación de medio de pago a cajero"
+msgstr ""
+
+#: .\tesoreria\models.py:102
+msgid "Asignaciones de medios de pago a cajeros"
+msgstr ""
+
+#: .\tesoreria\models.py:134
+msgid "Venta"
+msgstr ""
+
+#: .\tesoreria\models.py:135
+msgid "Pago de venta"
+msgstr ""
+
+#: .\tesoreria\models.py:136
+msgid "Gasto"
+msgstr ""
+
+#: .\tesoreria\models.py:137
+msgid "Pago a proveedor"
+msgstr ""
+
+#: .\tesoreria\models.py:138
+msgid "Cobro de deuda de cliente"
+msgstr ""
+
+#: .\tesoreria\models.py:139 .\ventas\models.py:414
+msgid "Adelanto de cliente"
+msgstr ""
+
+#: .\tesoreria\models.py:141
+msgid "Cancelación de deuda a proveedor"
+msgstr ""
+
+#: .\tesoreria\models.py:142
+msgid "Retiro de efectivo"
+msgstr ""
+
+#: .\tesoreria\models.py:143
+msgid "Apertura de caja"
+msgstr ""
+
+#: .\tesoreria\models.py:144
+msgid "Ajuste"
+msgstr ""
+
+#: .\tesoreria\models.py:145 .\tesoreria\models.py:360
+msgid "Transferencia entre cuentas"
+msgstr ""
+
+#: .\tesoreria\models.py:146
+msgid "Diferencia de arqueo de cierre"
+msgstr ""
+
+#: .\tesoreria\models.py:147
+msgid "Devolución de efectivo al cierre"
+msgstr ""
+
+#: .\tesoreria\models.py:153
+msgid "Ingreso"
+msgstr ""
+
+#: .\tesoreria\models.py:154
+msgid "Egreso"
+msgstr ""
+
+#: .\tesoreria\models.py:160 .\tesoreria\models.py:269
+#: .\tesoreria\models.py:339
+msgid "Fecha"
+msgstr ""
+
+#: .\tesoreria\models.py:161
+msgid "Momento en que ocurrió el movimiento."
+msgstr ""
+
+#: .\tesoreria\models.py:168
+msgid "Medio de pago afectado por este movimiento."
+msgstr ""
+
+#: .\tesoreria\models.py:174
+msgid "Tipo"
+msgstr ""
+
+#: .\tesoreria\models.py:175
+msgid "Operación que originó el movimiento."
+msgstr ""
+
+#: .\tesoreria\models.py:181
+msgid "Dirección"
+msgstr ""
+
+#: .\tesoreria\models.py:182
+msgid "Indica si el dinero entra o sale."
+msgstr ""
+
+#: .\tesoreria\models.py:188
+msgid "Siempre positivo; el signo se define en la dirección."
+msgstr ""
+
+#: .\tesoreria\models.py:197
+msgid "Usuario que registró la operación de origen."
+msgstr ""
+
+#: .\tesoreria\models.py:206
+msgid "Turno de caja al que pertenece el movimiento."
+msgstr ""
+
+#: .\tesoreria\models.py:212
+msgid "Texto libre que describe el movimiento."
+msgstr ""
+
+#: .\tesoreria\models.py:225
+msgid "Movimiento de cuenta"
+msgstr ""
+
+#: .\tesoreria\models.py:226
+msgid "Movimientos de cuenta"
+msgstr ""
+
+#: .\tesoreria\models.py:264
+msgid "Cuenta a la que se aplica el ajuste."
+msgstr ""
+
+#: .\tesoreria\models.py:270
+msgid "Momento en que se registra el ajuste."
+msgstr ""
+
+#: .\tesoreria\models.py:276
+msgid "Positivo para acreditar saldo, negativo para debitarlo."
+msgstr ""
+
+#: .\tesoreria\models.py:280
+msgid "Descripción / Comentario"
+msgstr ""
+
+#: .\tesoreria\models.py:281
+msgid "Motivo o detalle del ajuste."
+msgstr ""
+
+#: .\tesoreria\models.py:290
+msgid "Usuario que registró el ajuste."
+msgstr ""
+
+#: .\tesoreria\models.py:295
+msgid "Ajuste de cuenta"
+msgstr ""
+
+#: .\tesoreria\models.py:296
+msgid "Ajustes de cuenta"
+msgstr ""
+
+#: .\tesoreria\models.py:320
+msgid "Cuenta origen"
+msgstr ""
+
+#: .\tesoreria\models.py:321
+msgid "Medio de pago / cuenta desde donde sale el dinero."
+msgstr ""
+
+#: .\tesoreria\models.py:327
+msgid "Cuenta destino"
+msgstr ""
+
+#: .\tesoreria\models.py:328
+msgid "Medio de pago / cuenta a donde va el dinero."
+msgstr ""
+
+#: .\tesoreria\models.py:334
+msgid "Importe a transferir. Siempre positivo."
+msgstr ""
+
+#: .\tesoreria\models.py:340
+msgid "Momento en que ocurrió la transferencia."
+msgstr ""
+
+#: .\tesoreria\models.py:346
+msgid ""
+"Detalle opcional de la transferencia (ej: 'Fondo reserva → caja apertura')."
+msgstr ""
+
+#: .\tesoreria\models.py:355
+msgid "Usuario que registró la transferencia."
+msgstr ""
+
+#: .\tesoreria\models.py:361
+msgid "Transferencias entre cuentas"
+msgstr ""
+
+#: .\tesoreria\templates\admin\tesoreria\reporte_cuenta.html:8
+msgid "Inicio"
+msgstr ""
+
+#: .\ventas\admin.py:156
+msgid "Revert and void selected customer advances"
+msgstr ""
+
+#: .\ventas\admin.py:164
+#, python-format
+msgid "Advances voided: %(adelantos)s | debt collections reverted: %(cobros)s"
+msgstr ""
+
+#: .\ventas\admin.py:174
+#, python-format
+msgid "Already voided (ignored): %(cantidad)s"
+msgstr ""
+
+#: .\ventas\admin.py:180
+#, python-format
+msgid "Blocked by guardrails: %(cantidad)s"
+msgstr ""
+
+#: .\ventas\admin.py:192
+msgid "Download closing PDF (one shift only)"
+msgstr "Descargar cierre en PDF (solo un turno)"
+
+#: .\ventas\admin.py:197
+msgid "Select exactly one shift to download the PDF."
+msgstr "Selecciona exactamente un turno para descargar el PDF."
+
+#: .\ventas\admin.py:218
+msgid "Diferencia cierre"
+msgstr ""
+
+#: .\ventas\admin.py:233
+msgid "Closing PDF"
+msgstr "Cierre PDF"
+
+#: .\ventas\admin.py:236
+msgid "Download"
+msgstr "Baixar"
+
+#: .\ventas\models.py:17
+msgid "User who opened the register shift."
+msgstr "Usuario que abrio el turno de caja."
+
+#: .\ventas\models.py:19
+msgid "Date"
+msgstr "Data"
+
+#: .\ventas\models.py:19
+msgid "Business date for this register shift."
+msgstr "Fecha comercial de este turno de caja."
+
+#: .\ventas\models.py:21
+#, fuzzy
+#| msgid "Open"
+msgid "Opened at"
+msgstr "Aberto"
+
+#: .\ventas\models.py:22
+#, fuzzy
+#| msgid "Timestamp when the register shift was closed."
+msgid ""
+"Timestamp when the register shift was opened. Used as the stable date for "
+"opening ledger entries."
+msgstr "Fecha y hora en que se cerro el turno de caja."
+
+#: .\ventas\models.py:24 .\ventas\models.py:58
+msgid "Open"
+msgstr "Aberto"
+
+#: .\ventas\models.py:24
+msgid "Indicates whether the register shift is currently open."
+msgstr "Indica si el turno de caja esta abierto actualmente."
+
+#: .\ventas\models.py:26
+msgid "Opening balance"
+msgstr "Saldo inicial"
+
+#: .\ventas\models.py:26
+msgid "Cash amount declared when opening the shift."
+msgstr "Monto de efectivo declarado al abrir el turno."
+
+#: .\ventas\models.py:29
+#, fuzzy
+#| msgid "Opening balance"
+msgid "Opening Mercado Pago balance"
+msgstr "Saldo inicial"
+
+#: .\ventas\models.py:29
+#, fuzzy
+#| msgid "Cash amount declared when opening the shift."
+msgid "Mercado Pago amount declared when opening the shift."
+msgstr "Monto de efectivo declarado al abrir el turno."
+
+#: .\ventas\models.py:36
+msgid "Opening source account"
+msgstr ""
+
+#: .\ventas\models.py:37
+msgid ""
+"Account from which the opening cash was taken (e.g. RESERVA). If blank, no "
+"transfer is recorded."
+msgstr ""
+
+#: .\ventas\models.py:40
+msgid "Closing balance"
+msgstr "Saldo final"
+
+#: .\ventas\models.py:40
+msgid "Cash amount declared when closing the shift."
+msgstr "Monto de efectivo declarado al cerrar el turno."
+
+#: .\ventas\models.py:43
+#, fuzzy
+#| msgid "Closing balance"
+msgid "Closing Mercado Pago balance"
+msgstr "Saldo final"
+
+#: .\ventas\models.py:43
+#, fuzzy
+#| msgid "Cash amount declared when closing the shift."
+msgid "Mercado Pago amount declared when closing the shift."
+msgstr "Monto de efectivo declarado al cerrar el turno."
+
+#: .\ventas\models.py:47
+#, fuzzy
+#| msgid "Closing balance"
+msgid "Closing cash difference"
+msgstr "Saldo final"
+
+#: .\ventas\models.py:48
+msgid ""
+"Declared cash minus expected cash at close. Positive = surplus, negative = "
+"shortage."
+msgstr ""
+
+#: .\ventas\models.py:52
+msgid "Difference reason"
+msgstr ""
+
+#: .\ventas\models.py:53
+msgid ""
+"Cashier-provided reason for the cash-count difference at close. Required "
+"when the difference is not zero."
+msgstr ""
+
+#: .\ventas\models.py:55
+msgid "Closed at"
+msgstr "Cerrado en"
+
+#: .\ventas\models.py:55
+msgid "Timestamp when the register shift was closed."
+msgstr "Fecha y hora en que se cerro el turno de caja."
+
+#: .\ventas\models.py:58
+msgid "Closed"
+msgstr "Fechado"
+
+#: .\ventas\models.py:63
+msgid "Register shifts"
+msgstr "Turnos de caja"
+
+#: .\ventas\models.py:67
+msgid "Customer display name."
+msgstr "Nombre visible del cliente."
+
+#: .\ventas\models.py:68
+msgid "Optional customer phone number."
+msgstr "Telefono opcional del cliente."
+
+#: .\ventas\models.py:69
+msgid "Internal notes about this customer."
+msgstr "Notas internas sobre este cliente."
+
+#: .\ventas\models.py:70
+msgid "Marks whether this customer can be used in new operations."
+msgstr "Indica si este cliente puede usarse en nuevas operaciones."
+
+#: .\ventas\models.py:76 .\ventas\models.py:127 .\ventas\models.py:261
+msgid "Customer"
+msgstr "Cliente"
+
+#: .\ventas\models.py:77
+msgid "Customers"
+msgstr "Clientes"
+
+#: .\ventas\models.py:84 .\ventas\models.py:346
+msgid "Cliente"
+msgstr ""
+
+#: .\ventas\models.py:84
+msgid "Cliente asociado al saldo inicial de cuenta corriente."
+msgstr ""
+
+#: .\ventas\models.py:87
+msgid "Monto inicial adeudado por el cliente."
+msgstr ""
+
+#: .\ventas\models.py:108
+msgid "Saldo inicial de cliente"
+msgstr ""
+
+#: .\ventas\models.py:109
+msgid "Saldos iniciales de clientes"
+msgstr ""
+
+#: .\ventas\models.py:116
+msgid "Open register shift where this sale was recorded."
+msgstr "Turno de caja abierto donde se registro esta venta."
+
+#: .\ventas\models.py:118
+msgid "Moment when the sale was recorded."
+msgstr "Momento en que se registro la venta."
+
+#: .\ventas\models.py:120
+msgid "Total sale amount."
+msgstr "Importe total de la venta."
+
+#: .\ventas\models.py:123
+msgid "Optional category associated with the sale."
+msgstr "Categoria opcional asociada a la venta."
+
+#: .\ventas\models.py:127
+msgid "Customer linked to the sale, required for current-account sales."
+msgstr ""
+"Cliente vinculado a la venta, requerido para ventas en cuenta corriente."
+
+#: .\ventas\models.py:130
+msgid "Primary payment method for the sale."
+msgstr "Medio de pago principal de la venta."
+
+#: .\ventas\models.py:133
+msgid "Optional sale description."
+msgstr "Descripcion opcional de la venta."
+
+#: .\ventas\models.py:136
+msgid "Ticket"
+msgstr "Ticket"
+
+#: .\ventas\models.py:136
+msgid "Sequential ticket number inside the register shift."
+msgstr "Numero secuencial de ticket dentro del turno de caja."
+
+#: .\ventas\models.py:140
+#, fuzzy
+#| msgid "User who recorded the withdrawal."
+msgid "Cashier who recorded the sale."
+msgstr "Usuario que registro el retiro."
+
+#: .\ventas\models.py:182 .\ventas\models.py:190 .\ventas\models.py:208
+#: .\ventas\models.py:311
+msgid "Sale"
+msgstr "Venda"
+
+#: .\ventas\models.py:190
+msgid "Sale paid by this payment line."
+msgstr "Venta pagada por esta linea de pago."
+
+#: .\ventas\models.py:193
+msgid "Payment method used in this line."
+msgstr "Medio de pago usado en esta linea."
+
+#: .\ventas\models.py:195
+msgid "Amount paid with this method."
+msgstr "Importe pagado con este medio."
+
+#: .\ventas\models.py:201
+msgid "Sale payment"
+msgstr "Pago de venta"
+
+#: .\ventas\models.py:202
+msgid "Sale payments"
+msgstr "Pagos de venta"
+
+#: .\ventas\models.py:208
+#, fuzzy
+#| msgid "Sale paid by this payment line."
+msgid "Sale categorized by this line."
+msgstr "Venta pagada por esta linea de pago."
+
+#: .\ventas\models.py:212
+#, fuzzy
+#| msgid "Optional category associated with the sale."
+msgid "Category assigned to this part of the sale."
+msgstr "Categoria opcional asociada a la venta."
+
+#: .\ventas\models.py:214
+#, fuzzy
+#| msgid "Amount applied to this sale debt."
+msgid "Amount assigned to this category."
+msgstr "Monto aplicado a esta deuda de venta."
+
+#: .\ventas\models.py:220
+msgid "Sale category detail"
+msgstr ""
+
+#: .\ventas\models.py:221
+#, fuzzy
+#| msgid "Create sale categories"
+msgid "Sale category details"
+msgstr "Crear categorias de venta"
+
+#: .\ventas\models.py:228
+msgid "Open register shift where this withdrawal was recorded."
+msgstr "Turno de caja abierto donde se registro este retiro."
+
+#: .\ventas\models.py:230
+msgid "Moment when the cash withdrawal was recorded."
+msgstr "Momento en que se registro el retiro de efectivo."
+
+#: .\ventas\models.py:232
+msgid "Cash withdrawal amount."
+msgstr "Importe del retiro de efectivo."
+
+#: .\ventas\models.py:235
+msgid "Optional withdrawal description."
+msgstr "Descripcion opcional del retiro."
+
+#: .\ventas\models.py:239
+msgid "User who recorded the withdrawal."
+msgstr "Usuario que registro el retiro."
+
+#: .\ventas\models.py:250
+msgid "Cash withdrawal"
+msgstr "Retiro de efectivo"
+
+#: .\ventas\models.py:251
+msgid "Cash withdrawals"
+msgstr "Retiros de efectivo"
+
+#: .\ventas\models.py:257
+msgid "Open register shift where this customer debt collection was recorded."
+msgstr ""
+"Turno de caja abierto donde se registro este cobro de deuda de cliente."
+
+#: .\ventas\models.py:261
+msgid "Customer whose debt is being collected."
+msgstr "Cliente cuya deuda se esta cobrando."
+
+#: .\ventas\models.py:263
+msgid "Moment when the debt collection was recorded."
+msgstr "Momento en que se registro el cobro de deuda."
+
+#: .\ventas\models.py:264
+msgid "Total collected"
+msgstr "Total cobrado"
+
+#: .\ventas\models.py:264
+msgid "Total amount applied to customer debts."
+msgstr "Importe total aplicado a deudas de clientes."
+
+#: .\ventas\models.py:267
+msgid "Amount received"
+msgstr ""
+
+#: .\ventas\models.py:267
+#, fuzzy
+#| msgid "Current-account sale affected by this collection."
+msgid "Real amount received in this collection."
+msgstr "Venta en cuenta corriente afectada por este cobro."
+
+#: .\ventas\models.py:271
+#, fuzzy
+#| msgid "Current-account sale affected by this collection."
+msgid "Customer advance amount consumed by this collection."
+msgstr "Venta en cuenta corriente afectada por este cobro."
+
+#: .\ventas\models.py:275
+#, fuzzy
+#| msgid "Payment method used for this debt collection."
+msgid ""
+"Payment method used for the real amount received in this debt collection."
+msgstr "Medio de pago usado para este cobro de deuda."
+
+#: .\ventas\models.py:277
+msgid "Optional debt collection description."
+msgstr "Descripcion opcional del cobro de deuda."
+
+#: .\ventas\models.py:280
+msgid "User who recorded the debt collection."
+msgstr "Usuario que registro el cobro de deuda."
+
+#: .\ventas\models.py:300
+msgid "Customer debt collection"
+msgstr "Cobro de deuda de cliente"
+
+#: .\ventas\models.py:301
+msgid "Customer debt collections"
+msgstr "Cobros de deuda de cliente"
+
+#: .\ventas\models.py:307
+msgid "Collection"
+msgstr "Cobro"
+
+#: .\ventas\models.py:307
+msgid "Customer debt collection that owns this detail."
+msgstr "Cobro de deuda de cliente al que pertenece este detalle."
+
+#: .\ventas\models.py:311
+msgid "Current-account sale affected by this collection."
+msgstr "Venta en cuenta corriente afectada por este cobro."
+
+#: .\ventas\models.py:313
+msgid "Amount applied to this sale debt."
+msgstr "Monto aplicado a esta deuda de venta."
+
+#: .\ventas\models.py:316
+msgid "Customer debt collection detail"
+msgstr "Detalle de cobro de deuda de cliente"
+
+#: .\ventas\models.py:317
+msgid "Customer debt collection details"
+msgstr "Detalles de cobro de deuda de cliente"
+
+#: .\ventas\models.py:323 .\ventas\models.py:422
+msgid "Cobro"
+msgstr ""
+
+#: .\ventas\models.py:323
+msgid "Cobro de deuda que contiene este detalle de saldo inicial."
+msgstr ""
+
+#: .\ventas\models.py:327
+msgid "Saldo inicial de cliente afectado por este cobro."
+msgstr ""
+
+#: .\ventas\models.py:329
+msgid "Monto aplicado a este saldo inicial."
+msgstr ""
+
+#: .\ventas\models.py:332
+msgid "Detalle de cobro de saldo inicial de cliente"
+msgstr ""
+
+#: .\ventas\models.py:333
+msgid "Detalles de cobro de saldos iniciales de clientes"
+msgstr ""
+
+#: .\ventas\models.py:341
+msgid "Anulado"
+msgstr ""
+
+#: .\ventas\models.py:346
+msgid "Cliente que deja saldo a favor."
+msgstr ""
+
+#: .\ventas\models.py:349
+msgid "Monto recibido como adelanto."
+msgstr ""
+
+#: .\ventas\models.py:352
+msgid "Medio real usado para recibir el adelanto."
+msgstr ""
+
+#: .\ventas\models.py:357
+msgid "Turno donde se recibio el adelanto."
+msgstr ""
+
+#: .\ventas\models.py:368
+msgid "Estado"
+msgstr ""
+
+#: .\ventas\models.py:369
+msgid "Estado operativo del adelanto."
+msgstr ""
+
+#: .\ventas\models.py:374
+msgid "Anulado en"
+msgstr ""
+
+#: .\ventas\models.py:375
+msgid "Momento en que se anuló el adelanto."
+msgstr ""
+
+#: .\ventas\models.py:383
+msgid "Anulado por"
+msgstr ""
+
+#: .\ventas\models.py:384
+msgid "Usuario que anuló el adelanto."
+msgstr ""
+
+#: .\ventas\models.py:389
+msgid "Motivo de anulación"
+msgstr ""
+
+#: .\ventas\models.py:390
+msgid "Motivo registrado al anular el adelanto."
+msgstr ""
+
+#: .\ventas\models.py:415
+msgid "Adelantos de clientes"
+msgstr ""
+
+#: .\ventas\models.py:422
+msgid "Cobro de deuda que consume este adelanto."
+msgstr ""
+
+#: .\ventas\models.py:426
+msgid "Adelanto de cliente aplicado."
+msgstr ""
+
+#: .\ventas\models.py:428
+msgid "Monto del adelanto aplicado a este cobro."
+msgstr ""
+
+#: .\ventas\models.py:431
+msgid "Detalle de aplicacion de adelanto de cliente"
+msgstr ""
+
+#: .\ventas\models.py:432
+msgid "Detalles de aplicacion de adelantos de clientes"
+msgstr ""
+
+#: .\ventas\models.py:441
+msgid "Adelanto de cliente anulado."
+msgstr ""
+
+#: .\ventas\models.py:446
+msgid "Momento en que se registró la anulación."
+msgstr ""
+
+#: .\ventas\models.py:455
+msgid "Usuario que ejecutó la anulación."
+msgstr ""
+
+#: .\ventas\models.py:460
+msgid "Motivo"
+msgstr ""
+
+#: .\ventas\models.py:461
+msgid "Motivo de la anulación."
+msgstr ""
+
+#: .\ventas\models.py:467
+msgid "Monto revertido"
+msgstr ""
+
+#: .\ventas\models.py:468
+msgid "Monto total des-aplicado de compras/deudas durante la anulación."
+msgstr ""
+
+#: .\ventas\models.py:473
+msgid "Detalle"
+msgstr ""
+
+#: .\ventas\models.py:474
+msgid "Detalle técnico de cobros y destinos revertidos."
+msgstr ""
+
+#: .\ventas\models.py:481
+msgid "Evento de anulación de adelanto de cliente"
+msgstr ""
+
+#: .\ventas\models.py:482
+msgid "Eventos de anulación de adelantos de clientes"
+msgstr ""
+
+#~ msgid "Cash"
+#~ msgstr "Dinheiro"
+
+#~ msgid "Current account"
+#~ msgstr "Conta corrente"
+
+#~ msgid "Credit card"
+#~ msgstr "Cartao de credito"
+
+#~ msgid "Debit card"
+#~ msgstr "Cartao de debito"
+
+#~ msgid "Bank transfer"
+#~ msgstr "Transferencia bancaria"
+
+#~ msgid "Other"
+#~ msgstr "Outro"
+
+#~ msgid "Payment method name"
+#~ msgstr "Nombre del medio de pago"
+
+#~ msgid "Internal label for this payment method."
+#~ msgstr "Etiqueta interna para este medio de pago."
+
+#~ msgid "Payment method type"
+#~ msgstr "Tipo de medio de pago"
+
+#~ msgid "Select the payment category."
+#~ msgstr "Selecciona la categoria de pago."
+
+#~ msgid "Payment methods"
+#~ msgstr "Medios de pago"
+
+#~ msgid "SFI System"
+#~ msgstr "Sistema SFI"

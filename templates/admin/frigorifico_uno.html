@@ -1,0 +1,39 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div class="card" style="max-width: 820px;">
+  <div class="card-body">
+    <p>Carga todo lo que necesita Frigorífico Uno para empezar a operar en esta PC:</p>
+    <ul>
+      <li>Depósito Central Catan y Diana Catan (la sucursal de esta PC, cliente interno del depósito).</li>
+      <li>Medios de pago: efectivo, Mercado Pago, fiado, tarjeta de débito, tarjeta de crédito y transferencia.</li>
+      <li>Puestos Caja 1 y Mostrador 1, y la cámara Exhibidora.</li>
+      <li>Usuarios dueno, encargado, cajera1 y vendedor1 (clave inicial <strong>Catan1234</strong>).</li>
+      <li>El catálogo de la lista de precios (73 productos con sus códigos) y las fotos de los cortes.</li>
+    </ul>
+    <p><strong>No borra ni pisa nada:</strong> lo que ya existe queda como está (precios, fotos, claves). Se puede volver a correr sin problema.</p>
+
+    {% if not ejecutado or error %}
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-success">
+        <i class="fas fa-download"></i> Cargar datos de Frigorífico Uno
+      </button>
+    </form>
+    {% endif %}
+
+    {% if ejecutado %}
+      {% if error %}
+      <div class="alert alert-danger" style="margin-top: 1rem;"><strong>No se pudo completar:</strong> {{ error }}</div>
+      {% else %}
+      <div class="alert alert-success" style="margin-top: 1rem;">Listo. Ya podés entrar al POS con <strong>cajera1</strong> / <strong>Catan1234</strong>.</div>
+      {% endif %}
+      {% if salida %}
+      <pre style="margin-top: 1rem; padding: 0.75rem; border-radius: 6px; background: rgba(0,0,0,0.25); white-space: pre-wrap; font-size: 0.85rem;">{{ salida }}</pre>
+      {% endif %}
+      <a class="btn btn-primary" href="/pos/"><i class="fas fa-cash-register"></i> Ir al POS</a>
+      <a class="btn btn-secondary" href="{% url 'admin:index' %}">Volver al admin</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

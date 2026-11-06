@@ -1,0 +1,124 @@
+:root {
+  /* Theme variables - tweak here */
+  --primary-pink: #ff6b9d;
+  --primary-purple: #a855f7;
+  --primary-orange: #fb923c;
+  --primary-blue: #60a5fa;
+  --bg: #f9fafb;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --white: #ffffff;
+  --radius: 12px;
+  --container-width: 1100px;
+}
+
+*{box-sizing:border-box}
+body{font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background:var(--bg); color:var(--text); margin:0}
+.container{max-width:var(--container-width);margin:0 auto;padding:0 1rem}
+
+/* Header */
+.header{background:var(--white);box-shadow:0 1px 3px rgba(0,0,0,0.06);position:sticky;top:0;z-index:50}
+.header-content{display:flex;align-items:center;justify-content:space-between;padding:0.75rem 0;gap:0.5rem;flex-wrap:wrap}
+.logo a{font-weight:700;font-size:1.25rem;background:linear-gradient(135deg,var(--primary-purple),var(--primary-pink));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+.nav{display:flex;gap:0.75rem;flex-wrap:wrap}
+.nav-link{color:var(--muted);text-decoration:none;font-weight:500;font-size:0.95rem}
+.nav-link:hover{color:var(--primary-pink)}
+
+/* Modern mobile-first nav */
+.site-header{background:var(--white);box-shadow:0 1px 3px rgba(0,0,0,0.06);position:sticky;top:0;z-index:60}
+.header-content{display:flex;align-items:center;justify-content:space-between;padding:0.6rem 0;gap:0.5rem}
+.header-brand .logo-link{font-weight:700;font-size:1.1rem;background:linear-gradient(135deg,var(--primary-purple),var(--primary-pink));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+.nav-toggle{background:transparent;border:0;font-size:1.25rem;padding:0.4rem 0.6rem;border-radius:8px;display:inline-flex;align-items:center}
+.site-nav{width:100%}
+.nav-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:0.5rem}
+.nav-list.open{display:flex}
+.nav-item{padding:0 0.25rem}
+.nav-link{display:block;padding:0.6rem;border-radius:8px;color:var(--muted)}
+.nav-link:hover{background:rgba(0,0,0,0.03)}
+.auth-area{display:flex;gap:0.5rem;align-items:center;margin-top:0.5rem}
+
+/* Desktop layout */
+@media(min-width:768px){
+  .nav-toggle{display:none}
+  .site-nav{width:auto}
+  .nav-list{flex-direction:row;align-items:center;gap:0.75rem}
+  .auth-area{margin-top:0}
+}
+
+.auth-section{display:flex;gap:0.5rem;align-items:center}
+.user-name{font-weight:500;color:var(--text)}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.5rem 0.75rem;border-radius:8px;border:0;cursor:pointer}
+.btn-primary{background:linear-gradient(90deg,var(--primary-pink),var(--primary-purple));color:var(--white)}
+.btn-outline{background:transparent;border:1px solid var(--primary-purple);color:var(--primary-purple)}
+.btn-secondary{background:#fff;border:1px solid #e6e6e6;color:var(--text)}
+.btn-hero{padding:0.75rem 1.25rem;border-radius:14px}
+.btn-full{width:100%}
+
+/* Hero */
+.hero{padding:3rem 0;position:relative}
+.hero-bg{position:absolute;inset:0;background:linear-gradient(135deg, rgba(168,85,247,0.06), rgba(255,107,157,0.04));pointer-events:none}
+.hero-content{position:relative;padding:3rem 0}
+.hero-title{font-size:2rem;margin-bottom:0.5rem}
+.hero-subtitle{color:var(--muted);margin-bottom:1rem}
+
+/* Filters */
+.filters{padding:1rem 0}
+.filters-content{display:flex;gap:1rem;align-items:center}
+.search-container{flex:1;display:flex;gap:0.5rem;flex-wrap:wrap}
+.search-input{flex:1 1 160px;padding:0.6rem;border-radius:8px;border:1px solid #e6e6e6}
+.search-btn{padding:0.6rem 0.8rem;border-radius:8px;background:var(--primary-blue);color:#fff;border:0}
+.category-filter{padding:0.6rem;border-radius:8px;border:1px solid #e6e6e6}
+
+/* Feed */
+.feed{padding:1rem 0}
+.feed-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.75rem}
+.vendor-card{background:var(--white);padding:1rem;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.04);display:flex;flex-direction:column;gap:0.5rem}
+.vendor-image{height:140px;background:#f3f4f6;border-radius:8px;background-position:center;background-size:cover}
+.vendor-header{display:flex;gap:0.75rem;align-items:center}
+.vendor-avatar{width:48px;height:48px;border-radius:50%;background:#eee;background-position:center;background-size:cover}
+.vendor-info h3{margin:0;font-size:1rem}
+.vendor-category{color:var(--muted);font-size:0.9rem}
+.vendor-badges{display:flex;gap:0.4rem}
+.vendor-badge{padding:0.25rem 0.5rem;background:#fff;border-radius:999px;font-size:0.75rem;border:1px solid #eee}
+.vendor-description{color:var(--muted);font-size:0.9rem}
+.vendor-actions{display:flex;gap:0.5rem;margin-top:auto}
+
+/* Auth pages */
+.auth-main{padding:2rem 0}
+.auth-container{max-width:520px;margin:2rem auto}
+.auth-card{background:var(--white);padding:1.25rem;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.05)}
+.auth-header h2{margin:0 0 0.25rem 0}
+.auth-header p{color:var(--muted);margin:0 0 1rem 0}
+.auth-form .form-group{margin-bottom:0.75rem}
+.form-label{display:block;margin-bottom:0.25rem}
+.form-input{width:100%;padding:0.6rem;border-radius:8px;border:1px solid #e6e6e6}
+.checkbox-label{display:flex;gap:0.5rem;align-items:center}
+.checkmark{width:16px;height:16px;border:1px solid #d1d5db;border-radius:3px;display:inline-block}
+.auth-error{color:#b91c1c;margin-top:0.5rem}
+
+/* Footer */
+.footer{padding:1rem 0;margin-top:2rem;background:transparent}
+.footer-content{display:flex;justify-content:space-between;align-items:center}
+.footer-links{display:flex;gap:1rem}
+.footer-link{text-decoration:none;color:var(--muted)}
+
+@media(min-width:640px){
+  .feed-grid{grid-template-columns:repeat(3,minmax(0,1fr));}
+}
+
+@media(min-width:900px){
+  .feed-grid{grid-template-columns:repeat(4,minmax(0,1fr));}
+}
+
+@media(max-width:768px){
+  .filters-content{flex-direction:column;align-items:flex-start}
+  .footer-content{flex-direction:column;gap:0.5rem}
+}
+
+/* Generic input/select styles so Django-rendered fields look consistent */
+input[type="text"], input[type="email"], input[type="password"], select, textarea {
+  width:100%;padding:0.6rem;border-radius:8px;border:1px solid #e6e6e6;font-size:0.95rem
+}
+

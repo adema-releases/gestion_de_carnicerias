@@ -1,0 +1,142 @@
+/* Asistente ADEMA: panel flotante de chat, no modal centrado — a propósito
+   no tapa el resto de la pantalla, para que el cajero pueda seguir viendo
+   la terminal mientras conversa. Toma los tokens --surface/--border/--text/
+   --muted ya definidos en :root por la página que lo incluye (hoy solo
+   pos/terminal.html). */
+
+.asistente-panel {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: min(360px, calc(100vw - 24px));
+  max-height: min(70vh, 560px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, .45);
+  display: flex;
+  flex-direction: column;
+  z-index: 60;
+  overflow: hidden;
+  transform: translateY(12px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .15s ease, transform .15s ease, visibility .15s;
+}
+.asistente-panel.open {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.asistente-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, .03);
+  border-bottom: 1px solid var(--border);
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--text);
+  flex-shrink: 0;
+}
+.asistente-header i.fa-robot { margin-right: 6px; color: var(--blue, #60a5fa); }
+
+.asistente-cerrar {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+.asistente-cerrar:hover { color: var(--text); }
+
+.asistente-historial {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: .82rem;
+  min-height: 120px;
+}
+
+.asistente-msg {
+  max-width: 88%;
+  padding: 7px 10px;
+  border-radius: 10px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.asistente-msg-user {
+  align-self: flex-end;
+  background: rgba(96, 165, 250, .16);
+  color: var(--text);
+  border-bottom-right-radius: 3px;
+}
+.asistente-msg-assistant {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, .05);
+  color: var(--text);
+  border-bottom-left-radius: 3px;
+}
+.asistente-msg-error {
+  align-self: flex-start;
+  background: rgba(248, 113, 113, .12);
+  color: var(--red, #f87171);
+}
+.asistente-msg-cargando { align-self: flex-start; color: var(--muted); font-style: italic; }
+
+.asistente-input-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.asistente-input {
+  flex: 1;
+  resize: none;
+  max-height: 90px;
+  background: var(--bg, #0d0d12);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 8px 10px;
+  font-size: .82rem;
+  font-family: inherit;
+}
+.asistente-input:focus { outline: none; border-color: var(--blue, #60a5fa); }
+
+.asistente-enviar {
+  background: var(--blue, #60a5fa);
+  border: none;
+  color: #0d0d12;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.asistente-enviar:disabled { opacity: .5; cursor: default; }
+
+@media (max-width: 640px) {
+  .asistente-panel {
+    right: 8px;
+    left: 8px;
+    bottom: 8px;
+    width: auto;
+    max-height: 65vh;
+  }
+}

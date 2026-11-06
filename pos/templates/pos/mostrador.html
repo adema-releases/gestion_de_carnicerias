@@ -1,0 +1,459 @@
+{% load i18n static %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'es' }}">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% trans "Mostrador" %}</title>
+  <link rel="icon" href="{% static 'img/ico.ico' %}" type="image/x-icon" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d0d12; --surface: #16161f; --surface2: #1d1d29; --border: #252530; --text: #e8e8f0;
+      --muted: #8a8aa0; --green: #22c55e; --red: #f87171; --orange: #fb923c;
+    }
+    /* La pantalla no scrollea: solo la grilla de productos y la columna de la comanda. */
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text);
+           height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+    button { font: inherit; color: inherit; cursor: pointer; }
+    * { scrollbar-width: thin; scrollbar-color: #3a3a4a transparent; }
+    ::-webkit-scrollbar { width: 8px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: #3a3a4a; border-radius: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+
+    .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px; flex: 0 0 auto;
+           background: var(--surface); border-bottom: 1px solid var(--border); z-index: 5; }
+    .top-title { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .top-title i { color: var(--green); font-size: 1.3rem; }
+    .top-title strong { display: block; font-size: 1.05rem; }
+    .top-title small { color: var(--muted); }
+    .top-actions { display: flex; gap: 8px; align-items: center; }
+    .btn-ghost { background: none; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: var(--muted); text-decoration: none; font-size: 0.9rem; }
+    .btn-ghost:hover { color: var(--text); border-color: #3a3a4a; }
+
+    main { flex: 1; min-height: 0; width: 100%; display: grid; grid-template-columns: 1fr 360px; gap: 12px; padding: 12px;
+           max-width: 1600px; margin: 0 auto; }
+    aside { min-height: 0; overflow-y: auto; }
+
+    .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+    .catalogo { display: flex; flex-direction: column; min-height: 0; padding-bottom: 0; }
+    .buscar { width: 100%; background: #0b0b12; border: 1px solid var(--border); border-radius: 10px; color: var(--text);
+              padding: 11px 14px; font-size: 1rem; margin-bottom: 8px; flex: 0 0 auto; }
+    .buscar:focus { outline: none; border-color: var(--green); }
+    .chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 6px; flex: 0 0 auto; }
+    .chip { flex: 0 0 auto; border: 1px solid var(--border); background: var(--surface2); border-radius: 999px; padding: 7px 12px; font-size: 0.85rem; color: var(--muted); }
+    .chip.on { border-color: var(--green); color: var(--text); }
+    .prod-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; margin: 0 -6px; padding: 2px 6px 14px; }
+    .prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
+
+    /* Botón de producto: foto de fondo (o color e ícono del rubro) y el texto encima con degradé oscuro. */
+    .prod { position: relative; overflow: hidden; aspect-ratio: 4 / 3; border: 1px solid var(--border); border-radius: 12px;
+            padding: 0; text-align: left; display: flex; flex-direction: column; justify-content: flex-end;
+            background-color: var(--surface2); transition: transform 0.08s, border-color 0.12s; }
+    .prod:hover, .prod:focus-visible { border-color: var(--green); outline: none; }
+    .prod:active { transform: scale(0.97); }
+    .prod .icono { position: absolute; top: 10px; right: 12px; font-size: 2.6rem; color: #fff; opacity: 0.18; }
+    .prod .foto { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+    .prod::after { content: ''; position: absolute; inset: 0; z-index: 1;
+                   background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 35%, rgba(0,0,0,0.05) 72%); }
+    .prod .txt { position: relative; z-index: 2; padding: 10px 11px; display: grid; gap: 3px; }
+    .prod strong { font-size: 1rem; line-height: 1.15; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.95), 0 0 10px rgba(0,0,0,0.6); }
+    .prod .precio { font-size: 0.9rem; font-weight: 700; color: #bbf7d0; text-shadow: 0 1px 3px rgba(0,0,0,0.95); }
+    .vacio { color: var(--muted); padding: 16px 4px; text-align: center; }
+
+    .comanda h2, .mias h2 { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px; }
+    .linea { display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); padding: 10px 0; }
+    .linea div { flex: 1; min-width: 0; }
+    .linea strong { display: block; }
+    .linea small { color: var(--muted); }
+    .linea b { color: var(--green); white-space: nowrap; }
+    .linea button { background: none; border: 0; color: var(--red); padding: 6px; }
+    .total { display: flex; justify-content: space-between; align-items: baseline; margin: 14px 0; }
+    .total span { color: var(--muted); }
+    .total strong { font-size: 2rem; }
+    .enviar { width: 100%; background: var(--green); color: #052e14; border: 0; border-radius: 10px; padding: 16px; font-size: 1.1rem; font-weight: 800; }
+    .enviar:disabled { opacity: 0.4; cursor: not-allowed; }
+    .limpiar { width: 100%; margin-top: 8px; background: none; border: 1px solid var(--border); border-radius: 10px; padding: 10px; color: var(--muted); }
+    .mias { margin-top: 16px; }
+    .mia { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.92rem; }
+    .mia .num { font-weight: 800; width: 48px; }
+    .mia .tot { flex: 1; }
+    .estado { font-size: 0.75rem; border-radius: 999px; padding: 3px 8px; border: 1px solid var(--border); color: var(--muted); }
+    .estado.abierta { color: var(--orange); border-color: var(--orange); }
+    .estado.cobrada { color: var(--green); border-color: var(--green); }
+    .mia button { background: none; border: 0; color: var(--muted); padding: 4px 6px; }
+
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 20; }
+    .overlay.on { display: flex; }
+    .sheet { width: 100%; max-width: 420px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+    .sheet h3 { font-size: 1.2rem; margin-bottom: 4px; }
+    .sheet p { color: var(--muted); margin-bottom: 14px; }
+    .peso-row { display: flex; align-items: center; gap: 10px; }
+    .peso { flex: 1; background: #0b0b12; border: 1px solid var(--green); border-radius: 10px; color: var(--text);
+            font-size: 2.2rem; font-weight: 800; text-align: right; padding: 12px 14px; min-width: 0; }
+    .peso:focus { outline: none; }
+    .unidad { font-size: 1.4rem; color: var(--muted); font-weight: 700; }
+    .sub { margin: 14px 0; display: flex; justify-content: space-between; font-size: 1.1rem; }
+    .sub strong { color: var(--green); font-size: 1.4rem; }
+    .acciones { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
+    .acciones button { border-radius: 10px; padding: 14px; border: 1px solid var(--border); background: none; font-weight: 700; }
+    .acciones .ok { background: var(--green); color: #052e14; border: 0; }
+    .numero-grande { font-size: 5rem; font-weight: 900; text-align: center; color: var(--green); line-height: 1; margin: 10px 0 6px; }
+    .centro { text-align: center; }
+    .barra { display: none; }
+    @media (max-width: 900px) {
+      /* En tablet y celular la comanda va debajo: la página scrollea, pero la grilla sigue con su propio scroll. */
+      body { height: auto; display: block; overflow: visible; padding-bottom: 84px; }
+      main { grid-template-columns: 1fr; padding: 10px; }
+      aside { overflow: visible; }
+      .catalogo { height: max(calc(100dvh - 64px - 84px - 20px), 360px); }
+      .prod-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+      .barra { display: flex; align-items: center; gap: 12px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+               background: var(--surface); border-top: 1px solid var(--border); padding: 12px 16px; }
+      .barra div { flex: 1; }
+      .barra small { display: block; color: var(--muted); }
+      .barra strong { font-size: 1.5rem; }
+      .barra .enviar { width: auto; padding: 14px 22px; }
+    }
+    .toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: #3b1515; border: 1px solid var(--red);
+             color: var(--text); padding: 10px 16px; border-radius: 10px; display: none; z-index: 30; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="top-title">
+      <i class="fa-solid fa-scale-balanced"></i>
+      <div>
+        <strong>{% if puesto %}{{ puesto.nombre }}{% else %}{% trans "Mostrador" %}{% endif %}</strong>
+        <small>{{ request.user.get_full_name|default:request.user.username }}</small>
+      </div>
+    </div>
+    <div class="top-actions">
+      {% include "_selector_idioma.html" %}
+      {% if permisos.puede_recibir_mercaderia or permisos.puede_despostar or permisos.puede_ver_stock %}<a class="btn-ghost" href="{% url 'pos:recepcion' %}"><i class="fa-solid fa-warehouse"></i> {% trans "Cámara" %}</a>{% endif %}
+      {% include "ayuda/_boton.html" %}
+      <a class="btn-ghost" href="{% url 'pos:elegir_puesto' %}"><i class="fa-solid fa-repeat"></i> {% trans "Puesto" %}</a>
+      <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit" class="btn-ghost"><i class="fa-solid fa-right-from-bracket"></i> {% trans "Salir" %}</button></form>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel catalogo">
+      <input id="buscar" class="buscar" type="search" placeholder="{% trans "Buscar corte o código… (ej: asado, 601)" %}" autocomplete="off" />
+      <div class="chips" id="chips"></div>
+      <div class="prod-scroll" id="prod-scroll">
+        <div class="prod-grid" id="grid"></div>
+        <div class="vacio" id="grid-vacio" style="display:none;">{% trans "Sin resultados" %}</div>
+      </div>
+    </section>
+
+    <aside>
+      <section class="panel comanda">
+        <h2>{% trans "Comanda actual" %}</h2>
+        <div id="lineas"><div class="vacio">{% trans "Tocá un corte para pesarlo" %}</div></div>
+        <div class="total"><span>{% trans "Total" %}</span><strong id="total">$0</strong></div>
+        <button class="enviar" id="enviar" disabled>{% trans "Enviar a caja" %}</button>
+        <button class="limpiar" id="limpiar">{% trans "Vaciar comanda" %}</button>
+      </section>
+      <section class="panel mias">
+        <h2>{% trans "Mis comandas de hoy" %}</h2>
+        <div id="mias"><div class="vacio">{% trans "Todavía no enviaste ninguna" %}</div></div>
+      </section>
+    </aside>
+  </main>
+
+  <div class="overlay" id="ov-peso">
+    <div class="sheet">
+      <h3 id="peso-nombre"></h3>
+      <p id="peso-precio"></p>
+      <div class="peso-row">
+        <input id="peso" class="peso" type="text" inputmode="decimal" autocomplete="off" placeholder="0" />
+        <span class="unidad" id="peso-unidad">kg</span>
+      </div>
+      <div class="sub"><span>{% trans "Subtotal" %}</span><strong id="peso-sub">$0</strong></div>
+      <div class="acciones">
+        <button id="peso-cancelar">{% trans "Cancelar" %}</button>
+        <button class="ok" id="peso-ok">{% trans "Agregar" %}</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="ov-enviada">
+    <div class="sheet centro">
+      <p>{% trans "Comanda enviada a caja" %}</p>
+      <div class="numero-grande" id="enviada-numero">#0</div>
+      <p id="enviada-total"></p>
+      <div class="acciones" style="grid-template-columns: 1fr;">
+        <button class="ok" id="enviada-ok">{% trans "Nueva comanda" %}</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="barra">
+    <div><small id="barra-cant">{% trans "Comanda vacía" %}</small><strong id="barra-total">$0</strong></div>
+    <button class="enviar" id="barra-enviar" disabled>{% trans "Enviar a caja" %}</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>{% autoescape off %}
+const CSRF = '{{ csrf_token }}';
+const PRODUCTOS = {{ productos_json|safe }};
+const CATEGORIAS = {{ categorias_json|safe }};
+
+let lineas = [];          // [{producto, cantidad}]
+let pendiente = null;     // producto que se está pesando
+let categoriaSel = null;
+let ikey = null;          // clave antiduplicado de la comanda en curso
+
+const $ = id => document.getElementById(id);
+const fmt = n => '$' + Number(n || 0).toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+const fmtCant = (n, u) => Number(n).toLocaleString('es-AR', { maximumFractionDigits: 3 }) + (u === 'kg' ? ' kg' : ' u');
+const redondear = v => Math.round((Number(v) || 0) * 100) / 100;
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+function parseNumero(value) {
+  const raw = String(value || '').trim().replace(/\s/g, '');
+  if (!raw) return 0;
+  const dec = raw.lastIndexOf(',') > raw.lastIndexOf('.') ? ',' : '.';
+  const n = Number(raw.replace(new RegExp(dec === ',' ? '\\.' : ',', 'g'), '').replace(dec, '.').replace(/[^0-9.]/g, ''));
+  return Number.isFinite(n) ? Math.round(n * 1000) / 1000 : 0;
+}
+
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { t.style.display = 'none'; }, 3500);
+}
+
+async function api(url, body) {
+  const opts = body === undefined ? {} : {
+    method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF }, body: JSON.stringify(body),
+  };
+  try {
+    const res = await fetch(url, opts);
+    return await res.json();
+  } catch (e) {
+    return { ok: false, error: '{% trans "Sin conexión con la PC de la sucursal" %}' };
+  }
+}
+
+/* ── Catálogo ── */
+function renderChips() {
+  $('chips').innerHTML = [{ id: null, nombre: '{% trans "Todo" %}' }, ...CATEGORIAS].map(c =>
+    `<button class="chip ${categoriaSel === c.id ? 'on' : ''}" data-cat="${c.id === null ? '' : c.id}">${esc(c.nombre)}</button>`).join('');
+}
+
+/* Sin tildes ni mayúsculas: "vacio" encuentra "Vacío". */
+const normalizar = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+function visibles() {
+  const q = normalizar($('buscar').value.trim());
+  // con texto se busca en todo el catálogo: nombre o código de la lista (ej: 601)
+  if (q) return PRODUCTOS.filter(p => normalizar(p.nombre).includes(q) || (p.codigo && String(p.codigo).startsWith(q)));
+  return PRODUCTOS.filter(p => categoriaSel === null || p.categoria_id === categoriaSel);
+}
+
+/* Sin foto, el botón usa el color y el ícono del rubro: [ícono, color claro, color oscuro]. */
+const ESTILO_RUBRO = {
+  'Carne vacuna': ['fa-cow', '#8b1e1e', '#3b0a0a'],
+  'Granja': ['fa-drumstick-bite', '#a16207', '#3d2604'],
+  'Achuras y embutidos': ['fa-hotdog', '#7a2d55', '#2a0f1d'],
+  'Congelados': ['fa-snowflake', '#1e5578', '#0c1f2b'],
+  'Vacuno': ['fa-cow', '#8b1e1e', '#3b0a0a'],
+  'Cerdo': ['fa-bacon', '#9d4b5b', '#3d1820'],
+  'Pollo': ['fa-drumstick-bite', '#a16207', '#3d2604'],
+  'Achuras y menudencias': ['fa-bowl-food', '#7a2d55', '#2a0f1d'],
+  'Embutidos y chacinados': ['fa-hotdog', '#97401a', '#33150a'],
+  'Elaborados': ['fa-burger', '#855020', '#2e1a0b'],
+  'Subproductos': ['fa-bone', '#525a66', '#1f2329'],
+  'Almacén y varios': ['fa-basket-shopping', '#1e5578', '#0c1f2b'],
+};
+const ESTILO_OTRO = ['fa-utensils', '#3b4252', '#111827'];
+
+function botonProducto(p) {
+  const [icono, claro, oscuro] = ESTILO_RUBRO[p.categoria] || ESTILO_OTRO;
+  const foto = p.foto ? `<img class="foto" src="${esc(p.foto)}" alt="" loading="lazy" onerror="this.remove()" />` : '';
+  return `
+    <button class="prod" data-id="${p.id}" style="background-image: linear-gradient(140deg, ${claro}, ${oscuro});">
+      <i class="fa-solid ${icono} icono"></i>${foto}
+      <span class="txt"><strong>${esc(p.nombre)}</strong><span class="precio">${fmt(p.precio)}/${p.unidad === 'kg' ? 'kg' : 'u'}</span></span>
+    </button>`;
+}
+
+function renderGrid() {
+  const vs = visibles();
+  $('grid').innerHTML = vs.map(botonProducto).join('');
+  $('grid-vacio').style.display = vs.length ? 'none' : '';
+  $('prod-scroll').scrollTop = 0;
+}
+
+/* ── Pesaje ── */
+function abrirPeso(id) {
+  pendiente = PRODUCTOS.find(p => p.id === id);
+  if (!pendiente) return;
+  $('peso-nombre').textContent = pendiente.nombre;
+  const precioTxt = fmt(pendiente.precio);
+  $('peso-precio').textContent = pendiente.unidad === 'kg' ? `{% trans "${precioTxt} por kilo" %}` : `{% trans "${precioTxt} por unidad" %}`;
+  $('peso-unidad').textContent = pendiente.unidad === 'kg' ? 'kg' : 'u';
+  $('peso').value = '';
+  $('peso').placeholder = pendiente.unidad === 'kg' ? '0,000' : '1';
+  actualizarSub();
+  $('ov-peso').classList.add('on');
+  setTimeout(() => $('peso').focus(), 30);
+}
+
+function cerrarPeso() {
+  pendiente = null;
+  $('ov-peso').classList.remove('on');
+  $('buscar').focus();
+}
+
+function actualizarSub() {
+  if (!pendiente) return;
+  $('peso-sub').textContent = fmt(redondear(parseNumero($('peso').value) * pendiente.precio));
+}
+
+function confirmarPeso() {
+  if (!pendiente) return;
+  const cantidad = parseNumero($('peso').value);
+  if (cantidad <= 0) { toast(pendiente.unidad === 'kg' ? '{% trans "Ingresá el peso" %}' : '{% trans "Ingresá la cantidad" %}'); $('peso').focus(); return; }
+  lineas.push({ producto: pendiente, cantidad });
+  $('buscar').value = '';
+  renderGrid();
+  renderLineas();
+  cerrarPeso();
+}
+
+/* ── Comanda ── */
+function totalComanda() {
+  return redondear(lineas.reduce((s, l) => s + redondear(l.cantidad * l.producto.precio), 0));
+}
+
+function renderLineas() {
+  $('lineas').innerHTML = lineas.length ? lineas.map((l, i) => `
+    <div class="linea">
+      <div><strong>${esc(l.producto.nombre)}</strong><small>${fmtCant(l.cantidad, l.producto.unidad)} × ${fmt(l.producto.precio)}</small></div>
+      <b>${fmt(redondear(l.cantidad * l.producto.precio))}</b>
+      <button data-quitar="${i}" title="{% trans "Quitar" %}"><i class="fa-solid fa-xmark"></i></button>
+    </div>`).join('') : '<div class="vacio">{% trans "Tocá un corte para pesarlo" %}</div>';
+  $('total').textContent = fmt(totalComanda());
+  $('barra-total').textContent = fmt(totalComanda());
+  $('barra-cant').textContent = lineas.length ? (lineas.length === 1 ? '{% trans "1 producto" %}' : `{% trans "${lineas.length} productos" %}`) : '{% trans "Comanda vacía" %}';
+  $('enviar').disabled = $('barra-enviar').disabled = !lineas.length;
+}
+
+async function enviar() {
+  if (!lineas.length || $('enviar').dataset.enviando) return;
+  $('enviar').dataset.enviando = '1';
+  try { await enviarComanda(); } finally { delete $('enviar').dataset.enviando; }
+}
+
+async function enviarComanda() {
+  $('enviar').disabled = $('barra-enviar').disabled = true;
+  ikey = ikey || (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random());
+  const res = await api('{% url "pos:api_comanda_crear" %}', {
+    idempotency_key: ikey,
+    items: lineas.map(l => ({ producto_id: l.producto.id, cantidad: l.cantidad, precio_unitario: l.producto.precio })),
+  });
+  if (!res.ok) { toast(res.error || '{% trans "No se pudo enviar" %}'); $('enviar').disabled = $('barra-enviar').disabled = false; return; }
+  ikey = null;
+  lineas = [];
+  renderLineas();
+  $('enviada-numero').textContent = '#' + res.comanda.numero;
+  const totalTxt = fmt(res.comanda.total);
+  $('enviada-total').textContent = `{% trans "Total ${totalTxt} · decile al cliente que pase por caja" %}`;
+  $('ov-enviada').classList.add('on');
+  // La comanda ya está en caja; si la impresora falló se avisa (se puede reimprimir desde "Mis comandas").
+  const imp = res.impresion;
+  if (imp && !imp.ok && !imp.sin_impresora) toast(`{% trans "La comanda se envió pero no se imprimió: ${imp.error}" %}`);
+  cargarMias();
+}
+
+/* El estado llega como clave ('abierta', 'cobrada', 'anulada'); se muestra traducido. */
+const ESTADOS_COMANDA = { abierta: '{% trans "abierta" %}', cobrada: '{% trans "cobrada" %}', anulada: '{% trans "anulada" %}' };
+
+async function cargarMias() {
+  const res = await api('{% url "pos:api_mis_comandas" %}');
+  if (!res.ok) return;
+  $('mias').innerHTML = res.comandas.length ? res.comandas.map(c => `
+    <div class="mia">
+      <span class="num">#${c.numero}</span>
+      <span class="tot">${fmt(c.total)} · ${c.creada_en}</span>
+      <span class="estado ${c.estado}">${esc(ESTADOS_COMANDA[c.estado] || c.estado)}</span>
+      ${c.estado === 'abierta' ? `<button data-imprimir="${c.id}" title="{% trans "Reimprimir" %}"><i class="fa-solid fa-print"></i></button>` : ''}
+      ${c.estado === 'abierta' ? `<button data-anular="${c.id}" data-numero="${c.numero}" title="{% trans "Anular" %}"><i class="fa-solid fa-ban"></i></button>` : ''}
+    </div>`).join('') : '<div class="vacio">{% trans "Todavía no enviaste ninguna" %}</div>';
+}
+
+async function reimprimir(id) {
+  const res = await api(`/pos/api/comandas/${id}/imprimir/`, {});
+  toast(res.ok ? res.mensaje : (res.error || '{% trans "No se pudo imprimir" %}'));
+}
+
+async function anular(id, numero) {
+  const motivo = prompt(`{% trans "¿Anular la comanda #${numero}? Escribí el motivo:" %}`);
+  if (motivo === null) return;
+  const res = await api(`/pos/api/comandas/${id}/anular/`, { motivo });
+  if (!res.ok) { toast(res.error || '{% trans "No se pudo anular" %}'); return; }
+  cargarMias();
+}
+
+/* ── Eventos ── */
+$('chips').addEventListener('click', e => {
+  const b = e.target.closest('.chip');
+  if (!b) return;
+  categoriaSel = b.dataset.cat ? Number(b.dataset.cat) : null;
+  renderChips();
+  renderGrid();
+});
+$('grid').addEventListener('click', e => {
+  const b = e.target.closest('.prod');
+  if (b) abrirPeso(Number(b.dataset.id));
+});
+$('buscar').addEventListener('input', renderGrid);
+$('buscar').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    // código exacto (de la lista o de barras) primero; si no, el primer resultado
+    const q = $('buscar').value.trim();
+    const exacto = q && PRODUCTOS.find(p => p.codigo_barras === q || String(p.codigo) === q);
+    const vs = visibles();
+    if (exacto) abrirPeso(exacto.id); else if (vs.length) abrirPeso(vs[0].id);
+  }
+});
+$('peso').addEventListener('input', actualizarSub);
+$('peso').addEventListener('keydown', e => {
+  if (e.key === 'Enter') confirmarPeso();
+  if (e.key === 'Escape') cerrarPeso();
+});
+$('peso-ok').addEventListener('click', confirmarPeso);
+$('peso-cancelar').addEventListener('click', cerrarPeso);
+$('lineas').addEventListener('click', e => {
+  const b = e.target.closest('[data-quitar]');
+  if (!b) return;
+  lineas.splice(Number(b.dataset.quitar), 1);
+  renderLineas();
+});
+$('mias').addEventListener('click', e => {
+  const imp = e.target.closest('[data-imprimir]');
+  if (imp) { reimprimir(imp.dataset.imprimir); return; }
+  const b = e.target.closest('[data-anular]');
+  if (b) anular(b.dataset.anular, b.dataset.numero);
+});
+$('enviar').addEventListener('click', enviar);
+$('barra-enviar').addEventListener('click', enviar);
+$('limpiar').addEventListener('click', () => { if (!lineas.length || confirm('{% trans "¿Vaciar la comanda?" %}')) { lineas = []; ikey = null; renderLineas(); } });
+$('enviada-ok').addEventListener('click', () => { $('ov-enviada').classList.remove('on'); $('buscar').focus(); });
+
+renderChips();
+renderGrid();
+renderLineas();
+cargarMias();
+setInterval(cargarMias, 20000);
+$('buscar').focus();
+{% endautoescape %}</script>
+{% include "ayuda/_cargar.html" %}
+</body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "_ayuda": "Prefijo de URL -> tutoriales que se sugieren en 'Para esta pantalla'. Gana el prefijo mas largo que coincida. Sirve para los dos idiomas (los slugs son iguales).",
+  "contextos": [
+    {"prefijo": "/pos/puesto/", "slugs": ["01-ingresar-y-elegir-puesto", "02-cambiar-idioma"]},
+    {"prefijo": "/pos/mostrador/", "slugs": ["03-armar-una-comanda", "04-mis-comandas-y-anular", "02-cambiar-idioma"]},
+    {"prefijo": "/pos/recepcion/", "slugs": ["11-recibir-despacho-del-frigorifico", "13-camara-y-desposte", "15-liquidacion-semanal-contar", "16-liquidacion-cerrar", "14-ver-el-stock"]},
+    {"prefijo": "/pos/", "slugs": ["06-cobrar-una-comanda", "05-abrir-la-caja", "10-cerrar-la-caja", "08-fiado-y-cobro-de-deuda", "07-venta-por-unidad-y-pago-dividido", "09-gastos-y-retiros"]},
+    {"prefijo": "/dash/", "slugs": ["21-dashboard-y-reportes"]},
+    {"prefijo": "/central/", "slugs": ["23-panel-central", "24-despachar-a-una-sucursal", "25-cuenta-corriente-de-sucursales"]},
+    {"prefijo": "/admin/auth/user/", "slugs": ["18-alta-de-personal"]},
+    {"prefijo": "/admin/core/puesto/", "slugs": ["19-puestos-camaras-y-configuracion"]},
+    {"prefijo": "/admin/core/configuracion/", "slugs": ["19-puestos-camaras-y-configuracion"]},
+    {"prefijo": "/admin/core/sucursal/", "slugs": ["27-abrir-una-sucursal-nueva"]},
+    {"prefijo": "/admin/recepcion/camara/", "slugs": ["19-puestos-camaras-y-configuracion"]},
+    {"prefijo": "/admin/recepcion/plantilladespiece/", "slugs": ["26-catalogo-precios-y-plantillas"]},
+    {"prefijo": "/admin/recepcion/conteo/", "slugs": ["22-controles-de-la-semana", "16-liquidacion-cerrar"]},
+    {"prefijo": "/admin/tesoreria/asignacionmediopagocajero/", "slugs": ["20-medios-de-pago-de-la-cajera"]},
+    {"prefijo": "/admin/tesoreria/mediodepago/", "slugs": ["20-medios-de-pago-de-la-cajera"]},
+    {"prefijo": "/admin/tesoreria/ajustecuenta/", "slugs": ["22-controles-de-la-semana"]},
+    {"prefijo": "/admin/ventas/turnocaja/", "slugs": ["22-controles-de-la-semana", "10-cerrar-la-caja"]},
+    {"prefijo": "/admin/ventas/comanda/", "slugs": ["22-controles-de-la-semana", "04-mis-comandas-y-anular"]},
+    {"prefijo": "/admin/central/despacho/", "slugs": ["24-despachar-a-una-sucursal"]},
+    {"prefijo": "/admin/central/movimientocuentasucursal/", "slugs": ["25-cuenta-corriente-de-sucursales"]},
+    {"prefijo": "/admin/inventario/", "slugs": ["26-catalogo-precios-y-plantillas"]},
+    {"prefijo": "/admin/", "slugs": ["21-dashboard-y-reportes", "22-controles-de-la-semana", "18-alta-de-personal"]}
+  ]
+}

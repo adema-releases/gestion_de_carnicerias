@@ -1,0 +1,5 @@
+# Los scripts que corren dentro del contenedor Linux necesitan saltos de línea LF,
+# aunque el repo se clone en Windows con autocrlf.
+*.sh text eol=lf
+Dockerfile text eol=lf
+docker-compose.yml text eol=lf

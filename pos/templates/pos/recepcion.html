@@ -1,0 +1,993 @@
+{% load i18n static %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'es' }}">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% trans "Recepción y cámara" %}</title>
+  <link rel="icon" href="{% static 'img/ico.ico' %}" type="image/x-icon" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d0d12; --surface: #16161f; --surface2: #1d1d29; --border: #252530; --text: #e8e8f0;
+      --muted: #8a8aa0; --green: #22c55e; --red: #f87171; --orange: #fb923c; --blue: #60a5fa;
+    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 40px; }
+    button, input, select { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+
+    .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px;
+           background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 5; }
+    .top-title { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .top-title i { color: var(--green); font-size: 1.3rem; }
+    .top-title strong { display: block; font-size: 1.05rem; }
+    .top-title small { color: var(--muted); }
+    .top-actions { display: flex; gap: 8px; align-items: center; }
+    .btn-ghost { background: none; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: var(--muted); text-decoration: none; font-size: 0.9rem; }
+    .btn-ghost:hover { color: var(--text); border-color: #3a3a4a; }
+
+    .tabs { display: flex; gap: 6px; padding: 12px 16px 0; max-width: 1100px; margin: 0 auto; }
+    .tab { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px; color: var(--muted); font-weight: 700; }
+    .tab.on { border-color: var(--green); color: var(--text); }
+    main { max-width: 1100px; margin: 0 auto; padding: 16px; }
+    .vista { display: none; }
+    .vista.on { display: block; }
+
+    .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 14px; }
+    .panel h2 { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+    label { display: grid; gap: 6px; font-size: 0.85rem; color: var(--muted); }
+    .campo { width: 100%; background: #0b0b12; border: 1px solid var(--border); border-radius: 10px; padding: 11px 12px; font-size: 1rem; }
+    .campo:focus { outline: none; border-color: var(--green); }
+    .btn { border-radius: 10px; padding: 12px 16px; border: 1px solid var(--border); background: var(--surface2); font-weight: 700; }
+    .btn-ok { background: var(--green); color: #052e14; border: 0; }
+    .btn-ok:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-mini { border: 1px solid var(--border); background: var(--surface2); border-radius: 8px; padding: 6px 10px; font-size: 0.85rem; color: var(--text); }
+    .grande { width: 100%; padding: 16px; font-size: 1.1rem; }
+
+    .fila { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .fila:last-child { border-bottom: 0; }
+    .fila .info { flex: 1; min-width: 0; }
+    .fila strong { display: block; }
+    .fila small { color: var(--muted); }
+    .fila .kg { font-weight: 800; white-space: nowrap; }
+    .fila button.x { background: none; border: 0; color: var(--red); padding: 6px; }
+    .thumb { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); }
+    .dif { font-size: 0.8rem; }
+    .dif.mal { color: var(--red); }
+    .dif.bien { color: var(--green); }
+    .vacio { color: var(--muted); padding: 10px 0; text-align: center; }
+    .pill { font-size: 0.75rem; border-radius: 999px; padding: 3px 8px; border: 1px solid var(--border); color: var(--muted); white-space: nowrap; }
+    .pill.vieja { color: var(--orange); border-color: var(--orange); }
+    .neg { color: var(--red); }
+
+    .resumen { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+    .dato { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+    .dato small { color: var(--muted); display: block; font-size: 0.8rem; }
+    .dato strong { font-size: 1.4rem; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 8px 6px; border-bottom: 1px solid var(--border); text-align: right; }
+    th:first-child, td:first-child { text-align: left; }
+    th { font-size: 0.75rem; color: var(--muted); font-weight: 600; }
+    td input { width: 96px; background: #0b0b12; border: 1px solid var(--border); border-radius: 8px; padding: 7px 8px; text-align: right; }
+    td input:focus { outline: none; border-color: var(--green); }
+    tfoot td { font-weight: 800; border-bottom: 0; }
+
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: flex-start; justify-content: center; padding: 24px 12px; z-index: 20; overflow-y: auto; }
+    .overlay.on { display: flex; }
+    .sheet { width: 100%; max-width: 560px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
+    .sheet h3 { font-size: 1.15rem; margin-bottom: 4px; }
+    .sheet p.sub { color: var(--muted); margin-bottom: 14px; font-size: 0.9rem; }
+    .sheet .acciones { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; margin-top: 14px; }
+    .peso { font-size: 2rem; font-weight: 800; text-align: right; }
+    .foto-btn { display: flex; align-items: center; gap: 10px; border: 1px dashed var(--border); border-radius: 10px; padding: 12px; color: var(--muted); cursor: pointer; }
+    .foto-btn img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; }
+    .foto-btn input { display: none; }
+    .toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: #3b1515; border: 1px solid var(--red);
+             color: var(--text); padding: 10px 16px; border-radius: 10px; display: none; z-index: 30; max-width: 90vw; }
+    .toast.ok { background: #0f2417; border-color: var(--green); }
+
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0; }
+    .chip { border: 1px solid var(--border); background: var(--surface2); border-radius: 999px; padding: 8px 14px; color: var(--muted); font-weight: 600; }
+    .chip.on { border-color: var(--green); color: var(--text); background: #0f2417; }
+    .aviso { border: 1px solid var(--orange); background: #2a1a0c; color: var(--text); border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; display: flex; gap: 10px; align-items: center; }
+    .aviso i { color: var(--orange); }
+    .tab .badge { background: var(--orange); color: #2a1a0c; border-radius: 999px; padding: 1px 7px; font-size: 0.75rem; margin-left: 4px; }
+    .scroll-x { overflow-x: auto; }
+    .scroll-x table { min-width: 560px; }
+    tr.cat td { color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; padding-top: 14px; text-align: left; }
+    td select { background: #0b0b12; border: 1px solid var(--border); border-radius: 8px; padding: 7px 6px; max-width: 150px; }
+    td .estado { width: 18px; display: inline-block; text-align: center; color: var(--muted); }
+    td .estado.ok { color: var(--green); }
+    td .estado.err { color: var(--red); }
+    .req { font-size: 0.7rem; color: var(--orange); border: 1px solid var(--orange); border-radius: 999px; padding: 1px 6px; margin-left: 6px; white-space: nowrap; }
+    .balance { display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; font-size: 0.95rem; }
+    .balance span:nth-child(even) { text-align: right; font-weight: 700; }
+    .balance .total { border-top: 1px solid var(--border); padding-top: 6px; }
+    .pos { color: var(--green); }
+    .grupo-camara { margin-top: 6px; }
+    .grupo-camara h3 { font-size: 0.85rem; color: var(--blue); margin: 10px 0 2px; }
+    .mini-select { background: #0b0b12; border: 1px solid var(--border); border-radius: 8px; padding: 6px; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="top-title">
+      <i class="fa-solid fa-warehouse"></i>
+      <div>
+        <strong>{% if puesto %}{{ puesto.nombre }}{% else %}{% trans "Recepción y cámara" %}{% endif %}</strong>
+        <small>{{ request.user.get_full_name|default:request.user.username }}</small>
+      </div>
+    </div>
+    <div class="top-actions">
+      {% include "_selector_idioma.html" %}
+      {% if permisos.puede_armar_comanda %}<a class="btn-ghost" href="{% url 'pos:mostrador' %}"><i class="fa-solid fa-scale-balanced"></i> {% trans "Mostrador" %}</a>{% endif %}
+      {% include "ayuda/_boton.html" %}
+      <a class="btn-ghost" href="{% url 'pos:elegir_puesto' %}"><i class="fa-solid fa-repeat"></i> {% trans "Puesto" %}</a>
+      <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit" class="btn-ghost"><i class="fa-solid fa-right-from-bracket"></i> {% trans "Salir" %}</button></form>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    {% if permisos.puede_recibir_mercaderia %}<button class="tab" data-vista="recibir"><i class="fa-solid fa-truck-ramp-box"></i> {% trans "Recibir" %}</button>{% endif %}
+    {% if permisos.puede_despostar or permisos.puede_ver_stock %}<button class="tab" data-vista="camara"><i class="fa-solid fa-snowflake"></i> {% trans "Cámara" %}</button>{% endif %}
+    {% if permisos.puede_ver_stock %}<button class="tab" data-vista="stock"><i class="fa-solid fa-boxes-stacked"></i> {% trans "Stock" %}</button>{% endif %}
+    {% if permisos.puede_contar_stock or permisos.puede_cerrar_conteo %}<button class="tab" data-vista="conteo"><i class="fa-solid fa-clipboard-check"></i> {% trans "Conteo" %}<span class="badge" id="tab-conteo-badge" style="display:none;">!</span></button>{% endif %}
+  </nav>
+
+  <main>
+    <!-- ── Recibir ── -->
+    <section class="vista" id="v-recibir">
+      <div class="panel" id="r-despachos-panel" style="display:none;">
+        <h2>{% trans "Despachos del frigorífico por recibir" %}</h2>
+        <div id="r-despachos"></div>
+      </div>
+
+      <div class="panel" id="r-esperadas-panel" style="display:none;">
+        <h2>{% trans "Medias reses del despacho" %} <button class="btn-mini" id="r-soltar-despacho"><i class="fa-solid fa-xmark"></i> {% trans "Soltar despacho" %}</button></h2>
+        <div id="r-esperadas"></div>
+      </div>
+
+      <div class="panel">
+        <h2>{% trans "Remito" %}</h2>
+        <div class="grid2">
+          <label>{% trans "Proveedor" %}
+            <select class="campo" id="r-proveedor"><option value="">{% trans "Frigorífico" %}</option></select>
+          </label>
+          <label>{% trans "Número de remito" %}
+            <input class="campo" id="r-numero" type="text" autocomplete="off" placeholder="{% trans "Ej: 0001-00012345" %}" />
+          </label>
+          <label>{% trans "Cámara donde se cuelgan" %}
+            <select class="campo" id="r-camara"></select>
+          </label>
+        </div>
+        <label class="foto-btn" style="margin-top:10px;">
+          <i class="fa-solid fa-camera fa-lg"></i><span id="r-foto-txt">{% trans "Foto del remito (opcional)" %}</span>
+          <img id="r-foto-prev" alt="" style="display:none;" />
+          <input id="r-foto" type="file" accept="image/*" capture="environment" />
+        </label>
+      </div>
+
+      <div class="panel">
+        <h2>{% trans "Medias reses" %} <button class="btn-mini" id="r-add-media"><i class="fa-solid fa-plus"></i> {% trans "Media res colgada" %}</button></h2>
+        <div id="r-medias"><div class="vacio">{% trans "Colgá cada media res, pesala y cargala acá" %}</div></div>
+      </div>
+
+      <div class="panel">
+        <h2>{% trans "Otros productos" %}</h2>
+        <div class="grid2">
+          <label>{% trans "Producto" %}
+            <input class="campo" id="r-prod" list="r-prod-list" placeholder="{% trans "Buscar… (pollo entero, chorizo…)" %}" autocomplete="off" />
+            <datalist id="r-prod-list"></datalist>
+          </label>
+          <label>{% trans "Cantidad" %}
+            <div style="display:flex; gap:8px;">
+              <input class="campo" id="r-cant" type="text" inputmode="decimal" placeholder="0" autocomplete="off" />
+              <button class="btn" id="r-add-item">{% trans "Agregar" %}</button>
+            </div>
+          </label>
+        </div>
+        <div id="r-items" style="margin-top:8px;"></div>
+      </div>
+
+      <div class="panel">
+        <label>{% trans "Observaciones" %}
+          <input class="campo" id="r-obs" type="text" maxlength="255" placeholder="{% trans "Faltantes, golpes, temperatura…" %}" />
+        </label>
+      </div>
+      <button class="btn btn-ok grande" id="r-confirmar" disabled>{% trans "Confirmar recepción" %}</button>
+
+      <div class="panel" style="margin-top:14px;">
+        <h2>{% trans "Últimos remitos" %}</h2>
+        <div id="r-recientes"></div>
+      </div>
+    </section>
+
+    <!-- ── Cámara ── -->
+    <section class="vista" id="v-camara">
+      <div class="panel">
+        <h2>{% trans "Medias reses en cámara" %} <button class="btn-mini" id="c-refrescar"><i class="fa-solid fa-rotate"></i></button></h2>
+        <div id="c-medias"></div>
+      </div>
+    </section>
+
+    <!-- ── Stock ── -->
+    <section class="vista" id="v-stock">
+      <div class="resumen">
+        <div class="dato"><small>{% trans "Medias en cámara" %}</small><strong id="s-medias">0</strong></div>
+        <div class="dato"><small>{% trans "Kg en medias" %}</small><strong id="s-kg-medias">0</strong></div>
+        <div class="dato"><small>{% trans "Productos en negativo" %}</small><strong id="s-neg">0</strong></div>
+      </div>
+      <div class="panel">
+        <input class="campo" id="s-buscar" type="search" placeholder="{% trans "Buscar producto…" %}" autocomplete="off" style="margin-bottom:10px;" />
+        <table>
+          <thead><tr><th>{% trans "Producto" %}</th><th>{% trans "Categoría" %}</th><th>{% trans "Stock" %}</th></tr></thead>
+          <tbody id="s-tabla"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── Conteo y liquidación ── -->
+    <section class="vista" id="v-conteo">
+      <div class="aviso" id="k-aviso" style="display:none;"><i class="fa-solid fa-broom fa-lg"></i><div id="k-aviso-txt"></div></div>
+
+      <div id="k-sin">
+        <div class="panel">
+          <h2>{% trans "Empezar" %}</h2>
+          <div class="grid2">
+            <button class="btn btn-ok grande" id="k-iniciar-liq"><i class="fa-solid fa-broom"></i> {% trans "Liquidación semanal" %}</button>
+            <button class="btn grande" id="k-iniciar-control"><i class="fa-solid fa-clipboard-check"></i> {% trans "Conteo de control" %}</button>
+          </div>
+          <p class="sub" style="color:var(--muted); margin-top:10px; font-size:0.9rem;">
+            <strong>{% trans "Liquidación:" %}</strong> {% trans "se tira lo viejo, se cuenta todo lo que queda en cada cámara y se cierra el balance de kilos de la semana." %}
+            <strong>{% trans "Control:" %}</strong> {% trans "se cuentan algunos productos, sin cerrar la semana." %}
+          </p>
+        </div>
+        <div class="panel">
+          <h2>{% trans "Liquidaciones y conteos anteriores" %}</h2>
+          <div id="k-historial"></div>
+        </div>
+      </div>
+
+      <div id="k-abierto" style="display:none;">
+        <div class="panel">
+          <h2><span id="k-titulo"></span>
+            <span style="display:flex; gap:6px;">
+              {% if permisos.puede_cerrar_conteo %}<button class="btn-mini" id="k-anular"><i class="fa-solid fa-trash"></i> {% trans "Anular" %}</button>
+              <button class="btn-mini" id="k-resumen" style="border-color:var(--green); color:var(--green);"><i class="fa-solid fa-scale-unbalanced"></i> {% trans "Ver diferencias y cerrar" %}</button>{% endif %}
+            </span>
+          </h2>
+          <small style="color:var(--muted);" id="k-sub"></small>
+          <div class="chips" id="k-camaras"></div>
+          <div class="grid2">
+            <input class="campo" id="k-buscar" type="search" placeholder="{% trans "Buscar producto…" %}" autocomplete="off" />
+            <label style="display:flex; align-items:center; gap:8px; grid-template-columns:none;">
+              <input type="checkbox" id="k-solo-pend" /> {% trans "Solo los que faltan contar" %}
+            </label>
+          </div>
+        </div>
+        <div class="panel scroll-x">
+          <table>
+            <thead><tr><th>{% trans "Producto" %}</th><th>{% trans "Queda" %}</th><th>{% trans "Se tira" %}</th><th>{% trans "Motivo" %}</th><th>{% trans "Total contado" %}</th><th></th></tr></thead>
+            <tbody id="k-tabla"></tbody>
+          </table>
+        </div>
+        <p style="color:var(--muted); font-size:0.85rem;">{% trans "Cada número se guarda solo al salir del casillero. Contá cada cámara por separado: elegí la cámara arriba y cargá lo que hay ahí." %}</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Hoja: diferencias y cierre -->
+  <div class="overlay" id="ov-resumen">
+    <div class="sheet" style="max-width:760px;">
+      <h3 id="z-titulo"></h3>
+      <p class="sub" id="z-sub"></p>
+      <div class="aviso" id="z-faltan" style="display:none;"></div>
+      <div class="panel" id="z-balance-panel" style="display:none;">
+        <h2>{% trans "Balance de kilos" %} <span id="z-periodo" style="text-transform:none;"></span></h2>
+        <div class="balance" id="z-balance"></div>
+      </div>
+      <div class="scroll-x">
+        <table>
+          <thead><tr><th>{% trans "Producto" %}</th><th>{% trans "Esperado" %}</th><th>{% trans "Queda" %}</th><th>{% trans "Se tira" %}</th><th>{% trans "Diferencia" %}</th><th>{% trans "$ dif." %}</th></tr></thead>
+          <tbody id="z-tabla"></tbody>
+          <tfoot><tr><td>{% trans "Total a precio de venta" %}</td><td></td><td></td><td id="z-valor-desc"></td><td></td><td id="z-valor-dif"></td></tr></tfoot>
+        </table>
+      </div>
+      <label id="z-obs-label" style="margin-top:12px;">{% trans "Observaciones" %}
+        <input class="campo" id="z-obs" type="text" maxlength="255" placeholder="{% trans "Opcional" %}" />
+      </label>
+      <div class="acciones">
+        <button class="btn" id="z-volver">{% trans "Volver" %}</button>
+        <button class="btn btn-ok" id="z-cerrar">{% trans "Cerrar y ajustar stock" %}</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hoja: cargar media res -->
+  <div class="overlay" id="ov-media">
+    <div class="sheet">
+      <h3>{% trans "Media res colgada" %}</h3>
+      <p class="sub">{% trans "Leé el peso en el visor de la balanza y sacale una foto donde se vea." %}</p>
+      <div class="grid2">
+        <label>{% trans "Tipo" %}
+          <select class="campo" id="m-plantilla"></select>
+        </label>
+        <label>{% trans "Garrón / tropa" %}
+          <input class="campo" id="m-garron" type="text" autocomplete="off" placeholder="{% trans "Opcional" %}" />
+        </label>
+        <label>{% trans "Peso del remito (kg)" %}
+          <input class="campo" id="m-peso-remito" type="text" inputmode="decimal" autocomplete="off" placeholder="{% trans "Opcional" %}" />
+        </label>
+        <label>{% trans "Peso en la balanza (kg)" %}
+          <input class="campo peso" id="m-peso" type="text" inputmode="decimal" autocomplete="off" placeholder="0,0" />
+        </label>
+      </div>
+      <label class="foto-btn" style="margin-top:10px;">
+        <i class="fa-solid fa-camera fa-lg"></i><span id="m-foto-txt">{% trans "Foto del visor" %}</span>
+        <img id="m-foto-prev" alt="" style="display:none;" />
+        <input id="m-foto" type="file" accept="image/*" capture="environment" />
+      </label>
+      <div class="acciones">
+        <button class="btn" id="m-cancelar">{% trans "Cancelar" %}</button>
+        <button class="btn btn-ok" id="m-ok">{% trans "Agregar" %}</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hoja: despostar -->
+  <div class="overlay" id="ov-desposte">
+    <div class="sheet" style="max-width:640px;">
+      <h3 id="d-titulo"></h3>
+      <p class="sub" id="d-sub"></p>
+      <table>
+        <thead><tr><th>{% trans "Corte" %}</th><th>%</th><th>{% trans "Kg plantilla" %}</th><th>{% trans "Kg pesados" %}</th></tr></thead>
+        <tbody id="d-tabla"></tbody>
+        <tfoot><tr><td>{% trans "Total cortes" %}</td><td></td><td id="d-total-teo"></td><td id="d-total-real"></td></tr>
+               <tr><td>{% trans "Merma" %}</td><td></td><td id="d-merma-teo"></td><td id="d-merma-real"></td></tr></tfoot>
+      </table>
+      <p class="sub" style="margin-top:10px;">{% trans "Si no pesás los cortes, el stock se carga con los kilos de la plantilla. Si pesás algunos, esos usan el peso real." %}</p>
+      <div class="acciones">
+        <button class="btn" id="d-cancelar">{% trans "Cancelar" %}</button>
+        <button class="btn btn-ok" id="d-ok">{% trans "Confirmar desposte" %}</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>{% autoescape off %}
+const CSRF = '{{ csrf_token }}';
+const PERMISOS = {{ permisos_json|safe }};
+
+const $ = id => document.getElementById(id);
+const fmtKg = n => Number(n || 0).toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 3 });
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const normalizar = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+function parseNumero(value) {
+  const raw = String(value || '').trim().replace(/\s/g, '');
+  if (!raw) return 0;
+  const dec = raw.lastIndexOf(',') > raw.lastIndexOf('.') ? ',' : '.';
+  const n = Number(raw.replace(new RegExp(dec === ',' ? '\\.' : ',', 'g'), '').replace(dec, '.').replace(/[^0-9.]/g, ''));
+  return Number.isFinite(n) ? Math.round(n * 1000) / 1000 : 0;
+}
+
+function toast(msg, ok = false) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (ok ? ' ok' : '');
+  t.style.display = 'block';
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { t.style.display = 'none'; }, 3500);
+}
+
+async function api(url, opciones = {}) {
+  try {
+    const res = await fetch(url, opciones);
+    return await res.json();
+  } catch (e) {
+    return { ok: false, error: '{% trans "Sin conexión con la PC de la sucursal" %}' };
+  }
+}
+const postJson = (url, body) => api(url, {
+  method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF }, body: JSON.stringify(body),
+});
+
+/* Achica la foto antes de subirla: un celular saca 4-8 MB y alcanza con ~300 KB. */
+function comprimirFoto(file, maxLado = 1600) {
+  return new Promise(resolve => {
+    if (!file) return resolve(null);
+    const img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, maxLado / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * k);
+      c.height = Math.round(img.height * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      c.toBlob(b => resolve(b || file), 'image/jpeg', 0.8);
+      URL.revokeObjectURL(img.src);
+    };
+    img.onerror = () => resolve(file);
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+/* ── Pestañas ── */
+function mostrarVista(nombre) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.vista === nombre));
+  document.querySelectorAll('.vista').forEach(v => v.classList.toggle('on', v.id === 'v-' + nombre));
+  if (nombre === 'camara') cargarCamara();
+  if (nombre === 'stock') cargarStock();
+  if (nombre === 'recibir') cargarDatos();
+  if (nombre === 'conteo') cargarConteo();
+}
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => mostrarVista(t.dataset.vista)));
+
+/* ── Recibir ── */
+let DATOS = { plantillas: [], proveedores: [], productos: [], remitos: [] };
+let medias = [];   // [{plantilla_id, plantilla, garron, peso, peso_remito, foto: Blob|null, fotoUrl}]
+let items = [];    // [{producto, cantidad}]
+let fotoRemito = null;
+let ikeyRemito = null;
+let fotoMedia = null;
+let despachoActual = null;   // despacho de la central que se está recibiendo
+let esperada = null;         // índice de la media esperada que se está pesando
+
+async function cargarDatos() {
+  const res = await api('{% url "pos:api_recepcion_datos" %}');
+  if (!res.ok) { toast(res.error || '{% trans "No se pudieron cargar los datos" %}'); return; }
+  DATOS = res;
+  const prov = $('r-proveedor');
+  const sel = prov.value;
+  prov.innerHTML = '<option value="">{% trans "Frigorífico" %}</option>' + res.proveedores.map(p => `<option value="${p.id}">${esc(p.nombre)}</option>`).join('');
+  prov.value = sel;
+  const cam = $('r-camara');
+  const camSel = cam.value;
+  cam.innerHTML = res.camaras.map(c => `<option value="${c.id}">${esc(c.nombre)}</option>`).join('');
+  cam.value = camSel || String(res.camara_principal_id);
+  $('m-plantilla').innerHTML = res.plantillas.map(p => `<option value="${p.id}">${esc(p.nombre)}${p.completa ? '' : ' ({% trans "no suma el total" %} 100%)'}</option>`).join('');
+  $('r-prod-list').innerHTML = res.productos.map(p => `<option value="${esc(p.nombre)}">${esc(p.categoria)} · ${p.unidad}</option>`).join('');
+  renderDespachos();
+  $('r-recientes').innerHTML = res.remitos.length ? res.remitos.map(r => `
+    <div class="fila"><div class="info"><strong>${esc(r.proveedor)} ${r.numero ? '· ' + esc(r.numero) : ''}</strong>
+    <small>${r.fecha} · ${esc(r.recibido_por)}</small></div>
+    <span class="kg">{% trans "${r.medias} medias · ${fmtKg(r.kg_medias)} kg" %}</span></div>`).join('') : '<div class="vacio">{% trans "Sin remitos" %}</div>';
+}
+
+function renderDespachos() {
+  const lista = DATOS.despachos || [];
+  $('r-despachos-panel').style.display = lista.length && !despachoActual ? '' : 'none';
+  $('r-despachos').innerHTML = lista.map(d => `
+    <div class="fila"><div class="info"><strong>{% trans "Despacho #${d.numero}" %}</strong>
+    <small>{% trans "Salió ${d.fecha} · ${d.medias.length} medias · ${d.items.length} productos" %}${d.observaciones ? ' · ' + esc(d.observaciones) : ''}</small></div>
+    <button class="btn-mini" data-recibir-despacho="${d.id}">{% trans "Recibir" %}</button></div>`).join('');
+  const panel = $('r-esperadas-panel');
+  panel.style.display = despachoActual ? '' : 'none';
+  if (!despachoActual) return;
+  $('r-esperadas').innerHTML = despachoActual.medias.map((m, i) => {
+    const pesada = medias.find(x => x.esperada === i);
+    return `<div class="fila"><div class="info"><strong>${esc(m.plantilla)}${m.garron ? ' · ' + esc(m.garron) : ''}</strong>
+      <small>{% trans "Salió con ${fmtKg(m.peso_salida)} kg" %}</small></div>
+      ${pesada ? `<span class="kg">{% trans "${fmtKg(pesada.peso)} kg ✓" %}</span>` : `<button class="btn-mini" data-pesar="${i}">{% trans "Pesar" %}</button>`}</div>`;
+  }).join('');
+}
+
+function recibirDespacho(id) {
+  const d = (DATOS.despachos || []).find(x => x.id === id);
+  if (!d) return;
+  despachoActual = d;
+  medias = [];
+  items = d.items.map(it => ({ producto: DATOS.productos.find(p => p.id === it.producto_id), cantidad: it.cantidad })).filter(it => it.producto);
+  $('r-proveedor').value = '';
+  $('r-numero').value = String(d.numero);
+  renderRecibir();
+  renderDespachos();
+}
+
+function soltarDespacho() {
+  despachoActual = null;
+  medias = [];
+  items = [];
+  $('r-numero').value = '';
+  renderRecibir();
+  renderDespachos();
+}
+
+function renderRecibir() {
+  $('r-medias').innerHTML = medias.length ? medias.map((m, i) => {
+    let dif = '';
+    if (m.peso_remito) {
+      const d = Math.round((m.peso - m.peso_remito) * 1000) / 1000;
+      dif = `<span class="dif ${d < 0 ? 'mal' : 'bien'}">${(d >= 0 ? '+' : '') + fmtKg(d)} {% trans "kg vs remito" %}</span>`;
+    }
+    return `<div class="fila">
+      ${m.fotoUrl ? `<img class="thumb" src="${m.fotoUrl}" alt="{% trans "visor" %}" />` : '<span class="pill">{% trans "sin foto" %}</span>'}
+      <div class="info"><strong>${esc(m.plantilla)}${m.garron ? ' · ' + esc(m.garron) : ''}</strong>${dif}</div>
+      <span class="kg">{% trans "${fmtKg(m.peso)} kg" %}</span>
+      <button class="x" data-quitar-media="${i}" title="{% trans "Quitar" %}"><i class="fa-solid fa-xmark"></i></button></div>`;
+  }).join('') + `<div class="fila"><div class="info"><small>{% trans "${medias.length} medias reses" %}</small></div><span class="kg">${fmtKg(medias.reduce((s, m) => s + m.peso, 0))} kg</span><span style="width:30px"></span></div>`
+    : '<div class="vacio">{% trans "Colgá cada media res, pesala y cargala acá" %}</div>';
+  $('r-items').innerHTML = items.map((it, i) => `
+    <div class="fila"><div class="info"><strong>${esc(it.producto.nombre)}</strong><small>${esc(it.producto.categoria)}</small></div>
+    <span class="kg">${fmtKg(it.cantidad)} ${it.producto.unidad}</span>
+    <button class="x" data-quitar-item="${i}" title="{% trans "Quitar" %}"><i class="fa-solid fa-xmark"></i></button></div>`).join('');
+  $('r-confirmar').disabled = !(medias.length || items.length);
+}
+
+function abrirMedia(indiceEsperada = null) {
+  if (!DATOS.plantillas.length) { toast('{% trans "No hay plantillas de despiece cargadas" %}'); return; }
+  ['m-garron', 'm-peso-remito', 'm-peso'].forEach(id => { $(id).value = ''; });
+  esperada = indiceEsperada;
+  if (esperada !== null && despachoActual) {
+    const m = despachoActual.medias[esperada];
+    $('m-plantilla').value = String(m.plantilla_id);
+    $('m-garron').value = m.garron;
+    $('m-peso-remito').value = String(m.peso_salida).replace('.', ',');
+  }
+  fotoMedia = null;
+  $('m-foto').value = '';
+  $('m-foto-prev').style.display = 'none';
+  $('m-foto-txt').textContent = '{% trans "Foto del visor" %}';
+  $('ov-media').classList.add('on');
+  setTimeout(() => $('m-peso').focus(), 50);
+}
+
+function confirmarMedia() {
+  const peso = parseNumero($('m-peso').value);
+  if (peso <= 0) { toast('{% trans "Ingresá el peso de la balanza" %}'); $('m-peso').focus(); return; }
+  if (!fotoMedia && !confirm('{% trans "No sacaste foto del visor. ¿Agregar igual?" %}')) return;
+  const plantillaId = Number($('m-plantilla').value);
+  const plantilla = DATOS.plantillas.find(p => p.id === plantillaId);
+  medias.push({
+    plantilla_id: plantillaId, plantilla: plantilla ? plantilla.nombre : '', garron: $('m-garron').value.trim(),
+    peso, peso_remito: parseNumero($('m-peso-remito').value) || null,
+    foto: fotoMedia, fotoUrl: fotoMedia ? URL.createObjectURL(fotoMedia) : '', esperada,
+  });
+  $('ov-media').classList.remove('on');
+  renderRecibir();
+  renderDespachos();
+}
+
+function agregarItem() {
+  const q = normalizar($('r-prod').value.trim());
+  const producto = DATOS.productos.find(p => normalizar(p.nombre) === q) || DATOS.productos.find(p => normalizar(p.nombre).includes(q));
+  const cantidad = parseNumero($('r-cant').value);
+  if (!q || !producto) { toast('{% trans "Elegí un producto de la lista" %}'); $('r-prod').focus(); return; }
+  if (cantidad <= 0) { toast('{% trans "Ingresá la cantidad" %}'); $('r-cant').focus(); return; }
+  items.push({ producto, cantidad });
+  $('r-prod').value = '';
+  $('r-cant').value = '';
+  $('r-prod').focus();
+  renderRecibir();
+}
+
+async function confirmarRecepcion() {
+  if (!medias.length && !items.length) return;
+  if (despachoActual) {
+    const faltan = despachoActual.medias.length - medias.filter(m => m.esperada !== null && m.esperada !== undefined).length;
+    if (faltan > 0 && !confirm(`{% trans "Faltan pesar ${faltan} medias reses del despacho. ¿Confirmar igual? Quedan como faltante." %}`)) return;
+  }
+  const kgTotal = medias.reduce((s, m) => s + m.peso, 0);
+  if (!confirm(`{% trans "¿Confirmar ${medias.length} medias reses (${fmtKg(kgTotal)} kg) y ${items.length} productos?" %}`)) return;
+  $('r-confirmar').disabled = true;
+  ikeyRemito = ikeyRemito || (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random());
+  const fd = new FormData();
+  fd.append('datos', JSON.stringify({
+    idempotency_key: ikeyRemito,
+    proveedor_id: $('r-proveedor').value || null,
+    despacho_id: despachoActual ? despachoActual.id : null,
+    camara_id: $('r-camara').value || null,
+    numero: $('r-numero').value.trim(),
+    observaciones: $('r-obs').value.trim(),
+    medias: medias.map((m, i) => ({ plantilla_id: m.plantilla_id, garron: m.garron, peso: m.peso, peso_remito: m.peso_remito, foto_key: i })),
+    items: items.map(it => ({ producto_id: it.producto.id, cantidad: it.cantidad })),
+  }));
+  if (fotoRemito) fd.append('foto_remito', fotoRemito, 'remito.jpg');
+  medias.forEach((m, i) => { if (m.foto) fd.append(`foto_media_${i}`, m.foto, `visor-${i}.jpg`); });
+  const res = await api('{% url "pos:api_remito_crear" %}', { method: 'POST', headers: { 'X-CSRFToken': CSRF }, body: fd });
+  if (!res.ok) { toast(res.error || '{% trans "No se pudo guardar" %}'); $('r-confirmar').disabled = false; return; }
+  ikeyRemito = null;
+  medias = []; items = []; fotoRemito = null; despachoActual = null;
+  ['r-numero', 'r-obs', 'r-foto'].forEach(id => { $(id).value = ''; });
+  $('r-foto-prev').style.display = 'none';
+  $('r-foto-txt').textContent = '{% trans "Foto del remito (opcional)" %}';
+  renderRecibir();
+  cargarDatos();
+  toast('{% trans "Recepción guardada. Las medias reses ya están en cámara." %}', true);
+}
+
+$('r-add-media').addEventListener('click', () => abrirMedia());
+$('r-despachos').addEventListener('click', e => {
+  const b = e.target.closest('[data-recibir-despacho]');
+  if (b) recibirDespacho(Number(b.dataset.recibirDespacho));
+});
+$('r-esperadas').addEventListener('click', e => {
+  const b = e.target.closest('[data-pesar]');
+  if (b) abrirMedia(Number(b.dataset.pesar));
+});
+$('r-soltar-despacho').addEventListener('click', soltarDespacho);
+$('m-cancelar').addEventListener('click', () => $('ov-media').classList.remove('on'));
+$('m-ok').addEventListener('click', confirmarMedia);
+$('m-peso').addEventListener('keydown', e => { if (e.key === 'Enter') confirmarMedia(); });
+$('m-foto').addEventListener('change', async e => {
+  fotoMedia = await comprimirFoto(e.target.files[0]);
+  if (fotoMedia) { $('m-foto-prev').src = URL.createObjectURL(fotoMedia); $('m-foto-prev').style.display = ''; $('m-foto-txt').textContent = '{% trans "Foto lista · tocá para cambiarla" %}'; }
+});
+$('r-foto').addEventListener('change', async e => {
+  fotoRemito = await comprimirFoto(e.target.files[0]);
+  if (fotoRemito) { $('r-foto-prev').src = URL.createObjectURL(fotoRemito); $('r-foto-prev').style.display = ''; $('r-foto-txt').textContent = '{% trans "Foto del remito lista" %}'; }
+});
+$('r-add-item').addEventListener('click', agregarItem);
+$('r-cant').addEventListener('keydown', e => { if (e.key === 'Enter') agregarItem(); });
+$('r-medias').addEventListener('click', e => {
+  const b = e.target.closest('[data-quitar-media]');
+  if (b) { medias.splice(Number(b.dataset.quitarMedia), 1); renderRecibir(); renderDespachos(); }
+});
+$('r-items').addEventListener('click', e => {
+  const b = e.target.closest('[data-quitar-item]');
+  if (b) { items.splice(Number(b.dataset.quitarItem), 1); renderRecibir(); }
+});
+$('r-confirmar').addEventListener('click', confirmarRecepcion);
+
+/* ── Cámara y desposte ── */
+let camara = [];
+let despostando = null;
+
+async function cargarCamara() {
+  const res = await api('{% url "pos:api_camara" %}');
+  if (!res.ok) { toast(res.error || '{% trans "No se pudo cargar la cámara" %}'); return; }
+  camara = res.medias;
+  const puedeMover = (PERMISOS.puede_recibir_mercaderia || PERMISOS.puede_despostar) && res.camaras.length > 1;
+  const fila = m => `
+    <div class="fila">
+      ${m.foto_visor ? `<img class="thumb" src="${m.foto_visor}" alt="{% trans "visor" %}" />` : ''}
+      <div class="info"><strong>${esc(m.plantilla)}${m.garron ? ' · ' + esc(m.garron) : ''}</strong><small>{% trans "Recibida ${m.recibida}" %}</small></div>
+      <span class="pill ${m.dias_en_camara >= 4 ? 'vieja' : ''}">${m.dias_en_camara === 0 ? 'hoy' : m.dias_en_camara + ' {% trans "días" %}'}</span>
+      <span class="kg">{% trans "${fmtKg(m.peso)} kg" %}</span>
+      ${puedeMover ? `<select class="mini-select" data-mover="${m.id}" title="{% trans "Mover a otra cámara" %}">
+        ${m.camara_id ? '' : '<option value="">{% trans "Sin cámara" %}</option>'}
+        ${res.camaras.map(c => `<option value="${c.id}" ${c.id === m.camara_id ? 'selected' : ''}>${esc(c.nombre)}</option>`).join('')}</select>` : ''}
+      ${PERMISOS.puede_despostar ? `<button class="btn-mini" data-despostar="${m.id}">{% trans "Despostar" %}</button>` : ''}
+    </div>`;
+  const grupos = [...res.camaras, { id: null, nombre: '{% trans "Sin cámara asignada" %}' }]
+    .map(c => ({ c, medias: camara.filter(m => (m.camara_id || null) === c.id) }))
+    .filter(g => g.medias.length);
+  $('c-medias').innerHTML = grupos.length ? grupos.map(g => `
+    <div class="grupo-camara"><h3>${esc(g.c.nombre)} · {% trans "${g.medias.length} medias" %} · ${fmtKg(g.medias.reduce((s, m) => s + m.peso, 0))} kg</h3>
+    ${g.medias.map(fila).join('')}</div>`).join('') : '<div class="vacio">{% trans "No hay medias reses en cámara" %}</div>';
+}
+
+async function moverMedia(id, camaraId) {
+  const res = await postJson(`/pos/api/camara/${id}/mover/`, { camara_id: Number(camaraId) });
+  if (!res.ok) toast(res.error || '{% trans "No se pudo mover" %}');
+  cargarCamara();
+}
+
+function abrirDesposte(id) {
+  despostando = camara.find(m => m.id === id);
+  if (!despostando) return;
+  $('d-titulo').textContent = `{% trans "Despostar ${despostando.plantilla}" %}${despostando.garron ? ' · ' + despostando.garron : ''}`;
+  const mermaPct = fmtKg(despostando.merma_pct) + '%';
+  $('d-sub').textContent = `${fmtKg(despostando.peso)} kg · {% trans "merma no vendible ${mermaPct}" %}`;
+  $('d-tabla').innerHTML = despostando.despiece.map(l => `
+    <tr><td>${esc(l.producto)}</td><td>${fmtKg(l.porcentaje)}</td><td>${fmtKg(l.kg_teorico)}</td>
+    <td><input type="text" inputmode="decimal" data-producto="${l.producto_id}" placeholder="—" autocomplete="off" /></td></tr>`).join('');
+  actualizarTotalesDesposte();
+  $('ov-desposte').classList.add('on');
+}
+
+function actualizarTotalesDesposte() {
+  if (!despostando) return;
+  const teo = despostando.despiece.reduce((s, l) => s + l.kg_teorico, 0);
+  let real = 0, algunoPesado = false;
+  despostando.despiece.forEach(l => {
+    const v = $('d-tabla').querySelector(`input[data-producto="${l.producto_id}"]`).value;
+    if (v.trim()) { algunoPesado = true; real += parseNumero(v); } else { real += l.kg_teorico; }
+  });
+  $('d-total-teo').textContent = fmtKg(teo) + ' kg';
+  $('d-merma-teo').textContent = fmtKg(despostando.peso - teo) + ' kg';
+  $('d-total-real').textContent = algunoPesado ? fmtKg(real) + ' kg' : '';
+  $('d-merma-real').textContent = algunoPesado ? fmtKg(despostando.peso - real) + ' kg' : '';
+}
+
+async function confirmarDesposte() {
+  if (!despostando) return;
+  const kg_reales = {};
+  $('d-tabla').querySelectorAll('input[data-producto]').forEach(inp => {
+    if (inp.value.trim()) kg_reales[inp.dataset.producto] = parseNumero(inp.value);
+  });
+  $('d-ok').disabled = true;
+  const res = await postJson(`/pos/api/camara/${despostando.id}/despostar/`, { kg_reales });
+  $('d-ok').disabled = false;
+  if (!res.ok) { toast(res.error || '{% trans "No se pudo despostar" %}'); return; }
+  $('ov-desposte').classList.remove('on');
+  toast(`{% trans "Desposte guardado. Merma: ${fmtKg(res.merma_kg)} kg" %}`, true);
+  despostando = null;
+  cargarCamara();
+}
+
+$('c-refrescar').addEventListener('click', cargarCamara);
+$('c-medias').addEventListener('click', e => {
+  const b = e.target.closest('[data-despostar]');
+  if (b) abrirDesposte(Number(b.dataset.despostar));
+});
+$('c-medias').addEventListener('change', e => {
+  const s = e.target.closest('[data-mover]');
+  if (s && s.value) moverMedia(Number(s.dataset.mover), s.value);
+});
+$('d-tabla').addEventListener('input', actualizarTotalesDesposte);
+$('d-cancelar').addEventListener('click', () => { $('ov-desposte').classList.remove('on'); despostando = null; });
+$('d-ok').addEventListener('click', confirmarDesposte);
+
+/* ── Stock ── */
+let stock = [];
+
+async function cargarStock() {
+  const res = await api('{% url "pos:api_stock" %}');
+  if (!res.ok) { toast(res.error || '{% trans "No se pudo cargar el stock" %}'); return; }
+  stock = res.productos.sort((a, b) => a.categoria.localeCompare(b.categoria) || a.nombre.localeCompare(b.nombre));
+  $('s-medias').textContent = res.medias_en_camara;
+  $('s-kg-medias').textContent = fmtKg(res.kg_medias_en_camara);
+  $('s-neg').textContent = stock.filter(p => p.stock < 0).length;
+  renderStock();
+}
+
+function renderStock() {
+  const q = normalizar($('s-buscar').value.trim());
+  const filas = stock.filter(p => !q || normalizar(p.nombre).includes(q) || normalizar(p.categoria).includes(q));
+  $('s-tabla').innerHTML = filas.map(p => `
+    <tr><td>${esc(p.nombre)}</td><td>${esc(p.categoria)}</td>
+    <td class="${p.stock < 0 ? 'neg' : ''}">${fmtKg(p.stock)} ${p.unidad === 'kg' ? 'kg' : 'u'}</td></tr>`).join('');
+}
+$('s-buscar').addEventListener('input', renderStock);
+
+/* ── Conteo y liquidación ──
+   Conteo ciego: acá solo se carga lo que hay. El esperado y las diferencias
+   se ven en el resumen, que es solo para quien puede cerrar. */
+let K = null;          // estado del conteo (/api/conteo/)
+let kCamara = null;    // cámara que se está contando
+let kLineas = {};      // "producto|camara" -> {contado, descarte, motivo}
+let kResumen = null;
+const fmtPlata = n => (n < 0 ? '−$' : '$') + Math.abs(Math.round(Number(n || 0))).toLocaleString('es-AR');
+const fmtSigno = n => (n > 0 ? '+' : '') + fmtKg(n);
+const claveLinea = (pid, cam) => pid + '|' + (cam || '');
+const aTexto = n => (n === null || n === undefined) ? '' : String(n).replace('.', ',');
+
+async function cargarConteo() {
+  const res = await api('{% url "pos:api_conteo_estado" %}');
+  if (!res.ok) { toast(res.error || '{% trans "No se pudo cargar el conteo" %}'); return; }
+  K = res;
+  const ab = res.abierto;
+  const pendiente = res.es_dia_liquidacion && !res.liquidado_hoy;
+  const enLiquidacion = ab && ab.tipo === 'liquidacion';
+  $('k-aviso').style.display = pendiente && !enLiquidacion ? '' : 'none';
+  $('k-aviso-txt').innerHTML = `<strong>{% trans "Hoy es ${esc(res.dia_liquidacion)}, día de liquidación." %}</strong> {% trans "Tirá lo viejo, contá lo que queda en cada cámara y cerrá la semana. Conviene hacerlo antes de colgar la carne nueva." %}`;
+  const badge = $('tab-conteo-badge');
+  if (badge) badge.style.display = pendiente ? '' : 'none';
+  $('k-sin').style.display = ab ? 'none' : '';
+  $('k-abierto').style.display = ab ? '' : 'none';
+  if (!ab) { renderHistorial(); return; }
+  kLineas = {};
+  ab.lineas.forEach(l => { kLineas[claveLinea(l.producto_id, l.camara_id)] = l; });
+  if (!res.camaras.some(c => c.id === kCamara)) kCamara = res.camaras.length ? res.camaras[0].id : null;
+  renderConteo();
+}
+
+function renderHistorial() {
+  const puedeVer = PERMISOS.puede_cerrar_conteo;
+  $('k-historial').innerHTML = K.historial.length ? K.historial.map(c => {
+    const merma = c.merma_pct === null ? '—' : fmtKg(Math.round(c.merma_pct * 10) / 10) + '%';
+    const tiro = fmtKg(c.kg_descarte), dif = fmtSigno(c.kg_ajuste);
+    const detalle = c.tipo === 'liquidacion' && c.kg_descarte !== null
+      ? `{% trans "merma ${merma} · tiró ${tiro} kg · dif ${dif} kg" %}`
+      : `{% trans "${c.lineas} líneas" %}`;
+    return `<div class="fila"><div class="info"><strong>${esc(c.tipo_display)}</strong>
+      <small>${c.cerrado_en} · ${esc(c.cerrado_por)}</small></div>
+      <span class="kg" style="font-weight:600;">${detalle}</span>
+      ${puedeVer ? `<button class="btn-mini" data-ver-conteo="${c.id}">{% trans "Ver" %}</button>` : ''}</div>`;
+  }).join('') : '<div class="vacio">{% trans "Todavía no hay conteos cerrados" %}</div>';
+}
+
+function lineasDe(pid) {
+  return Object.entries(kLineas).filter(([k]) => k.split('|')[0] === String(pid)).map(([, l]) => l);
+}
+
+function totalProducto(pid, unidad) {
+  const ls = lineasDe(pid);
+  if (!ls.length) return '';
+  const queda = ls.reduce((s, l) => s + Number(l.contado || 0), 0);
+  const tira = ls.reduce((s, l) => s + Number(l.descarte || 0), 0);
+  const u = unidad === 'kg' ? 'kg' : 'u';
+  return `${fmtKg(queda)} ${u}${tira ? `<br><small class="neg">{% trans "tira ${fmtKg(tira)}" %}</small>` : ''}`;
+}
+
+function faltanContar() {
+  return (K.abierto.requeridos || []).filter(pid => !lineasDe(pid).length);
+}
+
+function renderSubConteo() {
+  const ab = K.abierto;
+  const faltan = faltanContar().length;
+  $('k-sub').textContent = `{% trans "Empezó ${ab.iniciado_por} · ${ab.iniciado_en}" %}` +
+    (ab.requeridos.length ? ` {% trans "· faltan contar ${faltan} de ${ab.requeridos.length} productos con stock" %}` : '');
+}
+
+function renderConteo() {
+  const ab = K.abierto;
+  $('k-titulo').textContent = `{% trans "${ab.tipo_display} en curso" %}`;
+  renderSubConteo();
+  $('k-camaras').innerHTML = K.camaras.map(c => `<button class="chip ${c.id === kCamara ? 'on' : ''}" data-camara="${c.id}">${esc(c.nombre)}</button>`).join('');
+  const q = normalizar($('k-buscar').value.trim());
+  const soloPend = $('k-solo-pend').checked;
+  const pend = new Set(faltanContar());
+  const requeridos = new Set(ab.requeridos);
+  const productos = K.productos
+    .filter(p => !q || normalizar(p.nombre).includes(q) || normalizar(p.categoria).includes(q))
+    .filter(p => !soloPend || pend.has(p.id))
+    .sort((a, b) => a.categoria.localeCompare(b.categoria) || a.nombre.localeCompare(b.nombre));
+  const motivos = sel => '<option value="">—</option>' +
+    K.motivos.map(([v, t]) => `<option value="${v}" ${v === sel ? 'selected' : ''}>${esc(t)}</option>`).join('');
+  let cat = null;
+  $('k-tabla').innerHTML = productos.map(p => {
+    const l = kLineas[claveLinea(p.id, kCamara)];
+    const u = p.unidad === 'kg' ? 'kg' : 'u';
+    let html = '';
+    if (p.categoria !== cat) { cat = p.categoria; html += `<tr class="cat"><td colspan="6">${esc(cat)}</td></tr>`; }
+    return html + `<tr data-pid="${p.id}" data-unidad="${p.unidad}">
+      <td>${esc(p.nombre)}${requeridos.has(p.id) && pend.has(p.id) ? '<span class="req">{% trans "contar" %}</span>' : ''}</td>
+      <td><input data-k="contado" type="text" inputmode="decimal" autocomplete="off" placeholder="${u}" value="${l ? aTexto(l.contado) : ''}" /></td>
+      <td><input data-k="descarte" type="text" inputmode="decimal" autocomplete="off" placeholder="${u}" value="${l && Number(l.descarte) ? aTexto(l.descarte) : ''}" /></td>
+      <td><select data-k="motivo">${motivos(l ? l.motivo : '')}</select></td>
+      <td class="kg total">${totalProducto(p.id, p.unidad)}</td>
+      <td><span class="estado">${l ? '✓' : ''}</span></td></tr>`;
+  }).join('') || '<tr><td colspan="6" class="vacio">{% trans "Nada para mostrar" %}</td></tr>';
+}
+
+async function guardarFila(tr) {
+  const pid = Number(tr.dataset.pid);
+  const contadoTxt = tr.querySelector('[data-k="contado"]').value.trim();
+  const descarte = parseNumero(tr.querySelector('[data-k="descarte"]').value);
+  const motivo = tr.querySelector('[data-k="motivo"]').value;
+  const estado = tr.querySelector('.estado');
+  if (descarte > 0 && !motivo) {
+    estado.className = 'estado err'; estado.textContent = '!';
+    toast('{% trans "Elegí por qué se tira" %}');
+    return;
+  }
+  estado.className = 'estado'; estado.textContent = '…';
+  const body = { producto_id: pid, camara_id: kCamara, contado: contadoTxt === '' ? null : parseNumero(contadoTxt), descarte, motivo };
+  const res = await postJson(`/pos/api/conteo/${K.abierto.id}/linea/`, body);
+  if (!res.ok) { estado.className = 'estado err'; estado.textContent = '!'; toast(res.error || '{% trans "No se pudo guardar" %}'); return; }
+  const clave = claveLinea(pid, kCamara);
+  if (res.guardada) kLineas[clave] = { producto_id: pid, camara_id: kCamara, contado: body.contado || 0, descarte, motivo };
+  else delete kLineas[clave];
+  estado.className = 'estado ok'; estado.textContent = res.guardada ? '✓' : '';
+  tr.querySelector('.total').innerHTML = totalProducto(pid, tr.dataset.unidad);
+  const req = tr.querySelector('.req');
+  if (req && res.guardada) req.remove();
+  renderSubConteo();
+}
+
+async function iniciarConteo(tipo) {
+  if (tipo === 'liquidacion' && !K.es_dia_liquidacion &&
+      !confirm(`{% trans "Hoy no es ${K.dia_liquidacion}. ¿Empezar la liquidación igual?" %}`)) return;
+  const res = await postJson('{% url "pos:api_conteo_iniciar" %}', { tipo });
+  if (!res.ok) { toast(res.error || '{% trans "No se pudo empezar" %}'); return; }
+  cargarConteo();
+}
+
+async function anularConteo() {
+  if (!confirm('{% trans "¿Anular el conteo? Se borra todo lo cargado y el stock no cambia." %}')) return;
+  const res = await postJson(`/pos/api/conteo/${K.abierto.id}/anular/`, {});
+  if (!res.ok) { toast(res.error || '{% trans "No se pudo anular" %}'); return; }
+  toast('{% trans "Conteo anulado" %}', true);
+  cargarConteo();
+}
+
+async function abrirResumen(id) {
+  const res = await api(`/pos/api/conteo/${id}/resumen/`);
+  if (!res.ok) { toast(res.error || '{% trans "No se pudo calcular" %}'); return; }
+  mostrarResumen(res);
+}
+
+function mostrarResumen(res) {
+  kResumen = res;
+  const c = res.conteo;
+  const abierto = c.estado === 'abierto';
+  $('z-titulo').textContent = abierto ? `{% trans "${c.tipo_display}: diferencias" %}` : `${c.tipo_display} · ${c.cerrado_en}`;
+  $('z-sub').textContent = abierto
+    ? `{% trans "Esperado calculado a las ${res.hasta}. Si se vende algo antes de cerrar, el esperado cambia." %}`
+    : `{% trans "Cerró ${c.cerrado_por}" %}${c.observaciones ? ' · ' + c.observaciones : ''}`;
+  const faltan = res.faltan_contar;
+  $('z-faltan').style.display = faltan.length ? '' : 'none';
+  $('z-faltan').innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i><div>{% trans "Falta contar ${faltan.length} productos que tienen stock:" %} ${faltan.slice(0, 10).map(p => esc(p.nombre)).join(', ')}${faltan.length > 10 ? '…' : ''}. {% trans "Si no queda nada, cargá 0." %}</div>`;
+  const b = res.balance;
+  $('z-balance-panel').style.display = b ? '' : 'none';
+  if (b) {
+    $('z-periodo').textContent = `{% trans "desde ${b.desde}" %}`;
+    const filas = [
+      ['{% trans "Había al cierre anterior" %}', fmtKg(b.inicial)],
+      ['{% trans "+ Recibido (medias y productos)" %}', fmtKg(b.recibido)],
+      ['{% trans "− Vendido" %}', fmtKg(b.vendido)],
+      ['{% trans "− Merma de desposte" %}', fmtKg(b.merma_desposte)],
+      ['{% trans "− Se tiró" %}', fmtKg(b.descarte)],
+      [b.ajuste < 0 ? '{% trans "− Faltante de conteo" %}' : '{% trans "+ Sobrante de conteo" %}', `<span class="${b.ajuste < 0 ? 'neg' : ''}">${fmtKg(Math.abs(b.ajuste))}</span>`],
+    ];
+    $('z-balance').innerHTML = filas.map(([a, v]) => `<span>${a}</span><span>{% trans "${v} kg" %}</span>`).join('') +
+      `<span class="total">{% trans "= Queda" %}</span><span class="total">{% trans "${fmtKg(b.final)} kg" %}</span>` +
+      `<span class="total">{% trans "Merma total (desposte + tirado + faltante)" %}</span><span class="total ${b.merma_pct > 6 ? 'neg' : ''}">${fmtKg(b.merma_total)} kg · ${b.merma_pct === null ? '—' : fmtKg(Math.round(b.merma_pct * 10) / 10) + '%'}</span>`;
+  }
+  const productos = [...res.productos].sort((x, y) => x.valor_ajuste - y.valor_ajuste);
+  $('z-tabla').innerHTML = productos.map(p => {
+    const u = p.unidad === 'kg' ? ' kg' : ' u';
+    const detalle = p.camaras.length > 1 || p.camaras.some(x => x.descarte)
+      ? `<br><small style="color:var(--muted)">${p.camaras.map(x => `${esc(x.camara)}: ${fmtKg(x.contado)}${x.descarte ? ` {% trans "(tira ${fmtKg(x.descarte)}, ${esc(x.motivo)})" %}` : ''}`).join(' · ')}</small>` : '';
+    return `<tr><td>${esc(p.nombre)}${detalle}</td><td>${fmtKg(p.teorico)}${u}</td><td>${fmtKg(p.contado)}${u}</td>
+      <td>${p.descarte ? fmtKg(p.descarte) + u : ''}</td>
+      <td class="${p.ajuste < -0.0005 ? 'neg' : p.ajuste > 0.0005 ? 'pos' : ''}">${fmtSigno(Math.round(p.ajuste * 1000) / 1000)}${u}</td>
+      <td class="${p.valor_ajuste < 0 ? 'neg' : ''}">${fmtPlata(p.valor_ajuste)}</td></tr>`;
+  }).join('') || '<tr><td colspan="6" class="vacio">{% trans "No se contó nada" %}</td></tr>';
+  $('z-valor-desc').textContent = res.valor_descarte ? '−' + fmtPlata(res.valor_descarte) : '';
+  $('z-valor-dif').textContent = fmtPlata(res.valor_ajuste);
+  $('z-valor-dif').className = res.valor_ajuste < 0 ? 'neg' : '';
+  $('z-obs-label').style.display = abierto ? '' : 'none';
+  $('z-cerrar').style.display = abierto ? '' : 'none';
+  $('z-cerrar').disabled = !!faltan.length || !res.productos.length;
+  $('z-cerrar').textContent = c.tipo === 'liquidacion' ? '{% trans "Cerrar liquidación y ajustar stock" %}' : '{% trans "Cerrar conteo y ajustar stock" %}';
+  $('z-obs').value = '';
+  $('ov-resumen').classList.add('on');
+}
+
+async function cerrarConteo() {
+  if (!kResumen) return;
+  const c = kResumen.conteo;
+  if (!confirm(`{% trans "¿Cerrar ${c.tipo_display.toLowerCase()}? El stock queda igual a lo contado y no se puede deshacer." %}`)) return;
+  $('z-cerrar').disabled = true;
+  const res = await postJson(`/pos/api/conteo/${c.id}/cerrar/`, { observaciones: $('z-obs').value.trim() });
+  if (!res.ok) { toast(res.error || '{% trans "No se pudo cerrar" %}'); $('z-cerrar').disabled = false; return; }
+  toast(c.tipo === 'liquidacion' ? '{% trans "Liquidación cerrada. Ya podés recibir la carne nueva." %}' : '{% trans "Conteo cerrado y stock ajustado." %}', true);
+  mostrarResumen(res);
+  cargarConteo();
+}
+
+$('k-iniciar-liq').addEventListener('click', () => iniciarConteo('liquidacion'));
+$('k-iniciar-control').addEventListener('click', () => iniciarConteo('control'));
+if ($('k-anular')) $('k-anular').addEventListener('click', anularConteo);
+if ($('k-resumen')) $('k-resumen').addEventListener('click', () => abrirResumen(K.abierto.id));
+$('k-historial').addEventListener('click', e => {
+  const b = e.target.closest('[data-ver-conteo]');
+  if (b) abrirResumen(Number(b.dataset.verConteo));
+});
+$('k-camaras').addEventListener('click', async e => {
+  const b = e.target.closest('[data-camara]');
+  if (!b) return;
+  kCamara = Number(b.dataset.camara);
+  await cargarConteo();   // trae también lo que cargaron otros en otras cámaras
+});
+$('k-buscar').addEventListener('input', renderConteo);
+$('k-solo-pend').addEventListener('change', renderConteo);
+$('k-tabla').addEventListener('change', e => {
+  const tr = e.target.closest('tr[data-pid]');
+  if (tr) guardarFila(tr);
+});
+$('k-tabla').addEventListener('keydown', e => {
+  if (e.key !== 'Enter' || e.target.tagName !== 'INPUT') return;
+  e.preventDefault();
+  const inputs = [...$('k-tabla').querySelectorAll('input')];
+  const sig = inputs[inputs.indexOf(e.target) + 1];
+  if (sig) sig.focus(); else e.target.blur();
+});
+$('z-volver').addEventListener('click', () => $('ov-resumen').classList.remove('on'));
+$('z-cerrar').addEventListener('click', cerrarConteo);
+
+/* ── Inicio ── */
+const primera = document.querySelector('.tab');
+if (primera) mostrarVista(primera.dataset.vista);
+if ($('tab-conteo-badge') && primera.dataset.vista !== 'conteo') cargarConteo();   // aviso de liquidación en la pestaña
+{% endautoescape %}</script>
+{% include "ayuda/_cargar.html" %}
+</body>
+</html>

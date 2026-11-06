@@ -1,0 +1,88 @@
+{% load i18n %}{% comment %}
+Pad de categorías para el modal de venta.
+Se incluye tanto en el flujo clásico como en el guiado.
+Sólo se renderiza si existen categorías cargadas: si no hay, el bloque
+entero desaparece para simplificar la pantalla.
+Flujo: tocar categoría -> importe -> Enter -> tocar otra categoría -> importe...
+{% endcomment %}
+{% if categorias %}
+{% if productos %}
+<div class="prodpad" id="v-prodpad">
+  <div class="comandas-strip" id="v-comandas" style="display:none;">
+    <div class="catpad-head">
+      <span class="catpad-title">{% trans "Comandas en espera" %}</span>
+      <button type="button" class="btn-mini" onclick="cargarComandasPendientes()" title="{% trans "Actualizar" %}"><i class="fa-solid fa-rotate"></i></button>
+    </div>
+    <div class="comandas-chips" id="v-comandas-chips"></div>
+    <div class="comanda-tag" id="v-comanda-tag" style="display:none;"></div>
+  </div>
+  <div class="catpad-head">
+    <span class="catpad-title">{% trans "Cortes y productos" %}</span>
+  </div>
+  <div class="prod-buscar-wrap">
+    <i class="fa-solid fa-barcode"></i>
+    <input id="v-prod-buscar" type="text" class="catpad-search" placeholder="{% trans "Escaneá, escribí el código o buscá el corte…" %}" autocomplete="off" />
+  </div>
+  <div class="prod-chips" id="v-prod-chips"></div>
+  <div class="prod-grid" id="v-prod-grid"></div>
+  <div class="catpad-empty" id="v-prod-empty" style="display:none;">{% trans "Sin resultados" %}</div>
+
+  <div class="catpad-entry" id="v-prod-entry" style="display:none;">
+    <span class="catpad-entry-cat" id="v-prod-entry-nombre"></span>
+    <input id="v-prod-cant" type="text" inputmode="decimal" class="catpad-entry-input" placeholder="0" autocomplete="off" />
+    <span class="prod-entry-unidad" id="v-prod-entry-unidad">kg</span>
+    <strong class="prod-entry-sub" id="v-prod-entry-sub">$0</strong>
+    <button type="button" class="btn btn-primary catpad-entry-add" onclick="confirmarProducto()">{% trans "Agregar" %}</button>
+    <button type="button" class="catpad-entry-cancel" onclick="cancelarProducto()" title="{% trans "Cancelar" %}">
+      <i class="fa-solid fa-times"></i>
+    </button>
+  </div>
+  <div class="venta-cat-lines" id="v-prod-lines"></div>
+</div>
+{% endif %}
+{% if productos %}
+<details class="catpad-plegable" id="v-catpad-plegable">
+  <summary>{% trans "Cobrar por rubro, sin elegir producto" %}</summary>
+{% endif %}
+<div class="catpad" id="v-catpad">
+  <div class="catpad-head">
+    <span class="catpad-title">{% trans "Categorías" %}</span>
+    {% if permisos.puede_crear_categoria_venta %}
+    <button type="button" class="btn-mini" onclick="crearCategoriaRapida()">
+      <i class="fa-solid fa-plus"></i> {% trans "Nueva" %}
+    </button>
+    {% endif %}
+  </div>
+
+  <input id="v-cat-buscar" type="text" class="catpad-search" placeholder="{% trans "Buscar categoría…" %}" autocomplete="off" style="display:none;" />
+
+  <div class="cat-grid" id="v-cat-grid">
+    {% for c in categorias %}
+    <button type="button" class="cat-btn" data-categoria-id="{{ c.id }}" data-nombre="{{ c.nombre }}">
+      <span class="cat-btn-name">{{ c.nombre }}</span>
+      <span class="cat-btn-total"></span>
+    </button>
+    {% endfor %}
+  </div>
+  <div class="catpad-empty" id="v-cat-empty" style="display:none;">{% trans "Sin resultados" %}</div>
+
+  <div class="catpad-entry" id="v-cat-entry" style="display:none;">
+    <span class="catpad-entry-cat" id="v-cat-entry-nombre"></span>
+    <input id="v-cat-importe" type="text" inputmode="decimal" class="catpad-entry-input" placeholder="0" autocomplete="off" />
+    <button type="button" class="btn btn-primary catpad-entry-add" onclick="confirmarCategoriaPendiente()">{% trans "Agregar" %}</button>
+    <button type="button" class="catpad-entry-cancel" onclick="cancelarCategoriaPendiente()" title="{% trans "Cancelar" %}">
+      <i class="fa-solid fa-times"></i>
+    </button>
+  </div>
+
+  <div class="catpad-hint" id="v-cat-hint" style="display:none;"></div>
+  <div class="venta-cat-lines" id="v-cat-lines"></div>
+  <div class="catpad-total" id="v-cat-total" style="display:none;">
+    <span>{% trans "Total por categorías" %}</span>
+    <strong id="v-cat-total-val">$0</strong>
+  </div>
+</div>
+{% if productos %}
+</details>
+{% endif %}
+{% endif %}

@@ -1,0 +1,104 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'es' }}">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% trans "Iniciar sesión — POS" %}</title>
+  <link rel="icon" href="{% static 'img/ico.ico' %}" type="image/x-icon" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0d0d12;
+      color: #e8e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .card {
+      background: #16161f;
+      border: 1px solid #252530;
+      border-radius: 16px;
+      padding: 36px 32px 28px;
+      width: 100%;
+      max-width: 360px;
+    }
+    .brand {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .brand img {
+      max-width: 160px;
+      height: auto;
+    }
+    .form-group { margin-bottom: 14px; }
+    .form-group label {
+      display: block;
+      font-size: 0.72rem;
+      color: #666680;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 5px;
+    }
+    .form-control {
+      width: 100%;
+      background: #0d0d12;
+      border: 1px solid #252530;
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: #e8e8f0;
+      font-size: 0.95rem;
+    }
+    .form-control:focus { outline: none; border-color: #4a4a6a; }
+    .btn-login {
+      width: 100%;
+      background: #22c55e;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .btn-login:hover { background: #16a34a; }
+    .errors {
+      background: #2b0d0d;
+      border: 1px solid #f87171;
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: #f87171;
+      font-size: 0.85rem;
+      margin-bottom: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand"><img src="{% static 'img/logo.png' %}" alt="ADEMA" /></div>
+
+    {% if form.errors %}
+    <div class="errors">{% trans "Usuario o contraseña incorrectos." %}</div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label>{% trans "Usuario" %}</label>
+        <input type="text" name="username" class="form-control" autofocus autocomplete="username" />
+      </div>
+      <div class="form-group">
+        <label>{% trans "Contraseña" %}</label>
+        <input type="password" name="password" class="form-control" autocomplete="current-password" />
+      </div>
+      <input type="hidden" name="next" value="{{ next }}" />
+      <button type="submit" class="btn-login">{% trans "Ingresar" %}</button>
+    </form>
+    <div style="margin-top:18px;text-align:center;">{% include "_selector_idioma.html" %}</div>
+  </div>
+</body>
+</html>

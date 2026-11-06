@@ -1,0 +1,132 @@
+/* ─── Nav compartido: menú hamburguesa del header (mobile) ───
+   Usado por pos/terminal.html y dashboard/index.html para que ambos headers
+   se comporten igual en mobile. Toma los colores de los tokens --surface /
+   --border / --text de cada página; para la altura real del header, cada
+   página define --appnav-header-h en :root (default 56px). */
+
+.appnav-menu-only { display: none; }
+
+.appnav-hamburger {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.appnav-hamburger:hover { border-color: var(--muted); }
+.appnav-hamburger .bars {
+  display: block;
+  width: 16px;
+  height: 2px;
+  background: var(--text);
+  position: relative;
+  transition: background .15s ease;
+}
+.appnav-hamburger .bars::before,
+.appnav-hamburger .bars::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 16px;
+  height: 2px;
+  background: var(--text);
+  transition: transform .2s ease, top .2s ease;
+}
+.appnav-hamburger .bars::before { top: -5px; }
+.appnav-hamburger .bars::after { top: 5px; }
+.appnav-hamburger[aria-expanded="true"] .bars { background: transparent; }
+.appnav-hamburger[aria-expanded="true"] .bars::before { top: 0; transform: rotate(45deg); }
+.appnav-hamburger[aria-expanded="true"] .bars::after { top: 0; transform: rotate(-45deg); }
+
+/* En desktop el menú es simplemente parte del flujo normal del header */
+.appnav-menu { display: contents; }
+.appnav-menu-backdrop { display: none; }
+.appnav-menu-divider { display: none; }
+
+@media (max-width: 640px) {
+  .appnav-hamburger { display: inline-flex; }
+
+  .appnav-menu-backdrop {
+    display: block;
+    position: fixed;
+    inset: var(--appnav-header-h, 56px) 0 0 0;
+    background: rgba(0, 0, 0, .45);
+    z-index: 38;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .16s ease, visibility .16s;
+  }
+  .appnav-menu-backdrop.open { opacity: 1; visibility: visible; pointer-events: auto; }
+
+  .appnav-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    position: fixed;
+    top: var(--appnav-header-h, 56px);
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 12px calc(14px + env(safe-area-inset-bottom));
+    box-shadow: 0 16px 28px rgba(0, 0, 0, .4);
+    z-index: 39;
+    max-height: calc(100vh - var(--appnav-header-h, 56px));
+    overflow-y: auto;
+    transform: translateY(-6px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .16s ease, transform .16s ease, visibility .16s;
+  }
+  .appnav-menu.open {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .appnav-menu-only { display: inline; }
+  .appnav-compact-only { display: none; }
+  .appnav-menu-divider { display: block; height: 1px; background: var(--border); margin: 6px 2px; }
+
+  .appnav-menu > .btn-link,
+  .appnav-menu > .btn-close-caja,
+  .appnav-menu > .print-toggle-wrap {
+    width: 100%;
+    min-height: 44px;
+    border-radius: 8px;
+    font-size: .85rem;
+    box-sizing: border-box;
+  }
+  .appnav-menu > .btn-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: flex-start;
+    border-color: transparent;
+  }
+  /* Fuera del menú, .btn-link/.pt-label van en --muted porque son íconos
+     chicos y compactos en la barra. Como filas de menú de ancho completo,
+     ese gris queda casi ilegible sobre --surface: acá se leen como el resto
+     de las opciones (.btn-dash y el estado activo del toggle ya se pintan
+     con su propio color y no los toca esta regla). */
+  .appnav-menu > .btn-link:not(.btn-dash) { color: var(--text); }
+  .appnav-menu > .btn-link:hover { background: rgba(255, 255, 255, .05); }
+  .appnav-menu .print-toggle-wrap .pt-label { color: var(--text); }
+  .appnav-menu > .print-toggle-wrap {
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    padding: 0 6px;
+  }
+  .appnav-menu > .btn-close-caja { margin-top: 4px; font-weight: 600; }
+}

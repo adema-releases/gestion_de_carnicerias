@@ -1,0 +1,55 @@
+{% load i18n static %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'es' }}">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% trans "Elegir puesto" %}</title>
+  <link rel="icon" href="{% static 'img/ico.ico' %}" type="image/x-icon" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg: #0d0d12; --surface: #16161f; --border: #252530; --text: #e8e8f0; --muted: #8a8aa0; --green: #22c55e; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh;
+           display: flex; align-items: center; justify-content: center; padding: 24px 16px; }
+    .card { width: 100%; max-width: 560px; }
+    h1 { font-size: 1.5rem; margin-bottom: 6px; }
+    p { color: var(--muted); margin-bottom: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+    button.puesto { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; color: var(--text);
+                    padding: 22px 14px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 10px; font: inherit; }
+    button.puesto:hover, button.puesto.actual { border-color: var(--green); }
+    button.puesto i { font-size: 1.8rem; color: var(--green); }
+    button.puesto strong { font-size: 1.05rem; }
+    button.puesto span { color: var(--muted); font-size: 0.85rem; }
+    .vacio { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; color: var(--muted); }
+    .pie { margin-top: 20px; display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 0.9rem; }
+    .pie button { background: none; border: 0; color: var(--muted); cursor: pointer; font: inherit; text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>{% trans "¿Qué puesto es este dispositivo?" %}</h1>
+    <p>{% trans "Se recuerda en este navegador. Lo podés cambiar cuando quieras." %}</p>
+    {% if puestos %}
+    <form method="post" class="grid">
+      {% csrf_token %}
+      {% for p in puestos %}
+      <button type="submit" name="puesto_id" value="{{ p.pk }}" class="puesto {% if actual and actual.pk == p.pk %}actual{% endif %}">
+        {% if p.tipo == 'mostrador' %}<i class="fa-solid fa-scale-balanced"></i>{% elif p.tipo == 'caja' %}<i class="fa-solid fa-cash-register"></i>{% else %}<i class="fa-solid fa-truck-ramp-box"></i>{% endif %}
+        <strong>{{ p.nombre }}</strong>
+        <span>{{ p.get_tipo_display }}</span>
+      </button>
+      {% endfor %}
+    </form>
+    {% else %}
+    <div class="vacio">{% trans "No tenés puestos habilitados. Pedile al gerente que te asigne uno." %}</div>
+    {% endif %}
+    <div class="pie">
+      <span>{{ request.user.get_full_name|default:request.user.username }}</span>
+      {% include "_selector_idioma.html" %}
+      <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">{% trans "Cerrar sesión" %}</button></form>
+    </div>
+  </div>
+{% include "ayuda/_cargar.html" with flotante=True %}
+</body>
+</html>

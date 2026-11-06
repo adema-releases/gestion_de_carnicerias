@@ -1,0 +1,2 @@
+{% load i18n %}{# Botón «Ayuda» para los encabezados del POS. clase = la de los botones vecinos (btn-ghost, btn-link…). #}
+<button type="button" class="{{ clase|default:'btn-ghost' }} ay-boton" onclick="window.AyudaCarniceria && AyudaCarniceria.abrir()" title="{% trans "Guía rápida (F1)" %}"><i class="fa-solid fa-circle-question"></i> <span{% if solo_menu %} class="appnav-menu-only"{% endif %}>{% trans "Ayuda" %}</span></button>

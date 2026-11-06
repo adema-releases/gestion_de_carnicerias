@@ -1,0 +1,16 @@
+{% load i18n %}{% get_current_language as IDIOMA_ACTUAL %}
+<form class="lang-switch" method="post" action="{% url 'set_language' %}" title="Idioma · 语言">
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ request.get_full_path }}" />
+  <i class="fa-solid fa-language" aria-hidden="true"></i>
+  <button type="submit" name="language" value="es" class="{% if IDIOMA_ACTUAL == 'es' %}on{% endif %}" lang="es">ES</button>
+  <button type="submit" name="language" value="zh-hans" class="{% if IDIOMA_ACTUAL == 'zh-hans' %}on{% endif %}" lang="zh-Hans">中文</button>
+</form>
+<style>
+  .lang-switch { display: inline-flex; align-items: center; gap: 2px; border: 1px solid var(--border, #252530); border-radius: 8px;
+                 padding: 2px 3px 2px 8px; color: var(--muted, #8a8aa0); font-size: 0.85rem; margin: 0; }
+  .lang-switch i { margin-right: 4px; }
+  .lang-switch button { background: none; border: 0; border-radius: 6px; padding: 5px 8px; color: inherit; font: inherit; cursor: pointer; line-height: 1; text-decoration: none; width: auto; margin: 0; }
+  .lang-switch button:hover { color: var(--text, #e8e8f0); }
+  .lang-switch button.on { background: var(--green, #22c55e); color: #052e14; font-weight: 700; }
+</style>

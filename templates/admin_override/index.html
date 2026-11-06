@@ -1,0 +1,860 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+{% load static core_extras %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    /* ── Full-width override ─────────────────────────── */
+    #content-main { padding: 0 !important; }
+    #content      { padding: 0 !important; }
+    .colMS #content, .colSM #content { padding: 0 !important; }
+
+    /* ── Dashboard shell ─────────────────────────────── */
+    .sfi-dashboard { padding: 1.25rem 1.75rem; width: 100%; box-sizing: border-box; }
+
+    /* ── Header ──────────────────────────────────────── */
+    .sfi-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #1e2a3b;
+    }
+    .sfi-brand { display: flex; align-items: center; gap: 0.75rem; }
+    .sfi-brand img { height: 44px; width: auto; }
+    .sfi-title-block { text-align: right; }
+    .sfi-title-block h1 { margin: 0; font-size: 1.55rem; font-weight: 700; }
+    .sfi-range { color: #93a4b8; margin: 0.2rem 0 0 0; font-size: 0.9rem; }
+
+    /* ── Filter bar ──────────────────────────────────── */
+    .sfi-filter-bar {
+        display: flex;
+        align-items: flex-end;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        background: rgba(18,26,36,0.6);
+        border: 1px solid #1e2a3b;
+        border-radius: 12px;
+        padding: 0.85rem 1rem;
+        margin-bottom: 1.25rem;
+    }
+    .sfi-filter-group { display: flex; flex-direction: column; gap: 0.3rem; }
+    .sfi-filter-group label {
+        font-size: 0.78rem;
+        color: #93a4b8;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin: 0;
+    }
+    .sfi-filter-group input,
+    .sfi-filter-group select {
+        min-width: 145px;
+        height: 36px;
+        background: #0d1b2a;
+        border: 1px solid #2a3d56;
+        color: #e6edf3;
+        border-radius: 8px;
+        padding: 0 0.6rem;
+        font-size: 0.88rem;
+    }
+    .sfi-filter-group select option { background: #0d1b2a; }
+    .sfi-filter-actions {
+        display: flex;
+        align-items: flex-end;
+        gap: 0.5rem;
+        margin-left: auto;
+        flex-wrap: wrap;
+    }
+    .sfi-btn { border: none; border-radius: 8px; padding: 0 1rem; height: 36px; font-size: 0.88rem; cursor: pointer; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; white-space: nowrap; }
+    .sfi-btn-filter { background: #3ba7ff; color: #fff; }
+    .sfi-btn-filter:hover { background: #2290e8; }
+    .sfi-btn-excel { background: #1d6f42; color: #fff; }
+    .sfi-btn-excel:hover { background: #155233; color: #fff; }
+    .sfi-btn-pdf   { background: #c0392b; color: #fff; }
+    .sfi-btn-pdf:hover { background: #a52f21; color: #fff; }
+
+    /* ── KPI grid (12 cards, divisible por 2/3/4/6) ─── */
+    .sfi-kpis {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.85rem;
+        margin-bottom: 1rem;
+    }
+    @media(min-width: 900px)  { .sfi-kpis { grid-template-columns: repeat(3, 1fr); } }
+    @media(min-width: 1200px) { .sfi-kpis { grid-template-columns: repeat(4, 1fr); } }
+    @media(min-width: 1600px) { .sfi-kpis { grid-template-columns: repeat(6, 1fr); } }
+
+    /* ── Cards ───────────────────────────────────────── */
+    .sfi-card {
+        background: rgba(18,26,36,0.9);
+        border: 1px solid #1e2a3b;
+        border-radius: 12px;
+        padding: 0.9rem 1rem;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.22);
+    }
+    .sfi-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.15rem;
+    }
+    .sfi-card-title { font-size: 0.78rem; color: #93a4b8; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1.3; }
+    .sfi-card-value { font-size: 1.5rem; font-weight: 700; margin: 0.3rem 0; }
+    .sfi-card-delta { font-size: 0.82rem; color: #93a4b8; }
+    .sfi-card-delta.pos { color: #2ecc71; }
+    .sfi-card-delta.neg { color: #ff5d6c; }
+    .sfi-card-value.neg { color: #ff5d6c; }
+
+    .sfi-info-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 0.85rem;
+        color: #4a6080;
+        padding: 0 0 0 0.3rem;
+        line-height: 1;
+        flex-shrink: 0;
+        transition: color 0.15s;
+        margin-top: 0.05rem;
+    }
+    .sfi-info-btn:hover { color: #3ba7ff; }
+
+    /* ── Charts ──────────────────────────────────────── */
+    .sfi-charts {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    @media(min-width: 1100px) { .sfi-charts { grid-template-columns: repeat(2, 1fr); } }
+    .sfi-chart-card {
+        background: rgba(18,26,36,0.9);
+        border: 1px solid #1e2a3b;
+        border-radius: 14px;
+        padding: 1rem 1.1rem;
+        min-height: 340px;
+    }
+    .sfi-chart-card h3 { margin: 0 0 0.65rem; font-size: 0.95rem; color: #e6edf3; }
+    .sfi-chart { position: relative; height: 270px; }
+
+    /* ── Modal ───────────────────────────────────────── */
+    .sfi-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.65);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+    }
+    .sfi-modal.open { display: flex; }
+    .sfi-modal-box {
+        background: #0d1b2a;
+        border: 1px solid #2a3d56;
+        border-radius: 14px;
+        padding: 1.5rem 1.75rem;
+        max-width: 520px;
+        width: 90%;
+        position: relative;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+    }
+    .sfi-modal-box h4 {
+        margin: 0 0 0.9rem;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #e6edf3;
+        padding-right: 1.5rem;
+    }
+    .sfi-modal-box p {
+        color: #93a4b8;
+        font-size: 0.88rem;
+        line-height: 1.7;
+        margin: 0 0 0.75rem;
+    }
+    .sfi-modal-box p:last-child { margin-bottom: 0; }
+    .sfi-modal-box strong { color: #e6edf3; }
+    .sfi-modal-box .sfi-modal-formula {
+        background: rgba(59,167,255,0.08);
+        border: 1px solid #1e2a3b;
+        border-radius: 8px;
+        padding: 0.6rem 0.85rem;
+        font-size: 0.83rem;
+        color: #7aa8cc;
+        margin: 0.5rem 0 0.75rem;
+        line-height: 1.6;
+    }
+    .sfi-modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        color: #93a4b8;
+        font-size: 1.4rem;
+        cursor: pointer;
+        line-height: 1;
+        padding: 0;
+    }
+    .sfi-modal-close:hover { color: #e6edf3; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="sfi-dashboard">
+
+    <!-- ── Header ──────────────────────────────────────────── -->
+    <!-- <div class="sfi-header">
+        <div class="sfi-brand">
+            <img src="{% static 'img/logo.png' %}" alt="Gestion de Carnicerias">
+        </div>
+        <div class="sfi-title-block">
+            <h1>{{ title }}</h1>
+            <p class="sfi-range">Periodo: {{ range_label }}{% if cajero_selected %} &nbsp;·&nbsp; Cajero: {{ cajero_selected }}{% endif %}</p>
+        </div>
+    </div> -->
+
+    <!-- ── Barra de filtros ─────────────────────────────────── -->
+    <form action="" method="get" class="sfi-filter-bar">
+        <div class="sfi-filter-group">
+            <label for="start">{% trans "Fecha desde" %}</label>
+            <input id="start" type="date" name="start" value="{{ start_date }}">
+        </div>
+        <div class="sfi-filter-group">
+            <label for="end">{% trans "Fecha hasta" %}</label>
+            <input id="end" type="date" name="end" value="{{ end_date }}">
+        </div>
+        <div class="sfi-filter-group">
+            <label for="cajero">{% trans "Cajero" %}</label>
+            <select id="cajero" name="cajero">
+                <option value="">{% trans "Todos" %}</option>
+                {% for c in cajeros_list %}
+                <option value="{{ c }}"{% if c == cajero_selected %} selected{% endif %}>{{ c }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="sfi-filter-actions">
+            <button type="submit" class="sfi-btn sfi-btn-filter">{% trans "Filtrar" %}</button>
+            <a href="{% url 'dashboard_export_excel' %}?start={{ start_date }}&end={{ end_date }}&cajero={{ cajero_selected }}"
+               class="sfi-btn sfi-btn-excel">{% trans "↓ Excel" %}</a>
+            <a href="{% url 'dashboard_export_pdf' %}?start={{ start_date }}&end={{ end_date }}&cajero={{ cajero_selected }}"
+               class="sfi-btn sfi-btn-pdf">{% trans "↓ PDF" %}</a>
+            <a href="{% url 'admin:tesoreria_reporte_cuenta' %}"
+               class="sfi-btn sfi-btn-pdf">{% trans "📊 Reporte de cuentas" %}</a>
+        </div>
+    </form>
+
+    <!-- ── 12 KPIs ────────────────────────────────────────── -->
+    <div class="sfi-kpis">
+
+        <!-- 1. Ventas brutas -->
+        <div class="sfi-card">
+            <div class="sfi-card-header">
+                <div class="sfi-card-title">{% trans "Ventas brutas" %}</div>
+                <button class="sfi-info-btn" onclick="sfiOpenModal('m-ventas')" title="{% trans "¿Qué es esto?" %}">❓</button>
+            </div>
+            <div class="sfi-card-value">${{ ventas_total|pesos }}</div>
+            <div class="sfi-card-delta {% if ventas_delta != None and ventas_delta < 0 %}neg{% elif ventas_delta != None %}pos{% endif %}">
+                {% if ventas_delta != None %}{% blocktrans with d=ventas_delta|floatformat:1 %}{{ d }}% vs periodo anterior{% endblocktrans %}{% else %}{% trans "Sin dato anterior" %}{% endif %}
+            </div>
+        </div>
+
+        <!-- 2. Gastos -->
+        <div class="sfi-card">
+            <div class="sfi-card-header">
+                <div class="sfi-card-title">{% trans "Gastos" %}</div>
+                <button class="sfi-info-btn" onclick="sfiOpenModal('m-gastos')" title="{% trans "¿Qué es esto?" %}">❓</button>
+            </div>
+            <div class="sfi-card-value">${{ gastos_total|pesos }}</div>
+            <div class="sfi-card-delta {% if gastos_delta != None and gastos_delta < 0 %}pos{% elif gastos_delta != None %}neg{% endif %}">
+                {% if gastos_delta != None %}{% blocktrans with d=gastos_delta|floatformat:1 %}{{ d }}% vs periodo anterior{% endblocktrans %}{% else %}{% trans "Sin dato anterior" %}{% endif %}
+            </div>
+        </div>
+
+        <!-- 3. Balance neto -->
+        <div class="sfi-card">
+            <div class="sfi-card-header">
+                <div class="sfi-card-title">{% trans "Balance neto" %}</div>
+                <button class="sfi-info-btn" onclick="sfiOpenModal('m-balance')" title="{% trans "¿Qué es esto?" %}">❓</button>
+            </div>
+            <div class="sfi-card-value {% if balance_total < 0 %}neg{% endif %}">
+                {% if balance_total < 0 %}-{% endif %}${{ balance_total|absval|pesos }}
+            </div>
+            <div class="sfi-card-delta {% if balance_delta != None and balance_delta < 0 %}neg{% elif balance_delta != None %}pos{% endif %}">
+                {% if balance_delta != None %}{% blocktrans with d=balance_delta|floatformat:1 %}{{ d }}% vs periodo anterior{% endblocktrans %}{% else %}{% trans "Sin dato anterior" %}{% endif %}
+            </div>
+        </div>
+
+        <!-- 4. Cobros de deuda -->
+        <div class="sfi-card">
+            <div class="sfi-card-header">
+                <div class="sfi-card-title">{% trans "Cobros de deuda" %}</div>
+                <button class="sfi-info-btn" onclick="sfiOpenModal('m-cobros')" title="{% trans "¿Qué es esto?" %}">❓</button>
+            </div>
+            <div class="sfi-card-value">${{ cobros_total|pesos }}</div>
+            <div class="sfi-card-delta {% if cobros_delta != None and cobros_delta < 0 %}neg{% elif cobros_delta != None %}pos{% endif %}">
+                {% if cobros_delta != None %}{% blocktrans with d=cobros_delta|floatformat:1 %}{{ d }}% vs periodo anterior{% endblocktrans %}{% else %}{% trans "Sin dato anterior" %}{% endif %}
+            </div>
+        </div>
+
+        <!-- 5. Pagos a proveedores -->
+        <div class="sfi-card">
+            <div class="sfi-card-header">
+                <div class="sfi-card-title">{% trans "Pagos a proveedores" %}</div>
+                <button class="sfi-info-btn" onclick="sfiOpenModal('m-pagos-prov')" title="{% trans "¿Qué es esto?" %}">❓</button>
+            </div>
+            <div class="sfi-card-value">${{ pagos_prov_total|pesos }}</div>
+            <div class="sfi-card-delta {% if pagos_prov_delta != None and pagos_prov_delta < 0 %}pos{% elif pagos_prov_delta != None %}neg{% endif %}">
+                {% if pagos_prov_delta != None %}{% blocktrans with d=pagos_prov_delta|floatformat:1 %}{{ d }}% vs periodo anterior{% endblocktrans %}{% else %}{% trans "Sin dato anterior" %}{% endif %}
+            </div>
+        </div>
+
+        <!-- 6. Retiros de caja -->
+        <div class="sfi-card">
+            <div class="sfi-card-header">
+                <div class="sfi-card-title">{% trans "Retiros de caja" %}</div>
+                <button class="sfi-info-btn" onclick="sfiOpenModal('m-retiros')" title="{% trans "¿Qué es esto?" %}">❓</button>
+            </div>
+            <div class="sfi-card-value">${{ retiros_total|pesos }}</div>
+            <div class="sfi-card-delta {% if retiros_delta != None and retiros_delta < 0 %}pos{% elif retiros_delta != None %}neg{% endif %}">
+                {% if retiros_delta != None %}{% blocktrans with d=retiros_delta|floatformat:1 %}{{ d }}% vs periodo anterior{% endblocktrans %}{% else %}{% trans "Sin dato anterior" %}{% endif %}
+            </div>
+        </div>
+
+        <!-- 7. Fiado emitido -->
+        <div class="sfi-card">
+            <div class="sfi-card-header">
+                <div class="sfi-card-title">{% trans "Fiado emitido" %}</div>
+                <button class="sfi-info-btn" onclick="sfiOpenModal('m-fiado')" title="{% trans "¿Qué es esto?" %}">❓</button>
+            </div>
+            <div class="sfi-card-value">${{ deuda_cliente_emitida|pesos }}</div>
+            <div class="sfi-card-delta {% if deuda_cliente_delta != None and deuda_cliente_delta < 0 %}pos{% elif deuda_cliente_delta != None %}neg{% endif %}">
+                {% if deuda_cliente_delta != None %}{% blocktrans with d=deuda_cliente_delta|floatformat:1 %}{{ d }}% vs periodo anterior{% endblocktrans %}{% else %}{% trans "Sin dato anterior" %}{% endif %}
+            </div>
+        </div>
+
+        <!-- 8. Deuda proveedor emitida -->
+        <div class="sfi-card">
+            <div class="sfi-card-header">
+                <div class="sfi-card-title">{% trans "Deuda proveedor emitida" %}</div>
+                <button class="sfi-info-btn" onclick="sfiOpenModal('m-deuda-prov')" title="{% trans "¿Qué es esto?" %}">❓</button>
+            </div>
+            <div class="sfi-card-value">${{ deuda_prov_emitida|pesos }}</div>
+            <div class="sfi-card-delta {% if deuda_prov_delta != None and deuda_prov_delta < 0 %}pos{% elif deuda_prov_delta != None %}neg{% endif %}">
+                {% if deuda_prov_delta != None %}{% blocktrans with d=deuda_prov_delta|floatformat:1 %}{{ d }}% vs periodo anterior{% endblocktrans %}{% else %}{% trans "Sin dato anterior" %}{% endif %}
+            </div>
+        </div>
+
+        <!-- 9. Saldo clientes inicio -->
+        <div class="sfi-card">
+            <div class="sfi-card-header">
+                <div class="sfi-card-title">{% trans "Saldo clientes inicio" %}</div>
+                <button class="sfi-info-btn" onclick="sfiOpenModal('m-sc-inicio')" title="{% trans "¿Qué es esto?" %}">❓</button>
+            </div>
+            <div class="sfi-card-value">${{ saldo_clientes_inicio|pesos }}</div>
+            <div class="sfi-card-delta">{% blocktrans %}Al {{ start_date_display }}{% endblocktrans %}</div>
+        </div>
+
+        <!-- 10. Saldo clientes fin -->
+        <div class="sfi-card">
+            <div class="sfi-card-header">
+                <div class="sfi-card-title">{% trans "Saldo clientes fin" %}</div>
+                <button class="sfi-info-btn" onclick="sfiOpenModal('m-sc-fin')" title="{% trans "¿Qué es esto?" %}">❓</button>
+            </div>
+            <div class="sfi-card-value">${{ saldo_clientes_fin|pesos }}</div>
+            <div class="sfi-card-delta {% if var_saldo_clientes > 0 %}neg{% elif var_saldo_clientes < 0 %}pos{% endif %}">
+                {% if var_saldo_clientes > 0 %}+{% elif var_saldo_clientes < 0 %}-{% endif %}{% blocktrans with v=var_saldo_clientes|absval|pesos %}${{ v }} vs inicio{% endblocktrans %}
+            </div>
+        </div>
+
+        <!-- 11. Saldo proveedor inicio -->
+        <div class="sfi-card">
+            <div class="sfi-card-header">
+                <div class="sfi-card-title">{% trans "Saldo proveedor inicio" %}</div>
+                <button class="sfi-info-btn" onclick="sfiOpenModal('m-sp-inicio')" title="{% trans "¿Qué es esto?" %}">❓</button>
+            </div>
+            <div class="sfi-card-value">${{ saldo_prov_inicio|pesos }}</div>
+            <div class="sfi-card-delta">{% blocktrans %}Al {{ start_date_display }}{% endblocktrans %}</div>
+        </div>
+
+        <!-- 12. Saldo proveedor fin -->
+        <div class="sfi-card">
+            <div class="sfi-card-header">
+                <div class="sfi-card-title">{% trans "Saldo proveedor fin" %}</div>
+                <button class="sfi-info-btn" onclick="sfiOpenModal('m-sp-fin')" title="{% trans "¿Qué es esto?" %}">❓</button>
+            </div>
+            <div class="sfi-card-value">${{ saldo_prov_fin|pesos }}</div>
+            <div class="sfi-card-delta {% if var_saldo_prov > 0 %}neg{% elif var_saldo_prov < 0 %}pos{% endif %}">
+                {% if var_saldo_prov > 0 %}+{% elif var_saldo_prov < 0 %}-{% endif %}{% blocktrans with v=var_saldo_prov|absval|pesos %}${{ v }} vs inicio{% endblocktrans %}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ── Gráficos ─────────────────────────────────────────── -->
+    <div class="sfi-charts">
+        <div class="sfi-chart-card">
+            <h3>{% trans "Actividad diaria" %}</h3>
+            <div class="sfi-chart"><canvas id="activityChart"></canvas></div>
+        </div>
+        <div class="sfi-chart-card">
+            <h3>{% trans "Movimientos por cajero" %}</h3>
+            <div class="sfi-chart"><canvas id="cashierChart"></canvas></div>
+        </div>
+        <div class="sfi-chart-card">
+            <h3>{% trans "Ventas por medio de pago" %}</h3>
+            <div class="sfi-chart"><canvas id="paymentChart"></canvas></div>
+        </div>
+        <div class="sfi-chart-card">
+            <h3>{% trans "Ventas por categoría" %}</h3>
+            <div class="sfi-chart"><canvas id="categoryChart"></canvas></div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════
+         MODALES EXPLICATIVOS
+    ═══════════════════════════════════════════════════════ -->
+
+    <div class="sfi-modal" id="m-ventas" onclick="sfiCloseModal(this)">
+        <div class="sfi-modal-box" onclick="event.stopPropagation()">
+            <button class="sfi-modal-close" onclick="sfiCloseModal(document.getElementById('m-ventas'))">×</button>
+            <h4>{% trans "Ventas brutas" %}</h4>
+            <p>{% blocktrans %}Representa el total facturado por ventas durante el período <strong>{{ start_date_display }}</strong> al <strong>{{ end_date_display }}</strong>. Incluye todas las formas de pago: efectivo, tarjeta, transferencia y cuenta corriente (fiado).{% endblocktrans %}</p>
+            <p>{% blocktrans with total=ventas_total|pesos %}El total del período asciende a <strong>${{ total }}</strong>.{% endblocktrans %}</p>
+            {% if ventas_delta != None %}
+            <p>
+                {% if ventas_delta >= 0 %}{% blocktrans with prev=prev_ventas_total|pesos delta=ventas_delta|floatformat:1 %}En el período anterior (<strong>{{ prev_start }}</strong> al <strong>{{ prev_end }}</strong>) las ventas fueron <strong>${{ prev }}</strong>, lo que implica un <strong>aumento</strong> del <strong>{{ delta }}%</strong> respecto a ese período.{% endblocktrans %}{% else %}{% blocktrans with prev=prev_ventas_total|pesos delta=ventas_delta|floatformat:1 %}En el período anterior (<strong>{{ prev_start }}</strong> al <strong>{{ prev_end }}</strong>) las ventas fueron <strong>${{ prev }}</strong>, lo que implica una <strong>caída</strong> del <strong>{{ delta }}%</strong> respecto a ese período.{% endblocktrans %}{% endif %}
+            </p>
+            {% else %}
+            <p>{% trans "No hay datos del período anterior para comparar." %}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="sfi-modal" id="m-gastos" onclick="sfiCloseModal(this)">
+        <div class="sfi-modal-box" onclick="event.stopPropagation()">
+            <button class="sfi-modal-close" onclick="sfiCloseModal(document.getElementById('m-gastos'))">×</button>
+            <h4>{% trans "Gastos" %}</h4>
+            <p>{% blocktrans %}Son todos los gastos operativos registrados entre el <strong>{{ start_date_display }}</strong> y el <strong>{{ end_date_display }}</strong>: insumos, servicios, sueldos u otros egresos del negocio.{% endblocktrans %}</p>
+            <p>{% blocktrans with total=gastos_total|pesos %}El total del período fue <strong>${{ total }}</strong>.{% endblocktrans %}</p>
+            {% if gastos_delta != None %}
+            <p>
+                {% if gastos_delta >= 0 %}{% blocktrans with prev=prev_gastos_total|pesos delta=gastos_delta|floatformat:1 %}En el período anterior (<strong>{{ prev_start }}</strong> al <strong>{{ prev_end }}</strong>) los gastos fueron <strong>${{ prev }}</strong>, lo que representa un <strong>aumento</strong> del <strong>{{ delta }}%</strong>.{% endblocktrans %}{% else %}{% blocktrans with prev=prev_gastos_total|pesos delta=gastos_delta|floatformat:1 %}En el período anterior (<strong>{{ prev_start }}</strong> al <strong>{{ prev_end }}</strong>) los gastos fueron <strong>${{ prev }}</strong>, lo que representa una <strong>reducción</strong> del <strong>{{ delta }}%</strong>. Una reducción de gastos es positiva para el negocio.{% endblocktrans %}{% endif %}
+            </p>
+            {% else %}
+            <p>{% trans "No hay datos del período anterior para comparar." %}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="sfi-modal" id="m-balance" onclick="sfiCloseModal(this)">
+        <div class="sfi-modal-box" onclick="event.stopPropagation()">
+            <button class="sfi-modal-close" onclick="sfiCloseModal(document.getElementById('m-balance'))">×</button>
+            <h4>{% trans "Balance neto" %}</h4>
+            <p>{% blocktrans %}Es el resultado de restar a las ventas todos los egresos del período (<strong>{{ start_date_display }}</strong> al <strong>{{ end_date_display }}</strong>). Refleja cuánto “quedó en el negocio” luego de cubrir gastos, proveedores y retiros.{% endblocktrans %}</p>
+            <div class="sfi-modal-formula">
+                {% trans "Ventas" %} ${{ ventas_total|pesos }}<br>
+                − {% trans "Gastos" %} ${{ gastos_total|pesos }}<br>
+                − {% trans "Pagos a prov." %} ${{ pagos_prov_total|pesos }}<br>
+                − {% trans "Retiros" %} ${{ retiros_total|pesos }}<br>
+                = <strong>{% if balance_total < 0 %}-{% endif %}${{ balance_total|absval|pesos }}</strong>
+            </div>
+            {% if balance_delta != None %}
+            <p>
+                {% if prev_balance_total < 0 %}{% firstof "-" as prev_signo %}{% else %}{% firstof "" as prev_signo %}{% endif %}{% if balance_delta >= 0 %}{% blocktrans with prev=prev_balance_total|absval|pesos delta=balance_delta|floatformat:1 signo=prev_signo %}En el período anterior (<strong>{{ prev_start }}</strong> al <strong>{{ prev_end }}</strong>) el balance fue <strong>{{ signo }}${{ prev }}</strong>, lo que representa una <strong>mejora</strong> del <strong>{{ delta }}%</strong>.{% endblocktrans %}{% else %}{% blocktrans with prev=prev_balance_total|absval|pesos delta=balance_delta|floatformat:1 signo=prev_signo %}En el período anterior (<strong>{{ prev_start }}</strong> al <strong>{{ prev_end }}</strong>) el balance fue <strong>{{ signo }}${{ prev }}</strong>, lo que representa un <strong>deterioro</strong> del <strong>{{ delta }}%</strong>.{% endblocktrans %}{% endif %}
+            </p>
+            {% else %}
+            <p>{% trans "No hay datos del período anterior para comparar." %}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="sfi-modal" id="m-cobros" onclick="sfiCloseModal(this)">
+        <div class="sfi-modal-box" onclick="event.stopPropagation()">
+            <button class="sfi-modal-close" onclick="sfiCloseModal(document.getElementById('m-cobros'))">×</button>
+            <h4>{% trans "Cobros de deuda" %}</h4>
+            <p>{% blocktrans %}Son los pagos recibidos de clientes para cancelar deudas de cuenta corriente (fiado), tanto las generadas en este período como las anteriores, registrados entre el <strong>{{ start_date_display }}</strong> y el <strong>{{ end_date_display }}</strong>.{% endblocktrans %}</p>
+            <p>{% blocktrans with total=cobros_total|pesos %}El total cobrado fue <strong>${{ total }}</strong>.{% endblocktrans %}</p>
+            {% if cobros_delta != None %}
+            <p>
+                {% if cobros_delta >= 0 %}{% blocktrans with prev=prev_cobros_total|pesos delta=cobros_delta|floatformat:1 %}En el período anterior (<strong>{{ prev_start }}</strong> al <strong>{{ prev_end }}</strong>) los cobros fueron <strong>${{ prev }}</strong>, lo que implica un <strong>aumento</strong> del <strong>{{ delta }}%</strong> en la recuperación de deuda.{% endblocktrans %}{% else %}{% blocktrans with prev=prev_cobros_total|pesos delta=cobros_delta|floatformat:1 %}En el período anterior (<strong>{{ prev_start }}</strong> al <strong>{{ prev_end }}</strong>) los cobros fueron <strong>${{ prev }}</strong>, lo que implica una <strong>caída</strong> del <strong>{{ delta }}%</strong> en la recuperación de deuda.{% endblocktrans %}{% endif %}
+            </p>
+            {% else %}
+            <p>{% trans "No hay datos del período anterior para comparar." %}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="sfi-modal" id="m-pagos-prov" onclick="sfiCloseModal(this)">
+        <div class="sfi-modal-box" onclick="event.stopPropagation()">
+            <button class="sfi-modal-close" onclick="sfiCloseModal(document.getElementById('m-pagos-prov'))">×</button>
+            <h4>{% trans "Pagos a proveedores" %}</h4>
+            <p>{% blocktrans %}Son los pagos realizados a proveedores durante el período <strong>{{ start_date_display }}</strong> al <strong>{{ end_date_display }}</strong>. Incluye tanto cancelaciones de deuda como adelantos de pago.{% endblocktrans %}</p>
+            <p>{% blocktrans with total=pagos_prov_total|pesos %}El total pagado fue <strong>${{ total }}</strong>.{% endblocktrans %}</p>
+            {% if pagos_prov_delta != None %}
+            <p>
+                {% if pagos_prov_delta >= 0 %}{% blocktrans with prev=prev_pagos_prov_total|pesos delta=pagos_prov_delta|floatformat:1 %}En el período anterior (<strong>{{ prev_start }}</strong> al <strong>{{ prev_end }}</strong>) los pagos a proveedores fueron <strong>${{ prev }}</strong>, lo que implica un <strong>aumento</strong> del <strong>{{ delta }}%</strong>.{% endblocktrans %}{% else %}{% blocktrans with prev=prev_pagos_prov_total|pesos delta=pagos_prov_delta|floatformat:1 %}En el período anterior (<strong>{{ prev_start }}</strong> al <strong>{{ prev_end }}</strong>) los pagos a proveedores fueron <strong>${{ prev }}</strong>, lo que implica una <strong>reducción</strong> del <strong>{{ delta }}%</strong>.{% endblocktrans %}{% endif %}
+            </p>
+            {% else %}
+            <p>{% trans "No hay datos del período anterior para comparar." %}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="sfi-modal" id="m-retiros" onclick="sfiCloseModal(this)">
+        <div class="sfi-modal-box" onclick="event.stopPropagation()">
+            <button class="sfi-modal-close" onclick="sfiCloseModal(document.getElementById('m-retiros'))">×</button>
+            <h4>{% trans "Retiros de caja" %}</h4>
+            <p>{% blocktrans %}Son los retiros de efectivo realizados entre el <strong>{{ start_date_display }}</strong> y el <strong>{{ end_date_display }}</strong>. Representan dinero que salió de la operación sin ser un gasto registrado ni un pago a proveedor — por ejemplo, extracciones del dueño o transferencias de fondos.{% endblocktrans %}</p>
+            <p>{% blocktrans with total=retiros_total|pesos %}El total retirado fue <strong>${{ total }}</strong>.{% endblocktrans %}</p>
+            {% if retiros_delta != None %}
+            <p>
+                {% if retiros_delta >= 0 %}{% blocktrans with prev=prev_retiros_total|pesos delta=retiros_delta|floatformat:1 %}En el período anterior (<strong>{{ prev_start }}</strong> al <strong>{{ prev_end }}</strong>) los retiros fueron <strong>${{ prev }}</strong>, lo que representa un <strong>aumento</strong> del <strong>{{ delta }}%</strong>.{% endblocktrans %}{% else %}{% blocktrans with prev=prev_retiros_total|pesos delta=retiros_delta|floatformat:1 %}En el período anterior (<strong>{{ prev_start }}</strong> al <strong>{{ prev_end }}</strong>) los retiros fueron <strong>${{ prev }}</strong>, lo que representa una <strong>reducción</strong> del <strong>{{ delta }}%</strong>.{% endblocktrans %}{% endif %}
+            </p>
+            {% else %}
+            <p>{% trans "No hay datos del período anterior para comparar." %}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="sfi-modal" id="m-fiado" onclick="sfiCloseModal(this)">
+        <div class="sfi-modal-box" onclick="event.stopPropagation()">
+            <button class="sfi-modal-close" onclick="sfiCloseModal(document.getElementById('m-fiado'))">×</button>
+            <h4>{% trans "Fiado emitido (deuda cliente)" %}</h4>
+            <p>{% blocktrans %}Es el monto total de ventas realizadas a cuenta corriente (fiado) en el período <strong>{{ start_date_display }}</strong> al <strong>{{ end_date_display }}</strong>. Estas ventas no generaron ingreso de efectivo inmediato — la plata queda registrada como deuda del cliente y se cobra en el futuro.{% endblocktrans %}</p>
+            <p>{% blocktrans with total=deuda_cliente_emitida|pesos %}El total fiado en el período fue <strong>${{ total }}</strong>.{% endblocktrans %}</p>
+            {% if deuda_cliente_delta != None %}
+            <p>
+                {% if deuda_cliente_delta >= 0 %}{% blocktrans with prev=prev_deuda_cliente_emitida|pesos delta=deuda_cliente_delta|floatformat:1 %}En el período anterior (<strong>{{ prev_start }}</strong> al <strong>{{ prev_end }}</strong>) el fiado emitido fue <strong>${{ prev }}</strong>, lo que representa un <strong>aumento</strong> del <strong>{{ delta }}%</strong>. Un aumento del fiado implica mayor deuda de clientes por cobrar.{% endblocktrans %}{% else %}{% blocktrans with prev=prev_deuda_cliente_emitida|pesos delta=deuda_cliente_delta|floatformat:1 %}En el período anterior (<strong>{{ prev_start }}</strong> al <strong>{{ prev_end }}</strong>) el fiado emitido fue <strong>${{ prev }}</strong>, lo que representa una <strong>caída</strong> del <strong>{{ delta }}%</strong>.{% endblocktrans %}{% endif %}
+            </p>
+            {% else %}
+            <p>{% trans "No hay datos del período anterior para comparar." %}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="sfi-modal" id="m-deuda-prov" onclick="sfiCloseModal(this)">
+        <div class="sfi-modal-box" onclick="event.stopPropagation()">
+            <button class="sfi-modal-close" onclick="sfiCloseModal(document.getElementById('m-deuda-prov'))">×</button>
+            <h4>{% trans "Deuda proveedor emitida" %}</h4>
+            <p>{% blocktrans %}Son las compras realizadas a proveedores entre el <strong>{{ start_date_display }}</strong> y el <strong>{{ end_date_display }}</strong> que quedaron registradas como deuda (no se abonaron al contado). Representa el crédito que los proveedores le otorgaron al negocio.{% endblocktrans %}</p>
+            <p>{% blocktrans with total=deuda_prov_emitida|pesos %}El total de deuda emitida fue <strong>${{ total }}</strong>.{% endblocktrans %}</p>
+            {% if deuda_prov_delta != None %}
+            <p>
+                {% if deuda_prov_delta >= 0 %}{% blocktrans with prev=prev_deuda_prov_emitida|pesos delta=deuda_prov_delta|floatformat:1 %}En el período anterior (<strong>{{ prev_start }}</strong> al <strong>{{ prev_end }}</strong>) la deuda con proveedores emitida fue <strong>${{ prev }}</strong>, lo que implica un <strong>aumento</strong> del <strong>{{ delta }}%</strong>.{% endblocktrans %}{% else %}{% blocktrans with prev=prev_deuda_prov_emitida|pesos delta=deuda_prov_delta|floatformat:1 %}En el período anterior (<strong>{{ prev_start }}</strong> al <strong>{{ prev_end }}</strong>) la deuda con proveedores emitida fue <strong>${{ prev }}</strong>, lo que implica una <strong>reducción</strong> del <strong>{{ delta }}%</strong>.{% endblocktrans %}{% endif %}
+            </p>
+            {% else %}
+            <p>{% trans "No hay datos del período anterior para comparar." %}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="sfi-modal" id="m-sc-inicio" onclick="sfiCloseModal(this)">
+        <div class="sfi-modal-box" onclick="event.stopPropagation()">
+            <button class="sfi-modal-close" onclick="sfiCloseModal(document.getElementById('m-sc-inicio'))">×</button>
+            <h4>{% trans "Saldo clientes — inicio de período" %}</h4>
+            <p>{% blocktrans %}Es el monto total que debían los clientes (en cuenta corriente) al inicio del período, es decir al <strong>{{ start_date_display }}</strong>. Es la deuda acumulada que “heredó” este período de momentos anteriores.{% endblocktrans %}</p>
+            <p>{% blocktrans with total=saldo_clientes_inicio|pesos %}Saldo inicial: <strong>${{ total }}</strong>.{% endblocktrans %}</p>
+            <p>
+                {% if var_saldo_clientes > 0 %}{% blocktrans with fin=saldo_clientes_fin|pesos var=var_saldo_clientes|absval|pesos %}Comparándolo con el saldo al cierre (<strong>${{ fin }}</strong>), la cartera de deuda <strong>creció</strong> ${{ var }} durante el período (se fiaron más de lo que se cobró).{% endblocktrans %}
+                {% elif var_saldo_clientes < 0 %}{% blocktrans with fin=saldo_clientes_fin|pesos var=var_saldo_clientes|absval|pesos %}Comparándolo con el saldo al cierre (<strong>${{ fin }}</strong>), la cartera de deuda <strong>se redujo</strong> ${{ var }} durante el período (se cobró más de lo que se fiaron).{% endblocktrans %}
+                {% else %}{% blocktrans with fin=saldo_clientes_fin|pesos %}Comparándolo con el saldo al cierre (<strong>${{ fin }}</strong>), la cartera de deuda no varió durante el período.{% endblocktrans %}{% endif %}
+            </p>
+        </div>
+    </div>
+
+    <div class="sfi-modal" id="m-sc-fin" onclick="sfiCloseModal(this)">
+        <div class="sfi-modal-box" onclick="event.stopPropagation()">
+            <button class="sfi-modal-close" onclick="sfiCloseModal(document.getElementById('m-sc-fin'))">×</button>
+            <h4>{% trans "Saldo clientes — cierre de período" %}</h4>
+            <p>{% blocktrans %}Es el monto total que deben los clientes al cierre del período, al <strong>{{ end_date_display }}</strong>. Representa toda la deuda pendiente acumulada hasta esa fecha.{% endblocktrans %}</p>
+            <p>{% blocktrans with total=saldo_clientes_fin|pesos %}Saldo al cierre: <strong>${{ total }}</strong>.{% endblocktrans %}</p>
+            {% if var_saldo_clientes > 0 %}
+            <p>{% blocktrans with var=var_saldo_clientes|absval|pesos ini=saldo_clientes_inicio|pesos %}El saldo <strong>aumentó ${{ var }}</strong> respecto al inicio del período (${{ ini }}). Esto significa que durante el período se generó más deuda nueva de la que se cobró — la cartera está creciendo.{% endblocktrans %}</p>
+            {% elif var_saldo_clientes < 0 %}
+            <p>{% blocktrans with var=var_saldo_clientes|absval|pesos ini=saldo_clientes_inicio|pesos %}El saldo <strong>bajó ${{ var }}</strong> respecto al inicio del período (${{ ini }}). Se cobró más de lo que se fiaron — la cartera se está saneando.{% endblocktrans %}</p>
+            {% else %}
+            <p>{% trans "El saldo no varió respecto al inicio del período." %}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="sfi-modal" id="m-sp-inicio" onclick="sfiCloseModal(this)">
+        <div class="sfi-modal-box" onclick="event.stopPropagation()">
+            <button class="sfi-modal-close" onclick="sfiCloseModal(document.getElementById('m-sp-inicio'))">×</button>
+            <h4>{% trans "Saldo proveedores — inicio de período" %}</h4>
+            <p>{% blocktrans %}Es el monto total que la empresa debía a sus proveedores al inicio del período (<strong>{{ start_date_display }}</strong>). Refleja las compras a crédito que estaban pendientes de pago al arrancar el período.{% endblocktrans %}</p>
+            <p>{% blocktrans with total=saldo_prov_inicio|pesos %}Saldo inicial con proveedores: <strong>${{ total }}</strong>.{% endblocktrans %}</p>
+            <p>
+                {% if var_saldo_prov > 0 %}{% blocktrans with fin=saldo_prov_fin|pesos var=var_saldo_prov|absval|pesos %}Comparándolo con el saldo al cierre (<strong>${{ fin }}</strong>), la deuda con proveedores <strong>creció</strong> ${{ var }} durante el período (se compró más a crédito de lo que se pagó).{% endblocktrans %}
+                {% elif var_saldo_prov < 0 %}{% blocktrans with fin=saldo_prov_fin|pesos var=var_saldo_prov|absval|pesos %}Comparándolo con el saldo al cierre (<strong>${{ fin }}</strong>), la deuda con proveedores <strong>se redujo</strong> ${{ var }} durante el período (se pagó más de lo que se compró a crédito).{% endblocktrans %}
+                {% else %}{% blocktrans with fin=saldo_prov_fin|pesos %}Comparándolo con el saldo al cierre (<strong>${{ fin }}</strong>), la deuda con proveedores no varió durante el período.{% endblocktrans %}{% endif %}
+            </p>
+        </div>
+    </div>
+
+    <div class="sfi-modal" id="m-sp-fin" onclick="sfiCloseModal(this)">
+        <div class="sfi-modal-box" onclick="event.stopPropagation()">
+            <button class="sfi-modal-close" onclick="sfiCloseModal(document.getElementById('m-sp-fin'))">×</button>
+            <h4>{% trans "Saldo proveedores — cierre de período" %}</h4>
+            <p>{% blocktrans %}Es el monto total que la empresa debe a sus proveedores al cierre del período (<strong>{{ end_date_display }}</strong>). Suma toda la deuda pendiente acumulada hasta esa fecha.{% endblocktrans %}</p>
+            <p>{% blocktrans with total=saldo_prov_fin|pesos %}Saldo al cierre: <strong>${{ total }}</strong>.{% endblocktrans %}</p>
+            {% if var_saldo_prov > 0 %}
+            <p>{% blocktrans with var=var_saldo_prov|absval|pesos ini=saldo_prov_inicio|pesos %}La deuda con proveedores <strong>aumentó ${{ var }}</strong> respecto al inicio (${{ ini }}). Se tomó más crédito del que se canceló — hay más pasivo con proveedores al cierre.{% endblocktrans %}</p>
+            {% elif var_saldo_prov < 0 %}
+            <p>{% blocktrans with var=var_saldo_prov|absval|pesos ini=saldo_prov_inicio|pesos %}La deuda con proveedores <strong>bajó ${{ var }}</strong> respecto al inicio (${{ ini }}). Se pagó más de lo que se compró a crédito — el pasivo con proveedores se está reduciendo.{% endblocktrans %}</p>
+            {% else %}
+            <p>{% trans "La deuda con proveedores no varió respecto al inicio del período." %}</p>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extrajs %}
+{{ block.super }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>{% autoescape off %}
+/* ── Modal ──────────────────────────────────────────── */
+function sfiOpenModal(id) {
+    document.getElementById(id).classList.add('open');
+}
+function sfiCloseModal(el) {
+    el.classList.remove('open');
+}
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.sfi-modal.open').forEach(function(m) {
+            m.classList.remove('open');
+        });
+    }
+});
+
+/* ── Charts ──────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', function() {
+    const fmtCurrency = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' });
+
+    const activityLabels = {{ activity_labels|safe }};
+    const activityVentas = {{ activity_ventas|safe }};
+    const activityGastos = {{ activity_gastos|safe }};
+    const activityCobros = {{ activity_cobros|safe }};
+
+    const cashierLabels = {{ cashier_labels|safe }};
+    const cashierVentas = {{ cashier_ventas|safe }};
+    const cashierCobros = {{ cashier_cobros|safe }};
+    const cashierGastos = {{ cashier_gastos|safe }};
+    const cashierRetiros = {{ cashier_retiros|safe }};
+    const cashierDeudaCliente = {{ cashier_deuda_cliente|safe }};
+    const cashierDeudaProv = {{ cashier_deuda_prov|safe }};
+
+    const paymentLabels = {{ payment_labels|safe }};
+    const paymentData = {{ payment_data|safe }};
+
+    const categoryLabels = {{ category_labels|safe }};
+    const categoryData = {{ category_data|safe }};
+
+    new Chart(document.getElementById('activityChart').getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: activityLabels,
+            datasets: [
+                {
+                    label: '{% trans "Ventas" %}',
+                    data: activityVentas,
+                    borderColor: '#2ecc71',
+                    backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                    fill: true,
+                    tension: 0.3
+                },
+                {
+                    label: '{% trans "Gastos" %}',
+                    data: activityGastos,
+                    borderColor: '#ff5d6c',
+                    backgroundColor: 'rgba(255, 93, 108, 0.2)',
+                    fill: true,
+                    tension: 0.3
+                },
+                {
+                    label: '{% trans "Cobros" %}',
+                    data: activityCobros,
+                    borderColor: '#3ba7ff',
+                    backgroundColor: 'rgba(59, 167, 255, 0.2)',
+                    fill: true,
+                    tension: 0.3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context){
+                            return context.dataset.label + ': ' + fmtCurrency.format(context.parsed.y || 0);
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value){
+                            return '$' + value.toLocaleString('es-AR');
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('cashierChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: cashierLabels,
+            datasets: [
+                {
+                    label: '{% trans "Ventas" %}',
+                    data: cashierVentas,
+                    backgroundColor: 'rgba(46, 204, 113, 0.7)'
+                },
+                {
+                    label: '{% trans "Cobros" %}',
+                    data: cashierCobros,
+                    backgroundColor: 'rgba(59, 167, 255, 0.7)'
+                },
+                {
+                    label: '{% trans "Gastos" %}',
+                    data: cashierGastos,
+                    backgroundColor: 'rgba(255, 93, 108, 0.7)'
+                },
+                {
+                    label: '{% trans "Retiros" %}',
+                    data: cashierRetiros,
+                    backgroundColor: 'rgba(247, 183, 49, 0.7)'
+                },
+                {
+                    label: '{% trans "Fiado emitido" %}',
+                    data: cashierDeudaCliente,
+                    backgroundColor: 'rgba(0, 194, 168, 0.7)'
+                },
+                {
+                    label: '{% trans "Deuda proveedor" %}',
+                    data: cashierDeudaProv,
+                    backgroundColor: 'rgba(155, 89, 182, 0.7)'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value){
+                            return '$' + value.toLocaleString('es-AR');
+                        }
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context){
+                            return context.dataset.label + ': ' + fmtCurrency.format(context.parsed.y || 0);
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('paymentChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: paymentLabels,
+            datasets: [
+                {
+                    label: '{% trans "Ventas" %}',
+                    data: paymentData,
+                    backgroundColor: 'rgba(0, 194, 168, 0.75)',
+                    borderColor: 'rgba(0, 194, 168, 1)',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                }
+            ]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context){
+                            return ' ' + fmtCurrency.format(context.parsed.x || 0);
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value){
+                            return '$' + value.toLocaleString('es-AR');
+                        }
+                    }
+                },
+                y: { ticks: { font: { size: 11 } } }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('categoryChart').getContext('2d'), {
+        type: 'pie',
+        data: {
+            labels: categoryLabels,
+            datasets: [
+                {
+                    data: categoryData,
+                    backgroundColor: [
+                        'rgba(59,167,255,0.8)','rgba(46,204,113,0.8)','rgba(255,93,108,0.8)',
+                        'rgba(0,194,168,0.8)','rgba(247,183,49,0.8)','rgba(155,89,182,0.8)',
+                        'rgba(52,152,219,0.8)','rgba(230,126,34,0.8)','rgba(26,188,156,0.8)',
+                        'rgba(231,76,60,0.8)'
+                    ],
+                    borderColor: 'rgba(18,26,36,0.9)',
+                    borderWidth: 2,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: { color: '#e6edf3', font: { size: 11 }, padding: 12 }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context){
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const pct = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : 0;
+                            return ' ' + fmtCurrency.format(context.parsed) + ' (' + pct + '%)';
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+{% endautoescape %}</script>
+{% endblock %}

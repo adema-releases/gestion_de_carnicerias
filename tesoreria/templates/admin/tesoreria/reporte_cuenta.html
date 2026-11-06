@@ -1,0 +1,81 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block title %}Reporte de cuenta | {{ site_title }}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">{% trans "Inicio" %}</a> ›
+  <a href="{% url 'admin:app_list' app_label='tesoreria' %}">Tesorería</a> ›
+  <a href="{% url 'admin:tesoreria_movimientocuenta_changelist' %}">Movimientos de cuenta</a> ›
+  Exportar reporte
+</div>
+{% endblock %}
+
+{# Suppress the auto h1 that Jazzmin renders beside the content block #}
+{% block content_title %}{% endblock %}
+
+{% block content %}
+<style>
+  .rpt-wrap   { clear: both; width: 100%; }
+  .rpt-card   { background: var(--darkened-bg,#1a2035); border:1px solid var(--border-color,#374151); border-radius:6px; max-width:520px; overflow:hidden; margin-top:8px; }
+  .rpt-head   { background:#1B4332; color:#fff; padding:14px 20px; }
+  .rpt-head h1{ margin:0; font-size:18px; font-weight:700; }
+  .rpt-head p { margin:3px 0 0; font-size:12px; opacity:.75; }
+  .rpt-body   { padding:24px 20px; }
+  .rpt-row    { display:flex; align-items:center; margin-bottom:16px; gap:14px; }
+  .rpt-row label { min-width:150px; font-weight:600; font-size:13px; }
+  .rpt-row select,
+  .rpt-row input[type="text"] {
+    flex:1; padding:7px 10px; border-radius:4px;
+    border:1px solid var(--border-color,#374151);
+    background:var(--body-bg,#0d1117);
+    color:var(--body-fg,#e0e0e0); font-size:13px;
+  }
+  .rpt-divider{ border:none; border-top:1px solid var(--border-color,#374151); margin:18px 0 14px; }
+  .rpt-actions{ display:flex; gap:12px; flex-wrap:wrap; }
+  .btn-pdf    { background:#C62828; color:#fff; border:none; padding:10px 24px; border-radius:4px; font-size:13px; font-weight:700; cursor:pointer; }
+  .btn-pdf:hover{ background:#b71c1c; }
+  .btn-xls    { background:#1B5E20; color:#fff; border:none; padding:10px 24px; border-radius:4px; font-size:13px; font-weight:700; cursor:pointer; }
+  .btn-xls:hover{ background:#145214; }
+  .errorlist  { color:#f87171; font-size:12px; margin:3px 0 0; padding:0; list-style:none; }
+</style>
+
+<div class="rpt-wrap">
+  <div class="rpt-card">
+    <div class="rpt-head">
+      <h1>Exportar reporte de cuenta</h1>
+      <p>Seleccioná la cuenta y el período, luego elegí el formato.</p>
+    </div>
+    <div class="rpt-body">
+      <form method="post">
+        {% csrf_token %}
+
+        {% for field in form %}
+        <div class="rpt-row">
+          <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+          <div style="flex:1;">
+            {{ field }}
+            {% if field.errors %}
+              <ul class="errorlist">
+                {% for e in field.errors %}<li>{{ e }}</li>{% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+
+        {% if form.non_field_errors %}
+          <p style="color:#f87171; font-size:13px; margin-bottom:12px;">{{ form.non_field_errors }}</p>
+        {% endif %}
+
+        <hr class="rpt-divider">
+        <div class="rpt-actions">
+          <button type="submit" name="formato" value="pdf" class="btn-pdf">📄 Exportar PDF</button>
+          <button type="submit" name="formato" value="excel" class="btn-xls">📊 Exportar Excel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

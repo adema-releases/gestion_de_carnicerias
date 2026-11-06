@@ -1,0 +1,71 @@
+# Central (frigorífico) + PostgreSQL, lista para Coolify (build pack "Docker Compose").
+# Las variables sin valor por defecto se cargan en Coolify → Environment Variables.
+# Guía completa: docs/DESPLIEGUE_COOLIFY.md
+
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SYNC_MODO: central
+      DEBUG: "0"
+      SECRET_KEY: ${SECRET_KEY}
+      # Dominio público, sin https:// (ej: central.midominio.com). Varios separados por coma.
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS}
+      # Igual que el dominio pero con https:// (ej: https://central.midominio.com).
+      CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS}
+      BEHIND_HTTPS_PROXY: "1"
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_NAME: ${POSTGRES_DB:-gestion_de_carnicerias}
+      DB_USER: ${POSTGRES_USER:-carnicerias}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      MEDIA_ROOT: /data/media
+      LOG_DIR: /data/logs
+      SERVIR_MEDIA: "1"
+      DATA_UPLOAD_MAX_MEMORY_SIZE_MB: ${DATA_UPLOAD_MAX_MEMORY_SIZE_MB:-100}
+      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-3}
+      GUNICORN_TIMEOUT: ${GUNICORN_TIMEOUT:-180}
+      # Superusuario que se crea en el primer arranque (si no existe).
+      DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME:-}
+      DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD:-}
+      DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL:-}
+      # Primer deploy con la base vacía: carga estos datos (ej: frigorifico_uno).
+      DATOS_INICIALES: ${DATOS_INICIALES:-}
+      # Clave inicial del personal que crea DATOS_INICIALES (mínimo 8 caracteres).
+      CLAVE_INICIAL_PERSONAL: ${CLAVE_INICIAL_PERSONAL:-}
+      TZ: America/Argentina/Buenos_Aires
+    volumes:
+      # Fotos (productos, remitos, visores), logs y la clave del asistente IA.
+      - central_data:/data
+    expose:
+      - "8000"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/healthz/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-gestion_de_carnicerias}
+      POSTGRES_USER: ${POSTGRES_USER:-carnicerias}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      TZ: America/Argentina/Buenos_Aires
+    volumes:
+      - central_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  central_data:
+  central_pg:

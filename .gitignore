@@ -1,0 +1,85 @@
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# ---------------------------------------------------------------------------
+# Entornos virtuales
+# ---------------------------------------------------------------------------
+venv/
+.venv/
+env/
+ENV/
+
+# ---------------------------------------------------------------------------
+# Secretos / configuracion local
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+agente_secret.key
+
+# ---------------------------------------------------------------------------
+# Django
+# ---------------------------------------------------------------------------
+staticfiles/
+media/
+logs/
+*.log
+
+# Base de datos local y sus backups
+db.sqlite3
+db.sqlite3-journal
+*.sqlite3
+*.sqlite3.bak*
+*.bak
+*.bak-*
+
+# ---------------------------------------------------------------------------
+# Build Windows (PyInstaller + NSIS)
+#   Se versionan gestion_de_carnicerias.spec, installer.nsi y build_release.bat;
+#   sus salidas no.
+# ---------------------------------------------------------------------------
+build/
+dist/
+exe/
+GestionDeCarnicerias_Installer_v*.exe
+*.exe.sha256
+# binarios de PostgreSQL que copia build_release.bat (unos 145 MB)
+vendor/pgsql/
+
+# ---------------------------------------------------------------------------
+# Tests / herramientas
+# ---------------------------------------------------------------------------
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.mypy_cache/
+.ruff_cache/
+
+# ---------------------------------------------------------------------------
+# Editores / SO
+# ---------------------------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*~
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ---------------------------------------------------------------------------
+# Notas
+#   locale/**/*.mo SE VERSIONA a proposito: build_release.bat no ejecuta
+#   compilemessages, asi que el .exe necesita los .mo ya compilados en el repo.
+# ---------------------------------------------------------------------------

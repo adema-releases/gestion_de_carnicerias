@@ -1,0 +1,3 @@
+{% load i18n %}{% get_current_language as IDIOMA_AYUDA %}{# Guía rápida. Incluir al final del <body>: {% include "ayuda/_cargar.html" %}  (con flotante=True agrega el botón «?» abajo a la derecha) #}
+<link rel="stylesheet" href="/ayuda/ayuda.css?v=1">
+<script src="/ayuda/ayuda.js?v=1" defer data-lang="{{ IDIOMA_AYUDA|default:'es' }}"{% if flotante %} data-flotante="1"{% endif %}></script>

@@ -1,0 +1,30 @@
+/* Mobile-first nav-modern styles */
+:root{--nav-bg:#fff;--nav-text:#1f2937;--nav-muted:#6b7280;--accent:linear-gradient(90deg,#ff6b9d,#a855f7)}
+.nav-modern{background:var(--nav-bg);position:sticky;top:0;z-index:80;box-shadow:0 1px 6px rgba(0,0,0,0.04)}
+.nav-modern__inner{display:flex;align-items:center;justify-content:space-between;padding:0.75rem 1rem}
+.nav-modern__logo{font-weight:700;color:var(--nav-text);text-decoration:none}
+.nav-modern__toggle{background:transparent;border:0;padding:0.5rem;border-radius:8px}
+.nav-modern__hamburger{display:inline-block;width:22px;height:2px;background:var(--nav-text);position:relative}
+.nav-modern__hamburger::before,.nav-modern__hamburger::after{content:"";position:absolute;left:0;width:22px;height:2px;background:var(--nav-text)}
+.nav-modern__hamburger::before{top:-7px}
+.nav-modern__hamburger::after{top:7px}
+
+/* Drawer */
+.nav-modern__drawer{position:fixed;inset:0;display:flex;justify-content:flex-end;pointer-events:none}
+.nav-modern__drawer-inner{width:84%;max-width:360px;background:#fff;height:100%;transform:translateX(100%);transition:transform .28s ease;display:flex;flex-direction:column;pointer-events:auto;overflow-y:auto}
+.nav-modern__drawer.open .nav-modern__drawer-inner{transform:translateX(0)}
+.nav-modern__backdrop{flex:1;background:rgba(0,0,0,0.35);opacity:0;transition:opacity .2s ease}
+.nav-modern__drawer.open .nav-modern__backdrop{opacity:1}
+.nav-modern__drawer-head{display:flex;align-items:center;justify-content:space-between;padding:1rem;border-bottom:1px solid #f3f4f6}
+.nav-modern__list{list-style:none;padding:1rem;margin:0;display:flex;flex-direction:column;gap:.5rem}
+.nav-modern__list a{display:block;padding:0.6rem;border-radius:8px;color:var(--nav-text);text-decoration:none}
+.nav-modern__actions{padding:1rem;display:flex;flex-direction:column;gap:0.5rem}
+
+/* Desktop */
+@media(min-width:800px){
+  .nav-modern__toggle{display:none}
+  .nav-modern__drawer{display:none}
+  .nav-modern__desktop{display:block}
+  .nav-modern__desktop-list{display:flex;gap:1rem;list-style:none;margin:0;padding:0}
+  .nav-modern__desktop-list a{color:var(--nav-muted);text-decoration:none;padding:0.5rem}
+}

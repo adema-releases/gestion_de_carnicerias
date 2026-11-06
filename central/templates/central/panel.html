@@ -1,0 +1,102 @@
+{% load i18n static %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'es' }}">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="refresh" content="120" />
+  <title>{% trans "Panel central" %}</title>
+  <link rel="icon" href="{% static 'img/ico.ico' %}" type="image/x-icon" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg: #0d0d12; --surface: #16161f; --border: #252530; --text: #e8e8f0; --muted: #8a8aa0;
+            --green: #22c55e; --red: #f87171; --orange: #fb923c; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 20px 16px; }
+    main { max-width: 1400px; margin: 0 auto; }
+    header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+    h1 { font-size: 1.4rem; }
+    header a { color: var(--muted); margin-left: 14px; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+    .card small { color: var(--muted); display: block; margin-bottom: 6px; }
+    .card strong { font-size: 1.5rem; }
+    .tabla { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 1300px; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: right; white-space: nowrap; }
+    th:first-child, td:first-child { text-align: left; }
+    th { font-size: 0.75rem; color: var(--muted); font-weight: 600; }
+    td small { color: var(--muted); display: block; }
+    .ok { color: var(--green); }
+    .alerta { color: var(--orange); }
+    .mal { color: var(--red); }
+    .nota { color: var(--muted); font-size: 0.85rem; margin-top: 12px; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>{% blocktrans count n=filas|length %}Panel central · {{ n }} sucursal{% plural %}Panel central · {{ n }} sucursales{% endblocktrans %}</h1>
+    <div>
+      <span style="color:var(--muted)">{{ ahora|date:"d/m/Y H:i" }}</span>
+      <a href="{% url 'admin:central_despacho_add' %}">{% trans "Nuevo despacho" %}</a>
+      <a href="{% url 'admin:central_movimientocuentasucursal_add' %}">{% trans "Registrar remesa" %}</a>
+      <a href="{% url 'admin:index' %}">{% trans "Admin" %}</a>
+      {% include "_selector_idioma.html" %}
+    </div>
+  </header>
+
+  <section class="cards">
+    <div class="card"><small>{% trans "Ventas de hoy" %}</small><strong>${{ totales.total_hoy|floatformat:"0g" }}</strong></div>
+    <div class="card"><small>{% trans "Ventas últimos 7 días" %}</small><strong>${{ totales.total_7|floatformat:"0g" }}</strong></div>
+    <div class="card"><small>{% trans "Kg vendidos 7 días" %}</small><strong>{{ totales.kg_vendidos_7|floatformat:"0g" }} kg</strong></div>
+    <div class="card"><small>{% trans "Deuda total de sucursales" %}</small><strong>${{ totales.saldo|floatformat:"0g" }}</strong></div>
+  </section>
+
+  <section class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>{% trans "Sucursal" %}</th><th>{% trans "Última sync" %}</th><th>{% trans "Ventas hoy" %}</th><th>{% trans "Ventas 7 días" %}</th><th>{% trans "Kg vendidos 7 días" %}</th>
+          <th>{% trans "Medias en cámara" %}</th><th>{% trans "Kg recibidos 7 días" %}</th><th>{% trans "Dif. vs remito" %}</th><th>{% trans "Merma desposte" %}</th>
+          <th>{% trans "Últ. liquidación" %}</th><th>{% trans "Merma semana" %}</th>
+          <th>{% trans "Comandas abiertas" %}</th><th>{% trans "Despachos sin recibir" %}</th><th>{% trans "Saldo cuenta" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for f in filas %}
+        <tr>
+          <td><strong>{{ f.sucursal.codigo }}</strong> {{ f.sucursal.nombre }}<small>{{ f.sucursal.supermercado }}</small></td>
+          <td class="{% if f.minutos_sync is None or f.minutos_sync > 60 %}mal{% elif f.minutos_sync > 10 %}alerta{% else %}ok{% endif %}">
+            {% if f.minutos_sync is None %}{% trans "nunca" %}{% elif f.minutos_sync < 1 %}{% trans "recién" %}{% else %}{% blocktrans with m=f.minutos_sync %}hace {{ m }} min{% endblocktrans %}{% endif %}
+          </td>
+          <td>${{ f.total_hoy|floatformat:"0g" }}<small>{% blocktrans with n=f.ventas_hoy %}{{ n }} tickets{% endblocktrans %}</small></td>
+          <td>${{ f.total_7|floatformat:"0g" }}</td>
+          <td>{{ f.kg_vendidos_7|floatformat:"1g" }}</td>
+          <td>{{ f.medias_camara }}<small>{{ f.kg_camara|floatformat:1 }} kg</small></td>
+          <td>{{ f.kg_recibidos_7|floatformat:"1g" }}</td>
+          <td class="{% if f.dif_remito_7 is not None and f.dif_remito_7 < -1 %}mal{% endif %}">{% if f.dif_remito_7 is None %}—{% else %}{{ f.dif_remito_7|floatformat:1 }} kg{% endif %}</td>
+          <td class="{% if f.merma_pct_7 is not None and f.merma_pct_7 > 4 %}alerta{% endif %}">{% if f.merma_pct_7 is None %}—{% else %}{{ f.merma_pct_7|floatformat:1 }}%{% endif %}</td>
+          {% with l=f.liquidacion %}
+          <td class="{% if f.dias_liquidacion is None or f.dias_liquidacion > 8 %}alerta{% endif %}">
+            {% if l %}{{ l.cerrado_en|date:"D d/m" }}<small>{% if f.dias_liquidacion == 0 %}{% trans "hoy" %}{% else %}{% blocktrans with n=f.dias_liquidacion %}hace {{ n }} días{% endblocktrans %}{% endif %}</small>{% else %}{% trans "nunca" %}{% endif %}
+          </td>
+          <td class="{% if l.merma_pct is not None and l.merma_pct > 6 %}mal{% elif l.merma_pct is not None and l.merma_pct > 4 %}alerta{% endif %}">
+            {% if l and l.merma_pct is not None %}{{ l.merma_pct|floatformat:1 }}%
+              <small>{% blocktrans with kg=l.kg_descarte|floatformat:"1g" %}tiró {{ kg }} kg{% endblocktrans %}{% if f.faltante_liquidacion %} · {% blocktrans with kg=f.faltante_liquidacion|floatformat:"1g" %}faltan {{ kg }} kg{% endblocktrans %}{% endif %}</small>
+            {% else %}—{% endif %}
+          </td>
+          {% endwith %}
+          <td>{{ f.comandas_abiertas }}</td>
+          <td class="{% if f.despachos_pendientes %}alerta{% endif %}">{{ f.despachos_pendientes }}</td>
+          <td>${{ f.saldo|floatformat:"0g" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="14">{% trans "No hay sucursales activas. Creá una en el admin para obtener su token." %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+  <p class="nota">{% trans 'Los datos son los que cada sucursal subió en su última sincronización. "Dif. vs remito" es kilos pesados al colgar menos kilos del remito; negativo = llegó menos. "Merma semana" es la de la última liquidación: merma de desposte + lo que se tiró + faltante de conteo, sobre los kilos que hubo en la semana (stock inicial + recibido).' %}</p>
+</main>
+{% include "ayuda/_cargar.html" with flotante=True %}
+</body>
+</html>
