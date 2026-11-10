@@ -1,0 +1,90 @@
+{% load i18n static %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'es' }}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% trans "Lista de precios" %}</title>
+  <link rel="icon" href="{% static 'img/ico.ico' %}" type="image/x-icon" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    :root {
+      --bg: #0d0d12; --surface: #16161f; --surface2: #1d1d29; --border: #252530; --text: #e8e8f0;
+      --muted: #8a8aa0; --green: #22c55e; --orange: #fb923c;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); }
+    main { max-width: 980px; margin: 0 auto; padding: 24px 16px 40px; }
+    header { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 6px; }
+    h1 { margin: 0; font-size: 1.5rem; }
+    h1 i { color: var(--green); margin-right: 6px; }
+    .sub { color: var(--muted); margin: 0 0 22px; }
+    .btn-ghost { border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: var(--muted); text-decoration: none; white-space: nowrap; }
+    .btn-ghost:hover { color: var(--text); border-color: #3a3a4a; }
+    .opciones { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+    .opcion { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px;
+              display: flex; flex-direction: column; gap: 10px; }
+    .opcion .icono { font-size: 1.8rem; color: var(--green); }
+    .opcion h2 { margin: 0; font-size: 1.1rem; }
+    .opcion p { margin: 0; color: var(--muted); font-size: 0.92rem; line-height: 1.4; flex: 1; }
+    .opcion .hojas { font-size: 0.8rem; color: var(--text); background: var(--surface2); border-radius: 999px;
+                     padding: 3px 10px; align-self: flex-start; }
+    .descargar { display: flex; justify-content: center; align-items: center; gap: 8px; background: var(--green);
+                 color: #052e16; font-weight: 700; text-decoration: none; border-radius: 10px; padding: 12px; }
+    .descargar:hover { filter: brightness(1.08); }
+    .descargar.cargando { opacity: 0.6; pointer-events: none; }
+    .aviso { margin-top: 18px; background: #2a1d0f; border: 1px solid #5a3a12; color: var(--orange);
+             border-radius: 10px; padding: 12px 14px; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1><i class="fa-solid fa-file-pdf"></i>{% trans "Lista de precios" %}</h1>
+      <a class="btn-ghost" href="{{ volver }}"><i class="fa-solid fa-arrow-left"></i> {% trans "Volver" %}</a>
+    </header>
+    <p class="sub">
+      {% blocktrans count cantidad=cantidad %}{{ cantidad }} producto en la balanza, con los precios de ahora.{% plural %}{{ cantidad }} productos en la balanza, con los precios de ahora.{% endblocktrans %}
+      {% trans "Elegí el formato para imprimir:" %}
+    </p>
+
+    <div class="opciones">
+      <section class="opcion">
+        <i class="icono fa-solid fa-table-list"></i>
+        <h2>{% trans "Tabla por secciones" %}</h2>
+        <p>{% trans "PLU, descripción y precio, con un color por sección. La más fácil de leer al lado de la balanza." %}</p>
+        <span class="hojas">{% trans "1 hoja A4" %}</span>
+        <a class="descargar" href="{% url 'pos:lista_precios_pdf' 'tabla' %}"><i class="fa-solid fa-download"></i> {% trans "Descargar" %}</a>
+      </section>
+      <section class="opcion">
+        <i class="icono fa-solid fa-images"></i>
+        <h2>{% trans "Tabla con fotitos" %}</h2>
+        <p>{% trans "La misma tabla con una foto chiquita de cada corte, para reconocerlo de un vistazo." %}</p>
+        <span class="hojas">{% trans "1 hoja A4" %}</span>
+        <a class="descargar" href="{% url 'pos:lista_precios_pdf' 'miniaturas' %}"><i class="fa-solid fa-download"></i> {% trans "Descargar" %}</a>
+      </section>
+      <section class="opcion">
+        <i class="icono fa-solid fa-border-all"></i>
+        <h2>{% trans "Catálogo con fotos" %}</h2>
+        <p>{% trans "Una tarjeta por producto con foto grande, el PLU en la esquina y el precio bien visible." %}</p>
+        <span class="hojas">{% trans "Varias hojas A4" %}</span>
+        <a class="descargar" href="{% url 'pos:lista_precios_pdf' 'catalogo' %}"><i class="fa-solid fa-download"></i> {% trans "Descargar" %}</a>
+      </section>
+    </div>
+
+    {% if sin_foto %}
+    <div class="aviso">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      {% blocktrans count cantidad=sin_foto|length %}{{ cantidad }} producto no tiene foto y sale con un recuadro de color:{% plural %}{{ cantidad }} productos no tienen foto y salen con un recuadro de color:{% endblocktrans %}
+      {% for p in sin_foto %}{{ p.nombre }}{% if not forloop.last %}, {% endif %}{% endfor %}.
+    </div>
+    {% endif %}
+  </main>
+  <script>
+    /* El catálogo tarda unos segundos en armarse: el botón avisa que está trabajando. */
+    document.querySelectorAll('.descargar').forEach(a => a.addEventListener('click', () => {
+      a.classList.add('cargando');
+      setTimeout(() => a.classList.remove('cargando'), 6000);
+    }));
+  </script>
+</body>
+</html>

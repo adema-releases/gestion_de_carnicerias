@@ -8275,3 +8275,98 @@ msgstr "按键 ${n} 没有对应的付款方式"
 
 msgid "¿Con cuánto paga? Enter = justo"
 msgstr "顾客付多少？Enter = 刚好"
+
+msgid "sin código"
+msgstr "没有编码"
+
+msgid "el código no es un número entre 1 y 8000"
+msgstr "编码不是 1 到 8000 之间的数字"
+
+msgid "precio mayor a $999.999"
+msgstr "价格超过 $999.999"
+
+msgid "La balanza quedó desactualizada."
+msgstr "电子秤数据已过期。"
+
+msgid "Descargar archivo para balanza"
+msgstr "下载电子秤文件"
+
+msgid "y reemplazá el archivo que importa Qendra."
+msgstr "并替换 Qendra 导入的文件。"
+
+msgid "No van a la balanza %(cantidad)s productos activos: %(detalle)s."
+msgstr "有 %(cantidad)s 个启用的商品不会传到电子秤：%(detalle)s。"
+
+msgid "En la balanza quedan con el mismo nombre \"%(nombre)s\" los códigos %(codigos)s: acortá esos nombres para distinguirlos."
+msgstr "编码 %(codigos)s 在电子秤上名称相同（\"%(nombre)s\"）：请缩短这些名称以便区分。"
+
+msgid "Archivo para balanza"
+msgstr "电子秤文件"
+
+msgid "Todos los productos activos con código, en el formato que importa Qendra (Systel). Reemplazá con este archivo el que importa Qendra."
+msgstr "所有带编码的启用商品，采用 Qendra（Systel）导入的格式。用此文件替换 Qendra 导入的文件。"
+
+msgid "Lista de precios"
+msgstr "价目表"
+
+msgid "Lista de precios para imprimir y pegar al lado de la balanza"
+msgstr "可打印并贴在电子秤旁的价目表"
+
+msgid "Logo del negocio"
+msgstr "商家标志"
+
+msgid "Aparece en la lista de precios para imprimir. Conviene PNG cuadrado o apaisado, de unos 400 px."
+msgstr "显示在可打印的价目表上。建议使用约 400 像素的方形或横向 PNG。"
+
+msgid "Cobrando: <kbd>1</kbd>–<kbd>9</kbd> elige el medio (otro número lo cambia) · <kbd>Enter</kbd> confirma · <kbd>Esc</kbd> vuelve a cargar"
+msgstr "收款中：<kbd>1</kbd>–<kbd>9</kbd> 选择付款方式（按其他数字可更换）· <kbd>Enter</kbd> 确认 · <kbd>Esc</kbd> 返回录入商品"
+
+msgid "<kbd>Enter</kbd> con el buscador vacío: pasar a cobrar"
+msgstr "搜索框为空时按 <kbd>Enter</kbd>：进入收款"
+
+msgid "Cargá al menos un producto para cobrar"
+msgstr "请至少录入一个商品再收款"
+
+msgid "Elegí el medio de pago con 1–9"
+msgstr "请用 1–9 选择付款方式"
+
+msgid "Ese importe parece un código escaneado, no un pago. Revisalo."
+msgstr "该金额看起来像扫描的条码，而不是付款金额。请检查。"
+
+msgid "%(cantidad)s producto en la balanza, con los precios de ahora."
+msgid_plural "%(cantidad)s productos en la balanza, con los precios de ahora."
+msgstr[0] "电子秤中有 %(cantidad)s 个商品，价格为当前价格。"
+
+msgid "Elegí el formato para imprimir:"
+msgstr "请选择打印格式："
+
+msgid "Tabla por secciones"
+msgstr "分区价格表"
+
+msgid "PLU, descripción y precio, con un color por sección. La más fácil de leer al lado de la balanza."
+msgstr "PLU、名称和价格，每个分区一种颜色。放在电子秤旁最易阅读。"
+
+msgid "1 hoja A4"
+msgstr "1 张 A4"
+
+msgid "Descargar"
+msgstr "下载"
+
+msgid "Tabla con fotitos"
+msgstr "带小图的价格表"
+
+msgid "La misma tabla con una foto chiquita de cada corte, para reconocerlo de un vistazo."
+msgstr "同一张价格表，每个部位配一张小图，一眼就能认出。"
+
+msgid "Catálogo con fotos"
+msgstr "图片目录"
+
+msgid "Una tarjeta por producto con foto grande, el PLU en la esquina y el precio bien visible."
+msgstr "每个商品一张卡片：大图、角落显示 PLU、价格醒目。"
+
+msgid "Varias hojas A4"
+msgstr "多张 A4"
+
+msgid "%(cantidad)s producto no tiene foto y sale con un recuadro de color:"
+msgid_plural "%(cantidad)s productos no tienen foto y salen con un recuadro de color:"
+msgstr[0] "%(cantidad)s 个商品没有图片，将显示为彩色方块："

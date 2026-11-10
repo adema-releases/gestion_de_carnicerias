@@ -30,7 +30,7 @@ class ConfiguracionAdmin(SingletonModelAdmin):
     )
     fieldsets = (
         (_('Datos de la empresa'), {
-            'fields': ('nombre', 'descripcion', 'direccion', 'telefono', 'instagram', 'facebook', 'whatsapp', 'sitio_web'),
+            'fields': ('nombre', 'logo', 'descripcion', 'direccion', 'telefono', 'instagram', 'facebook', 'whatsapp', 'sitio_web'),
         }),
         (_('POS — General'), {
             'fields': ('nombre_impresora', 'importes_rapidos_venta', 'permitir_turnos_multi_dia'),

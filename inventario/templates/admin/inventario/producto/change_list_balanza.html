@@ -1,0 +1,16 @@
+{% extends "admin/import_export/change_list_import_export.html" %}
+{% load i18n %}
+
+{% block object-tools-items %}
+  {{ block.super }}
+  <a href="{% url 'admin:inventario_producto_archivo_balanza' %}"
+     class="btn {{ jazzmin_ui.button_classes.secondary }}"
+     title="{% translate 'Todos los productos activos con código, en el formato que importa Qendra (Systel). Reemplazá con este archivo el que importa Qendra.' %}">
+    <i class="fas fa-balance-scale"></i> {% translate "Archivo para balanza" %}
+  </a>
+  <a href="{% url 'pos:lista_precios' %}"
+     class="btn {{ jazzmin_ui.button_classes.secondary }}"
+     title="{% translate 'Lista de precios para imprimir y pegar al lado de la balanza' %}">
+    <i class="fas fa-file-pdf"></i> {% translate "Lista de precios" %}
+  </a>
+{% endblock %}

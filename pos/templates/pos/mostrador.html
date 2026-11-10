@@ -131,6 +131,7 @@
     <div class="top-actions">
       {% include "_selector_idioma.html" %}
       {% if permisos.puede_recibir_mercaderia or permisos.puede_despostar or permisos.puede_ver_stock %}<a class="btn-ghost" href="{% url 'pos:recepcion' %}"><i class="fa-solid fa-warehouse"></i> {% trans "Cámara" %}</a>{% endif %}
+      <a class="btn-ghost" href="{% url 'pos:lista_precios' %}" title="{% trans "Lista de precios para imprimir y pegar al lado de la balanza" %}"><i class="fa-solid fa-file-pdf"></i> {% trans "Lista de precios" %}</a>
       {% include "ayuda/_boton.html" %}
       <a class="btn-ghost" href="{% url 'pos:elegir_puesto' %}"><i class="fa-solid fa-repeat"></i> {% trans "Puesto" %}</a>
       <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit" class="btn-ghost"><i class="fa-solid fa-right-from-bracket"></i> {% trans "Salir" %}</button></form>

@@ -1,4 +1,5 @@
 from django.urls import path
+from inventario import views as inventario_views
 from . import comandas, conteo_views, puestos, recepcion_views, views
 
 app_name = 'pos'
@@ -8,6 +9,8 @@ urlpatterns = [
     path('puesto/', puestos.elegir_puesto, name='elegir_puesto'),
     path('mostrador/', comandas.mostrador, name='mostrador'),
     path('recepcion/', recepcion_views.recepcion, name='recepcion'),
+    path('lista-precios/', inventario_views.lista_precios, name='lista_precios'),
+    path('lista-precios/<str:formato>/', inventario_views.lista_precios_pdf, name='lista_precios_pdf'),
     path('api/recepcion/datos/', recepcion_views.api_recepcion_datos, name='api_recepcion_datos'),
     path('api/remitos/', recepcion_views.api_remito_crear, name='api_remito_crear'),
     path('api/camara/', recepcion_views.api_camara, name='api_camara'),

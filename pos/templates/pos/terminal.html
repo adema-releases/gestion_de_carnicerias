@@ -1425,6 +1425,13 @@
     .medios-grid.asignando .medio-btn { border-style: dashed; }
     .medios-grid.asignando .medio-tecla.vacia { opacity: 0.3; }
     .medios-grid.asignando .medio-tecla:not(.vacia) { background: var(--blue); border-color: var(--blue); color: #0b1a33; }
+    /* Cargar y cobrar separados: cargando, las teclas 1–9 no eligen medio (se ven apagadas) */
+    .medios-grid.cargando .medio-tecla { opacity: 0.3; }
+    .medios-grid.cobrando { outline: 2px solid var(--green); outline-offset: 4px; border-radius: 12px; }
+    .cobro-hint { margin-top: 8px; font-size: 0.78rem; color: var(--muted); text-align: center; }
+    .cobro-hint.cobrando { color: var(--green); font-weight: 600; }
+    .cobro-hint kbd { display: inline-block; min-width: 18px; padding: 0 5px; border: 1px solid #3a3a55; border-radius: 5px;
+                      background: #23233a; color: #e5e5f0; font: 700 0.72rem/16px inherit; text-align: center; }
     .medios-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; }
     .medios-head label { margin: 0; }
     .medios-head-acciones { display: flex; gap: 6px; }
@@ -1701,6 +1708,10 @@
         <span class="appnav-menu-only">{% trans "Asistente" %}</span>
       </button>
       {% endif %}
+      <a class="btn-link" href="{% url 'pos:lista_precios' %}" title="{% trans "Lista de precios para imprimir y pegar al lado de la balanza" %}">
+        <i class="fa-solid fa-file-pdf"></i>
+        <span class="appnav-menu-only">{% trans "Lista de precios" %}</span>
+      </a>
       {% include "ayuda/_boton.html" with clase="btn-link" solo_menu=True %}
       <button class="btn-link" onclick="abrirModal('config-impresora')" title="{% trans "Configurar impresora" %}">
         <i class="fa-solid fa-gear" style="font-size:0.75rem;"></i>
@@ -1897,6 +1908,7 @@
           </div>
           <div class="medios-grid" id="v-medios-grid"></div>
           <div class="teclas-hint" id="v-teclas-hint" style="display:none;">{% trans "Tocá los medios en el orden que quieras: el primero queda en la tecla 1, el segundo en la 2… Después tocá Listo." %}</div>
+          <div class="cobro-hint" id="v-cobro-hint"></div>
         </div>
 
         <!-- Fila importe + agregar (aparece al seleccionar un medio) -->
@@ -2980,6 +2992,7 @@ function getMedioEmoji(cat) { return MEDIO_EMOJI[cat] || '💱'; }
 /* ── Estado multi-pago venta ── */
 let vPagos = [];      // [{medioId, nombre, categoria, emoji, importe}]
 let vMedioSel = null; // id (string) del medio seleccionado actualmente
+let vCobrando = false; // true = paso de cobro: las teclas 1–9 eligen medio (ver "Cargar y cobrar")
 let vCategorias = []; // [{categoriaId, nombre, importe, auto?}]  auto = derivada de las líneas por peso
 let vItems = [];      // [{productoId, nombre, unidad, categoriaId, categoria, cantidad, precio}]
 let vProdPendiente = null; // producto elegido esperando peso/cantidad
@@ -3036,6 +3049,7 @@ function abrirModal(nombre) {
       renderCategoriasVenta();
       renderMediosGrid();
       actualizarVueltoMulti();
+      actualizarModoCobro();
     }
   }
   if (nombre === 'qr-acceso' && !_qrGenerado && typeof QRCode !== 'undefined') {
@@ -3122,6 +3136,8 @@ function limpiar(nombre) {
     vImporteObjetivo = 0;
     vPasoVenta = 1;
     vPagoMixtoActivo = false;
+    vCobrando = false;
+    actualizarModoCobro();
     const pagoRow = document.getElementById('v-pago-row');
     if (pagoRow) pagoRow.style.display = 'none';
     const catEntry = document.getElementById('v-cat-entry');
@@ -3608,6 +3624,7 @@ async function traerComandaPorCodigo(id) {
 
 /* Un producto por unidad escaneado suma 1 sin pedir cantidad; uno por kilo pide el peso. */
 function cargarProductoPorCodigo(texto) {
+  if (!ventaGuiadaActiva()) salirModoCobro();   // escanear o buscar es cargar, nunca cobrar
   const buscador = document.getElementById('v-prod-buscar');
   const idComanda = idComandaDeCodigo(texto);
   if (idComanda) {
@@ -3780,10 +3797,12 @@ function sincronizarCategoriasDesdeItems() {
   const cant = document.getElementById('v-prod-cant');
   if (!buscador || !cant) return;
   buscador.addEventListener('input', renderProductosVenta);
+  buscador.addEventListener('focus', () => { if (!ventaGuiadaActiva()) salirModoCobro(); });
   buscador.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
       e.stopImmediatePropagation();
       e.preventDefault();
+      if (!buscador.value.trim() && entrarModoCobro()) return;   // Enter con el buscador vacío: a cobrar
       if (cargarProductoPorCodigo(buscador.value)) return;
       const visibles = productosVisibles();
       if (visibles.length >= 1) seleccionarProducto(visibles[0].id);
@@ -4059,28 +4078,146 @@ function restablecerTeclasMedios() {
   renderMediosGrid();
 }
 
-/* Una tecla 1–9 sola (fuera de un campo de texto) elige el medio. Espera un instante:
-   si enseguida llega otra tecla es el lector tipeando una etiqueta, no el cajero. */
+/* ── Cargar y cobrar, separados ──
+   Cargando (al abrir la venta), los números son del escáner o del buscador y NUNCA eligen
+   medio de pago: una etiqueta escaneada no puede terminar como pago. Enter con el buscador
+   vacío pasa a cobrar; ahí 1–9 elige el medio (otro número lo cambia), Enter confirma y
+   Esc vuelve a cargar. Escanear un paquete en cualquier momento vuelve a cargar.
+   La venta guiada ya tiene su paso de cobro (paso 3): ahí las teclas valen solo en ese paso. */
+function ventaVisibleSola() {
+  const abiertos = document.querySelectorAll('.modal-backdrop.visible');
+  return abiertos.length === 1 && abiertos[0].id === 'modal-venta';
+}
+
+function esCampoDeTexto(t) {
+  return Boolean(t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable));
+}
+
+function tecladoEligeMedio() {
+  return ventaGuiadaActiva() ? vPasoVenta === 3 : vCobrando;
+}
+
+function actualizarModoCobro() {
+  const guiada = ventaGuiadaActiva();
+  const grid = document.getElementById('v-medios-grid');
+  if (grid) {
+    grid.classList.toggle('cargando', !guiada && !vCobrando);
+    grid.classList.toggle('cobrando', !guiada && vCobrando);
+  }
+  const hint = document.getElementById('v-cobro-hint');
+  if (!hint) return;
+  hint.style.display = guiada ? 'none' : '';
+  hint.classList.toggle('cobrando', vCobrando);
+  hint.innerHTML = vCobrando
+    ? '{% trans "Cobrando: <kbd>1</kbd>–<kbd>9</kbd> elige el medio (otro número lo cambia) · <kbd>Enter</kbd> confirma · <kbd>Esc</kbd> vuelve a cargar" %}'
+    : '{% trans "<kbd>Enter</kbd> con el buscador vacío: pasar a cobrar" %}';
+}
+
+function entrarModoCobro() {
+  if (ventaGuiadaActiva()) return false;
+  if (totalVentaActual() <= 0) { toast('{% trans "Cargá al menos un producto para cobrar" %}', 'error'); return true; }
+  vCobrando = true;
+  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  actualizarModoCobro();
+  const emitir = document.getElementById('v-btn-emitir');
+  if (pendienteVenta() <= 0 && vPagos.length && emitir && emitir.offsetParent !== null) setTimeout(() => emitir.focus(), 30);
+  return true;
+}
+
+function salirModoCobro() {
+  if (!vCobrando && !vMedioSel) return;
+  vCobrando = false;
+  vMedioSel = null;
+  const inp = document.getElementById('v-pago-importe');
+  if (inp) inp.value = '';
+  const pagoRow = document.getElementById('v-pago-row');
+  if (pagoRow && !ventaGuiadaActiva()) pagoRow.style.display = 'none';
+  renderMediosGrid();
+  actualizarModoCobro();
+}
+
+/* Enter que confirma el paso de cobro con el teclado (fuera de un campo de texto). */
+function enterEnCobro() {
+  if (!vMedioSel) {
+    if (pendienteVenta() <= 0 && vPagos.length) { emitirSiCubierto(); return; }
+    toast('{% trans "Elegí el medio de pago con 1–9" %}', 'error');
+    return;
+  }
+  const medio = MEDIOS.find(m => String(m.id) === vMedioSel);
+  const inp = document.getElementById('v-pago-importe');
+  // Efectivo: el primer Enter pide con cuánto paga (Enter de nuevo = justo); el resto cobra lo que falta.
+  if (medio && medio.categoria === 'Efectivo' && inp && document.activeElement !== inp) {
+    inp.focus();
+    inp.select();
+    return;
+  }
+  agregarPagoVenta();
+}
+
+/* Última barrera: un pago con forma de código de barras (10 o más dígitos seguidos) o
+   desproporcionado para la venta (más de 20 veces el total y más de $100.000 por encima)
+   no se acepta. Un billete grande para una compra chica sí pasa. */
+function importeDePagoSospechoso(escrito, importe) {
+  if (/^\s*\d{10,}\s*$/.test(String(escrito || ''))) return true;
+  const total = totalVentaActual();
+  return total > 0 && importe > Math.max(total * 20, total + 100000);
+}
+
+function emitirSiCubierto() {
+  const emitir = document.getElementById('v-btn-emitir');
+  if (emitir && emitir.offsetParent !== null) emitir.focus();
+}
+
+/* Una tecla 1–9 sola (fuera de un campo de texto) elige el medio, solo cobrando. Espera un
+   instante: si enseguida llega otra tecla es el lector tipeando una etiqueta, no el cajero. */
 (function initTeclasMedios() {
   let pendiente = null;
   document.addEventListener('keydown', e => {
     if (pendiente) { clearTimeout(pendiente); pendiente = null; return; }
     if (!/^[1-9]$/.test(e.key) || e.ctrlKey || e.altKey || e.metaKey) return;
-    const t = e.target;
-    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
-    const abiertos = document.querySelectorAll('.modal-backdrop.visible');
-    if (abiertos.length !== 1 || abiertos[0].id !== 'modal-venta' || Array.isArray(vAsignandoTeclas)) return;
+    if (esCampoDeTexto(e.target)) return;
+    if (!ventaVisibleSola() || Array.isArray(vAsignandoTeclas) || !tecladoEligeMedio()) return;
     const n = Number(e.key);
     pendiente = setTimeout(() => {
       pendiente = null;
+      if (!tecladoEligeMedio()) return;   // un escaneo en el medio volvió a cargar
       const medio = medioDeTecla(n);
-      if (medio) seleccionarMedioVenta(medio.id);
+      if (medio) seleccionarMedioVenta(medio.id, { enfocar: ventaGuiadaActiva() });
       else toast(`{% trans "La tecla ${n} no tiene medio de pago" %}`, 'error');
     }, 90);
   });
 })();
 
-function seleccionarMedioVenta(medioId) {
+/* Enter y Esc del cobro con el foco fuera de los campos. Va en captura, después del escaneo
+   (que se queda con el Enter cuando hubo ráfaga) y antes del Esc que cierra la venta. */
+(function initEnterCobro() {
+  let ultimaTecla = 0;
+  document.addEventListener('keydown', e => {
+    const ahora = Date.now();
+    const anterior = ultimaTecla;
+    ultimaTecla = ahora;
+    if (e.defaultPrevented || ventaGuiadaActiva() || !ventaVisibleSola()) return;  // el escaneo ya usó este Enter
+    const t = e.target;
+    if (esCampoDeTexto(t) || (t && t.tagName === 'BUTTON')) return;
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      e.stopPropagation();
+      /* Nadie aprieta Enter a menos de 50 ms de otra tecla: es el final de una etiqueta que
+         el lector mandó entrecortada. No cobra ni cambia de paso. */
+      if (ahora - anterior < 50) return;
+      if (vCobrando) enterEnCobro();
+      else entrarModoCobro();
+    } else if (e.key === 'Escape' && vCobrando) {
+      e.preventDefault();
+      e.stopPropagation();
+      salirModoCobro();
+      volverAlBuscador(document.getElementById('v-prod-buscar') || document.getElementById('v-cat-buscar'));
+    }
+  }, true);
+})();
+
+function seleccionarMedioVenta(medioId, { enfocar = true } = {}) {
+  if (!ventaGuiadaActiva()) { vCobrando = true; actualizarModoCobro(); }
   vMedioSel = String(medioId);
   const medio = MEDIOS.find(m => String(m.id) === vMedioSel);
   if (!medio) return;
@@ -4109,7 +4246,10 @@ function seleccionarMedioVenta(medioId) {
     inp.value = pendiente > 0 ? formatImporteInput(pendiente) : '';
     inp.placeholder = '0';
   }
-  setTimeout(() => { inp.focus(); inp.select(); }, 60);
+  /* Con el mouse el cursor va al importe. Con el teclado no: así otro número cambia el
+     medio, y el importe se escribe recién después de Enter (efectivo). */
+  if (enfocar) setTimeout(() => { inp.focus(); inp.select(); }, 60);
+  else if (document.activeElement === inp) inp.blur();
 }
 
 function pendienteVenta() {
@@ -4124,6 +4264,11 @@ function agregarPagoVenta() {
   // Vacío = paga justo lo que falta (útil en efectivo: "1" + Enter).
   const pagoImporte = escrito.trim() ? parseImporteEscrito(escrito) : pendienteVenta();
   if (pagoImporte <= 0) { toast('{% trans "Ingresá un importe válido" %}', 'error'); return; }
+  if (importeDePagoSospechoso(escrito, pagoImporte)) {
+    document.getElementById('v-pago-importe').value = '';
+    toast('{% trans "Ese importe parece un código escaneado, no un pago. Revisalo." %}', 'error');
+    return;
+  }
   const medio = MEDIOS.find(m => String(m.id) === vMedioSel);
   if (!medio) return;
   if (ventaGuiadaActiva()) vPagoMixtoActivo = true;
@@ -4201,10 +4346,12 @@ document.getElementById('v-cat-importe')?.addEventListener('keydown', e => {
 });
 
 document.getElementById('v-cat-buscar')?.addEventListener('input', filtrarCategoriasVenta);
+document.getElementById('v-cat-buscar')?.addEventListener('focus', () => { if (!ventaGuiadaActiva()) salirModoCobro(); });
 document.getElementById('v-cat-buscar')?.addEventListener('keydown', e => {
   if (e.key === 'Enter') {
     e.stopImmediatePropagation();
     e.preventDefault();
+    if (!e.target.value.trim() && totalVentaActual() > 0 && entrarModoCobro()) return;   // vacío: a cobrar
     const visibles = categoriasVisibles();
     /* Sólo elige sola si hay una candidata clara: buscando, o una única categoría */
     if (visibles.length === 1 || (e.target.value.trim() && visibles.length)) {
@@ -4234,9 +4381,36 @@ document.getElementById('v-importe').addEventListener('keydown', e => {
   if (!visibles.length && ventaGuiadaActiva()) continuarVentaGuiada();
 });
 document.getElementById('v-cliente').addEventListener('change', actualizarMediosVentaPorCliente);
-document.getElementById('v-pago-importe').addEventListener('keydown', e => {
-  if (e.key === 'Enter') { e.stopImmediatePropagation(); agregarPagoVenta(); }
-});
+/* El importe del pago no acepta escaneos: una ráfaga del lector (teclas a menos de 35 ms)
+   terminada en Enter es un paquete, no un pago: se borra del importe y se carga como producto.
+   Esc deja de escribir el importe y vuelve a elegir el medio con 1–9. */
+(function initImportePago() {
+  const inp = document.getElementById('v-pago-importe');
+  let ultimo = 0;
+  let rafaga = 0;
+  inp.addEventListener('keydown', e => {
+    const ahora = Date.now();
+    rafaga = ahora - ultimo < 35 ? rafaga + 1 : 0;
+    ultimo = ahora;
+    if (e.key === 'Enter') {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      if (rafaga >= 4) {
+        const codigo = inp.value.trim();
+        inp.value = '';
+        rafaga = 0;
+        inp.blur();
+        if (!cargarProductoPorCodigo(codigo)) toast(`{% trans "No hay ningún producto con el código ${codigo}" %}`, 'error');
+        return;
+      }
+      agregarPagoVenta();
+    } else if (e.key === 'Escape' && !ventaGuiadaActiva()) {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      inp.blur();
+    }
+  });
+})();
 actualizarBuscadorCategorias();
 
 /* Cerrar con ESC */

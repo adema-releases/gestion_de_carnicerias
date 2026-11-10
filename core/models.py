@@ -150,6 +150,12 @@ class Configuracion(models.Model):
         verbose_name=_("Company name"),
         help_text=_("Commercial name or legal business name."),
     )
+    logo = models.ImageField(
+        upload_to='configuracion/',
+        blank=True,
+        verbose_name=_("Logo del negocio"),
+        help_text=_("Aparece en la lista de precios para imprimir. Conviene PNG cuadrado o apaisado, de unos 400 px."),
+    )
     direccion = models.CharField(
         max_length=255,
         blank=True,

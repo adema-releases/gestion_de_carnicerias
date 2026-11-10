@@ -24,6 +24,7 @@ class ConfiguracionForm(ModelForm):
         model = Configuracion
         fields = [
             'nombre',
+            'logo',
             'direccion',
             'telefono',
             'instagram',
