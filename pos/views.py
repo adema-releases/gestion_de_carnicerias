@@ -2260,6 +2260,10 @@ def terminal(request):
         'instagram': (cfg_obj.instagram or '') if cfg_obj else '',
         'apertura_cuenta_default_id': cuenta_default.pk if cuenta_default else None,
         'apertura_cajero_puede_cambiar': cfg_obj.cajero_puede_cambiar_cuenta_origen if cfg_obj else True,
+        'formatos_balanza': (
+            cfg_obj.get_formatos_etiqueta_balanza() if cfg_obj
+            else [f.strip() for f in Configuracion.FORMATOS_ETIQUETA_BALANZA_DEFAULT.split(',')]
+        ),
     }
     importes_rapidos_venta = [
         _format_importe_rapido_venta(value)

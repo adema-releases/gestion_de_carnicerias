@@ -199,6 +199,22 @@ class VentaGuiadaPosTests(TestCase):
         self.assertEqual(productos[0]['codigo_barras'], '7790000000017')
         self.assertTrue(productos[0]['foto'].endswith('productos/asado.jpg'))
 
+    def test_caja_recibe_formatos_de_etiqueta_de_balanza(self):
+        cfg = Configuracion.objects.first() or Configuracion.objects.create()
+        cfg.formatos_etiqueta_balanza = '20ppppcccccc, mal, 21PPPPIIIIII'
+        cfg.save()
+        vacuna = Categoria.objects.create(nombre='Carne vacuna')
+        Producto.objects.create(nombre='Asado', categoria=vacuna, precio=13900, codigo='601')
+
+        response = self.client.get('/pos/')
+
+        self.assertEqual(json.loads(response.context['config_json'])['formatos_balanza'],
+                         ['20PPPPCCCCCC', '21PPPPIIIIII'])
+        self.assertContains(response, 'function etiquetaBalanza(')
+        # botón para pasar a "solo escáner" (oculta la grilla y lista lo escaneado con foto)
+        self.assertContains(response, 'id="v-modo-escaner-btn"')
+        self.assertContains(response, 'id="v-escaner-resumen"')
+
     def test_api_venta_guarda_desglose_de_categorias(self):
         almacen = Categoria.objects.create(nombre='Almacen')
         limpieza = Categoria.objects.create(nombre='Limpieza')

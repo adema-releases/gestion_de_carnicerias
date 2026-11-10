@@ -139,6 +139,9 @@ class Puesto(DeSucursalMixin):
 
 class Configuracion(models.Model):
     IMPORTES_RAPIDOS_VENTA_DEFAULT = (Decimal('500'), Decimal('1000'), Decimal('2000'), Decimal('5000'))
+    # Etiqueta de balanza (EAN-13 sin el dígito de control): 20 = pesable,
+    # 21 = por unidad; PPPP = PLU; CCCCCC = gramos o unidades.
+    FORMATOS_ETIQUETA_BALANZA_DEFAULT = '20PPPPCCCCCC, 21PPPPCCCCCC'
 
     nombre    = models.CharField(
         max_length=255,
@@ -220,6 +223,19 @@ class Configuracion(models.Model):
         default='500,1000,2000,5000',
         verbose_name=_("Importes rápidos de venta"),
         help_text=_("Importes favoritos del modal de venta rápida, separados por coma. Ej: 500,1000,2000,5000."),
+    )
+
+    formatos_etiqueta_balanza = models.CharField(
+        max_length=100,
+        blank=True,
+        default=FORMATOS_ETIQUETA_BALANZA_DEFAULT,
+        verbose_name=_("Formato de etiqueta de balanza"),
+        help_text=_(
+            "Cómo arma la balanza etiquetadora el código de barras, igual que en su menú "
+            "(Config. equipo > Balanza > Código de barras): 12 caracteres, números fijos, "
+            "P = PLU (el código del producto, ej. 601), C = cantidad (gramos o unidades), "
+            "I = importe en pesos. Varios separados por coma. Vacío: la caja no lee etiquetas de balanza."
+        ),
     )
 
     cobro_automatico_deudas = models.BooleanField(
@@ -368,6 +384,7 @@ class Configuracion(models.Model):
     def clean(self):
         super().clean()
         self._parse_importes_rapidos_venta(validate=True)
+        self._parse_formatos_etiqueta_balanza(validate=True)
         for campo in ('cuenta_caja_pos', 'cuenta_caja_central', 'cuenta_origen_apertura_default'):
             cuenta = getattr(self, campo, None)
             if cuenta and cuenta.categoria != 'Efectivo':
@@ -416,6 +433,35 @@ class Configuracion(models.Model):
 
     def get_importes_rapidos_venta(self):
         return self._parse_importes_rapidos_venta(validate=False)
+
+    def _parse_formatos_etiqueta_balanza(self, validate=False):
+        """Formatos válidos en mayúsculas. Cada uno: 12 caracteres (el 13º es el
+        dígito de control), con un campo P y un campo C o I, cada campo seguido."""
+        formatos = []
+        for parte in (self.formatos_etiqueta_balanza or '').split(','):
+            formato = parte.strip().upper().replace(' ', '')
+            if not formato:
+                continue
+            error = None
+            if len(formato) != 12 or any(c not in '0123456789PCI' for c in formato):
+                error = _('Cada formato lleva 12 caracteres: números fijos y las letras P, C o I. Ej: 20PPPPCCCCCC.')
+            elif 'P' not in formato or ('C' not in formato and 'I' not in formato):
+                error = _('Cada formato necesita el PLU (P) y la cantidad (C) o el importe (I).')
+            else:
+                for letra in 'PCI':
+                    if letra in formato:
+                        tramo = formato[formato.index(letra):formato.rindex(letra) + 1]
+                        if set(tramo) != {letra}:
+                            error = _('Las letras de cada campo van todas juntas. Ej: 20PPPPCCCCCC.')
+            if error:
+                if validate:
+                    raise ValidationError({'formatos_etiqueta_balanza': error})
+                continue
+            formatos.append(formato)
+        return formatos
+
+    def get_formatos_etiqueta_balanza(self):
+        return self._parse_formatos_etiqueta_balanza(validate=False)
 
     def __str__(self):
         return self.nombre or str(_("Unnamed configuration"))

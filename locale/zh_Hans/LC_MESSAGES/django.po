@@ -8203,3 +8203,75 @@ msgstr "客户预付款作废事件"
 
 #~ msgid "Payment methods"
 #~ msgstr "Medios de pago"
+
+msgid "Formato de etiqueta de balanza"
+msgstr "电子秤标签格式"
+
+msgid "Cómo arma la balanza etiquetadora el código de barras, igual que en su menú (Config. equipo > Balanza > Código de barras): 12 caracteres, números fijos, P = PLU (el código del producto, ej. 601), C = cantidad (gramos o unidades), I = importe en pesos. Varios separados por coma. Vacío: la caja no lee etiquetas de balanza."
+msgstr "标签秤生成条形码的方式，与秤菜单中的设置相同（设备配置 > 秤 > 条形码）：12 个字符，固定数字，P = PLU（商品代码，例如 601），C = 数量（克或件），I = 金额（比索）。多个格式用逗号分隔。留空：收银台不读取秤标签。"
+
+msgid "Cada formato lleva 12 caracteres: números fijos y las letras P, C o I. Ej: 20PPPPCCCCCC."
+msgstr "每个格式必须有 12 个字符：固定数字和字母 P、C 或 I。例如：20PPPPCCCCCC。"
+
+msgid "Cada formato necesita el PLU (P) y la cantidad (C) o el importe (I)."
+msgstr "每个格式都需要 PLU（P）以及数量（C）或金额（I）。"
+
+msgid "Las letras de cada campo van todas juntas. Ej: 20PPPPCCCCCC."
+msgstr "同一字段的字母必须连在一起。例如：20PPPPCCCCCC。"
+
+msgid "POS — Balanza etiquetadora"
+msgstr "POS — 标签秤"
+
+msgid "La etiqueta no se leyó bien. Escaneala de nuevo."
+msgstr "标签读取失败，请重新扫描。"
+
+msgid "La etiqueta trae el PLU ${plu} y no hay ningún producto con ese código"
+msgstr "标签上的 PLU 为 ${plu}，但没有该代码的商品"
+
+msgid "La etiqueta no trae cantidad"
+msgstr "标签上没有数量"
+
+msgid "Esa etiqueta ya está cargada en la venta"
+msgstr "该标签已在本次销售中"
+
+msgid "Ver cortes"
+msgstr "显示肉块"
+
+msgid "Solo escáner"
+msgstr "仅扫描"
+
+msgid "Mostrar otra vez los botones de los cortes"
+msgstr "重新显示肉块按钮"
+
+msgid "Ocultar los cortes y ver lo escaneado como lista"
+msgstr "隐藏肉块，以列表查看已扫描的商品"
+
+msgid "Escaneá las etiquetas"
+msgstr "请扫描标签"
+
+msgid "Cada paquete se suma a la lista. Para cargar un corte a mano, escribí su nombre o código arriba."
+msgstr "每个包裹都会加入列表。要手动添加肉块，请在上方输入名称或代码。"
+
+msgid "paquetes"
+msgstr "包"
+
+msgid "Para cobrar: el número del medio de pago, el monto y Enter. Otro Enter emite el ticket."
+msgstr "收款：按付款方式的数字键，输入金额后按 Enter。再按一次 Enter 开出小票。"
+
+msgid "Tocá los medios en el orden que quieras: el primero queda en la tecla 1, el segundo en la 2… Después tocá Listo."
+msgstr "按你想要的顺序点击付款方式：第一个对应按键 1，第二个对应按键 2……然后点击“完成”。"
+
+msgid "Listo"
+msgstr "完成"
+
+msgid "Teclas"
+msgstr "快捷键"
+
+msgid "Elegir qué número del teclado elige cada medio de pago"
+msgstr "设置每种付款方式对应的数字键"
+
+msgid "La tecla ${n} no tiene medio de pago"
+msgstr "按键 ${n} 没有对应的付款方式"
+
+msgid "¿Con cuánto paga? Enter = justo"
+msgstr "顾客付多少？Enter = 刚好"

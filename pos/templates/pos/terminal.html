@@ -475,6 +475,15 @@
     }
     .form-control:focus { outline: none; border-color: #4a4a6a; }
     .form-control.big { font-size: 1.4rem; font-weight: 700; text-align: right; }
+    /* Importe total de la venta: rojo, grande y con el signo $ a la izquierda. */
+    .importe-total-wrap { position: relative; }
+    .importe-total-signo {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      font-size: 1.6rem; font-weight: 700; color: var(--red); pointer-events: none;
+    }
+    .modal-venta #v-col-pago .importe-total-wrap .form-control.big.importe-total {
+      font-size: 2rem; color: var(--red); padding: 6px 12px 6px 40px; line-height: 1.2;
+    }
     textarea.form-control { min-height: 68px; resize: vertical; }
     select.form-control option { background: var(--surface); }
 
@@ -708,6 +717,45 @@
       .modal-venta.con-productos .medio-btn .medio-emoji { font-size: 1.1rem; }
       .modal-venta.con-productos .modal-actions { flex: 0 0 auto; margin-top: 10px; }
     }
+    /* Modo escáner: sin grilla de cortes; lo escaneado ocupa el panel como lista con foto.
+       Si el cajero escribe en el buscador, la grilla vuelve a aparecer filtrada. */
+    .escaner-resumen { display: none; }
+    .prodpad.modo-escaner .prod-chips,
+    .prodpad.modo-escaner:not(.buscando) .prod-grid,
+    .prodpad.modo-escaner:not(.buscando) #v-prod-empty { display: none !important; }
+    .prodpad.modo-escaner:not(.buscando) #v-prod-lines { flex: 1 1 auto; max-height: none; overflow-y: auto; }
+    .prodpad.modo-escaner.buscando #v-prod-lines,
+    .prodpad.modo-escaner.buscando .escaner-resumen { display: none; }
+    .prodpad.modo-escaner .escaner-resumen {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.8rem; color: var(--muted); padding: 0 2px;
+    }
+    .prodpad.modo-escaner .escaner-resumen strong { color: var(--text); font-size: 0.95rem; }
+    .escaner-vacio {
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+      min-height: 220px; height: 100%; color: var(--muted); text-align: center;
+      border: 2px dashed #2a2a40; border-radius: 12px; padding: 24px;
+    }
+    .escaner-vacio i { font-size: 2.6rem; opacity: 0.7; }
+    .escaner-vacio strong { color: var(--text); font-size: 1.05rem; }
+    .escaner-item {
+      display: grid; grid-template-columns: 64px minmax(0, 1fr) auto auto; gap: 12px; align-items: center;
+      border: 1px solid #24243a; border-radius: 10px; background: #131320;
+      padding: 8px 8px 8px 8px; margin-bottom: 8px;
+    }
+    .escaner-item.nuevo { animation: escanerNuevo 1.2s ease-out; }
+    @keyframes escanerNuevo { from { border-color: var(--green); background: #12301f; } }
+    .escaner-foto {
+      width: 64px; height: 64px; border-radius: 8px; overflow: hidden;
+      display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #fff;
+    }
+    .escaner-foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .escaner-info { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+    .escaner-nombre { font-weight: 700; font-size: 1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .escaner-detalle { font-size: 0.82rem; color: var(--muted); }
+    .escaner-detalle b { color: var(--text); font-weight: 600; }
+    .escaner-sub { font-size: 1.1rem; font-weight: 700; color: var(--green); white-space: nowrap; }
+    .escaner-item button { border: 0; background: transparent; color: var(--red); cursor: pointer; padding: 8px; font-size: 1rem; }
     .prod-buscar-wrap { position: relative; }
     .prod-buscar-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
     .prod-buscar-wrap .catpad-search { padding-left: 36px; width: 100%; font-size: 0.95rem; }
@@ -1366,6 +1414,21 @@
       border: 1px solid #2c2c3d;
     }
     .medio-btn .medio-emoji { font-size: 1.4rem; line-height: 1; }
+    /* Tecla rápida de cada medio (1–9) */
+    .medio-btn { position: relative; }
+    .medio-tecla {
+      position: absolute; top: 4px; left: 5px; min-width: 18px; height: 18px; padding: 0 4px;
+      border-radius: 5px; border: 1px solid #3a3a55; background: #23233a; color: #c9c9e0;
+      font-size: 0.7rem; font-weight: 800; line-height: 16px; text-align: center;
+    }
+    .medio-btn.selected .medio-tecla { background: var(--green); border-color: var(--green); color: #052e16; }
+    .medios-grid.asignando .medio-btn { border-style: dashed; }
+    .medios-grid.asignando .medio-tecla.vacia { opacity: 0.3; }
+    .medios-grid.asignando .medio-tecla:not(.vacia) { background: var(--blue); border-color: var(--blue); color: #0b1a33; }
+    .medios-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .medios-head label { margin: 0; }
+    .medios-head-acciones { display: flex; gap: 6px; }
+    .teclas-hint { margin-top: 6px; font-size: 0.76rem; color: var(--blue); }
     .medio-btn:hover { border-color: #505070; background: #1d1d30; transform: translateY(-1px); }
     .medio-btn.selected { border-color: var(--green); background: #0f2d1a; color: #b9f8d1; }
     .medio-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
@@ -1791,7 +1854,10 @@
       <div class="venta-col" id="v-col-pago">
         <div class="form-group">
           <label>{% trans "Importe Total *" %}</label>
-          <input id="v-importe" type="text" inputmode="decimal" class="form-control big" placeholder="0" autocomplete="off" />
+          <div class="importe-total-wrap">
+            <span class="importe-total-signo">$</span>
+            <input id="v-importe" type="text" inputmode="decimal" class="form-control big importe-total" placeholder="0" autocomplete="off" />
+          </div>
           <div class="venta-importe-nota" id="v-importe-nota" style="display:none;">{% trans "Se calcula con el detalle por categorías" %}</div>
         </div>
 
@@ -1822,8 +1888,15 @@
 
         <!-- Medios de pago como botones -->
         <div class="form-group" style="margin-bottom:6px;">
-          <label>{% trans "Medio de Pago" %}</label>
+          <div class="medios-head">
+            <label>{% trans "Medio de Pago" %}</label>
+            <span class="medios-head-acciones">
+              <button type="button" class="btn-mini" id="v-teclas-reset" onclick="restablecerTeclasMedios()" style="display:none;">{% trans "Restablecer" %}</button>
+              <button type="button" class="btn-mini" id="v-teclas-btn" onclick="alternarAsignarTeclas()"></button>
+            </span>
+          </div>
           <div class="medios-grid" id="v-medios-grid"></div>
+          <div class="teclas-hint" id="v-teclas-hint" style="display:none;">{% trans "Tocá los medios en el orden que quieras: el primero queda en la tecla 1, el segundo en la 2… Después tocá Listo." %}</div>
         </div>
 
         <!-- Fila importe + agregar (aparece al seleccionar un medio) -->
@@ -3170,6 +3243,13 @@ function formatImporteInput(valor) {
   return Number.isInteger(v) ? String(v) : v.toFixed(2);
 }
 
+/* Total calculado (no editable) a la argentina: 20.316,50 o 20.316 si es redondo. */
+function formatImporteTotal(valor) {
+  const v = redondearImporte(valor);
+  const decimales = Number.isInteger(v) ? 0 : 2;
+  return v.toLocaleString('es-AR', { minimumFractionDigits: decimales, maximumFractionDigits: decimales });
+}
+
 function fmtMonto(valor) {
   return '$' + Number(valor || 0).toLocaleString('es-AR', {minimumFractionDigits:0, maximumFractionDigits:2});
 }
@@ -3269,7 +3349,7 @@ function renderCategoriasVenta() {
 
   if (importeInp) {
     if (vCategorias.length) {
-      importeInp.value = formatImporteInput(total);
+      importeInp.value = formatImporteTotal(total);
       importeInp.readOnly = true;
     } else {
       /* Sin líneas vuelve a mandar el total tipeado a mano */
@@ -3354,6 +3434,66 @@ function cardProductoVenta(p) {
     </button>`;
 }
 
+/* Modo escáner: oculta la grilla de cortes y muestra lo cargado como lista con foto.
+   Se recuerda por PC (es una preferencia de la caja, no un dato). */
+const MODO_ESCANER_KEY = 'pos.venta.modoEscaner';
+let modoEscaner = false;
+try { modoEscaner = localStorage.getItem(MODO_ESCANER_KEY) === '1'; } catch (e) { /* sin storage: arranca con la grilla */ }
+
+function aplicarModoEscaner() {
+  const pad = document.getElementById('v-prodpad');
+  const btn = document.getElementById('v-modo-escaner-btn');
+  if (pad) pad.classList.toggle('modo-escaner', modoEscaner);
+  if (btn) {
+    btn.innerHTML = modoEscaner
+      ? '<i class="fa-solid fa-table-cells"></i> {% trans "Ver cortes" %}'
+      : '<i class="fa-solid fa-barcode"></i> {% trans "Solo escáner" %}';
+    btn.title = modoEscaner
+      ? '{% trans "Mostrar otra vez los botones de los cortes" %}'
+      : '{% trans "Ocultar los cortes y ver lo escaneado como lista" %}';
+  }
+  renderProductosVenta();
+}
+
+/* Después de cargar un producto: en modo escáner el foco sale del buscador, así las
+   teclas 1–9 eligen el medio de pago (el lector igual se lee sin foco). Si no, vuelve
+   al buscador para seguir tipeando. */
+function volverAlBuscador(buscador) {
+  if (!buscador) return;
+  if (modoEscaner) setTimeout(() => { if (document.activeElement === buscador) buscador.blur(); }, 30);
+  else setTimeout(() => buscador.focus(), 30);
+}
+
+function alternarModoEscaner() {
+  modoEscaner = !modoEscaner;
+  try { localStorage.setItem(MODO_ESCANER_KEY, modoEscaner ? '1' : '0'); } catch (e) { /* queda solo por esta sesión */ }
+  aplicarModoEscaner();
+  const buscador = document.getElementById('v-prod-buscar');
+  if (buscador && !modoEscaner) buscador.focus();
+  else if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+}
+
+function lineaEscaner(i, idx) {
+  const prod = PRODUCTOS.find(p => p.id === i.productoId);
+  const [icono, claro, oscuro] = ESTILO_RUBRO_PROD[i.categoria] || ESTILO_OTRO_PROD;
+  const foto = prod && prod.foto ? `<img src="${escHtml(prod.foto)}" alt="" loading="lazy" onerror="this.remove()" />` : '';
+  const unidad = i.unidad === 'kg' ? 'kg' : 'u';
+  const nuevo = i.agregadoEn && Date.now() - i.agregadoEn < 1200 ? 'nuevo' : '';
+  const quitar = i.deComanda
+    ? '<span title="{% trans "De la comanda" %}" style="padding:8px;color:var(--orange)"><i class="fa-solid fa-scale-balanced"></i></span>'
+    : `<button type="button" title="{% trans "Quitar" %}" onclick="removerItemVenta(${idx})"><i class="fa-solid fa-times"></i></button>`;
+  return `
+    <div class="escaner-item ${nuevo}">
+      <div class="escaner-foto" style="background-image: linear-gradient(140deg, ${claro}, ${oscuro});">${foto || `<i class="fa-solid ${icono}"></i>`}</div>
+      <div class="escaner-info">
+        <span class="escaner-nombre">${escHtml(i.nombre)}</span>
+        <span class="escaner-detalle"><b>${fmtCantidad(i.cantidad, i.unidad)}</b> × ${fmtMonto(i.precio)}/${unidad}${prod && prod.codigo ? ` · ${escHtml(prod.codigo)}` : ''}</span>
+      </div>
+      <strong class="escaner-sub">${fmtMonto(redondearImporte(i.cantidad * i.precio))}</strong>
+      ${quitar}
+    </div>`;
+}
+
 function renderChipsProductos() {
   const cont = document.getElementById('v-prod-chips');
   if (!cont) return;
@@ -3382,6 +3522,71 @@ function productoPorCodigo(texto) {
   return PRODUCTOS.find(p => p.codigo_barras && p.codigo_barras === q)
     || PRODUCTOS.find(p => p.codigo && String(p.codigo) === q)
     || null;
+}
+
+/* Etiqueta de la balanza etiquetadora: EAN-13 armado según EMPRESA.formatos_balanza
+   (ej. 20PPPPCCCCCC: 20 fijo, PPPP = PLU = código del producto, CCCCCC = gramos o
+   unidades; I = importe en pesos). Devuelve null si el código no es de balanza, o
+   {prod, cantidad} / {error}. */
+function digitoControlEan13(doce) {
+  let suma = 0;
+  for (let i = 0; i < 12; i++) suma += Number(doce[i]) * (i % 2 ? 3 : 1);
+  return (10 - suma % 10) % 10;
+}
+
+function etiquetaBalanza(texto) {
+  const codigo = String(texto || '').trim();
+  if (!/^\d{13}$/.test(codigo)) return null;
+  const formatos = (EMPRESA && EMPRESA.formatos_balanza) || [];
+  const formato = formatos.find(f => [...f].every((c, i) => !/\d/.test(c) || c === codigo[i]));
+  if (!formato) return null;
+  if (digitoControlEan13(codigo) !== Number(codigo[12])) {
+    return { error: '{% trans "La etiqueta no se leyó bien. Escaneala de nuevo." %}' };
+  }
+  const campo = letra => {
+    const desde = formato.indexOf(letra);
+    return desde < 0 ? null : Number(codigo.slice(desde, formato.lastIndexOf(letra) + 1));
+  };
+  const plu = campo('P');
+  const prod = PRODUCTOS.find(p => /^\d+$/.test(String(p.codigo || '')) && Number(p.codigo) === plu);
+  if (!prod) return { error: `{% trans "La etiqueta trae el PLU ${plu} y no hay ningún producto con ese código" %}` };
+  const gramosOUnidades = campo('C');
+  const importe = campo('I');
+  let cantidad;
+  if (gramosOUnidades !== null) {
+    cantidad = prod.unidad === 'kg' ? gramosOUnidades / 1000 : gramosOUnidades;
+  } else {
+    const precio = Number(prod.precio) || 0;
+    cantidad = precio > 0 ? importe / precio : 0;
+    cantidad = prod.unidad === 'kg' ? Math.round(cantidad * 1000) / 1000 : Math.round(cantidad);
+  }
+  if (!(cantidad > 0)) return { error: '{% trans "La etiqueta no trae cantidad" %}' };
+  return { prod, cantidad };
+}
+
+function cargarEtiquetaBalanza(etiqueta, codigo) {
+  const buscador = document.getElementById('v-prod-buscar');
+  if (buscador) buscador.value = '';
+  const rechazar = mensaje => {
+    toast(mensaje, 'error');
+    renderProductosVenta();
+    if (buscador) volverAlBuscador(buscador);
+  };
+  if (etiqueta.error) { rechazar(etiqueta.error); return; }
+  if (vItems.some(i => i.etiqueta === codigo)) {
+    rechazar('{% trans "Esa etiqueta ya está cargada en la venta" %}');
+    return;
+  }
+  const prod = etiqueta.prod;
+  vItems.push({
+    productoId: prod.id, nombre: prod.nombre, unidad: prod.unidad,
+    categoriaId: prod.categoria_id, categoria: prod.categoria,
+    cantidad: etiqueta.cantidad, precio: prod.precio, etiqueta: codigo, agregadoEn: Date.now(),
+  });
+  cancelarProducto();
+  sincronizarCategoriasDesdeItems();
+  actualizarVueltoMulti();
+  if (buscador) volverAlBuscador(buscador);
 }
 
 /* Código de barras de la comanda impresa en el mostrador: CM000123 (id de la comanda). */
@@ -3413,6 +3618,8 @@ function cargarProductoPorCodigo(texto) {
   const prod = productoPorCodigo(texto);
   if (!prod) {
     const codigo = String(texto || '').trim();
+    const etiqueta = etiquetaBalanza(codigo);
+    if (etiqueta) { cargarEtiquetaBalanza(etiqueta, codigo); return true; }
     if (/^\d+$/.test(codigo)) {
       toast(`{% trans "No hay ningún producto con el código ${codigo}" %}`, 'error');
       if (buscador) buscador.select();
@@ -3423,15 +3630,15 @@ function cargarProductoPorCodigo(texto) {
   if (buscador) buscador.value = '';
   if (prod.unidad === 'u') {
     const ultimo = vItems[vItems.length - 1];
-    if (ultimo && !ultimo.deComanda && ultimo.productoId === prod.id) ultimo.cantidad += 1;
+    if (ultimo && !ultimo.deComanda && !ultimo.etiqueta && ultimo.productoId === prod.id) { ultimo.cantidad += 1; ultimo.agregadoEn = Date.now(); }
     else vItems.push({
       productoId: prod.id, nombre: prod.nombre, unidad: prod.unidad,
-      categoriaId: prod.categoria_id, categoria: prod.categoria, cantidad: 1, precio: prod.precio,
+      categoriaId: prod.categoria_id, categoria: prod.categoria, cantidad: 1, precio: prod.precio, agregadoEn: Date.now(),
     });
     cancelarProducto();
     sincronizarCategoriasDesdeItems();
     actualizarVueltoMulti();
-    if (buscador) setTimeout(() => buscador.focus(), 30);
+    if (buscador) volverAlBuscador(buscador);
   } else {
     seleccionarProducto(prod.id);
   }
@@ -3446,8 +3653,33 @@ function renderProductosVenta() {
   const vacio = document.getElementById('v-prod-empty');
   if (vacio) vacio.style.display = visibles.length ? 'none' : '';
 
+  const pad = document.getElementById('v-prodpad');
+  const buscador = document.getElementById('v-prod-buscar');
+  // Busca quien escribe un nombre o un código corto (601). Un número largo es el lector
+  // tipeando una etiqueta: la lista no se esconde mientras llega.
+  const q = buscador ? buscador.value.trim() : '';
+  if (pad) pad.classList.toggle('buscando', /\D/.test(q) || (q.length > 0 && q.length < 8));
+
   const list = document.getElementById('v-prod-lines');
-  if (list) {
+  if (list && modoEscaner) {
+    list.innerHTML = vItems.length ? vItems.map(lineaEscaner).join('') : `
+      <div class="escaner-vacio">
+        <i class="fa-solid fa-barcode"></i>
+        <strong>{% trans "Escaneá las etiquetas" %}</strong>
+        <span>{% trans "Cada paquete se suma a la lista. Para cargar un corte a mano, escribí su nombre o código arriba." %}</span>
+        <span>{% trans "Para cobrar: el número del medio de pago, el monto y Enter. Otro Enter emite el ticket." %}</span>
+      </div>`;
+    const resumen = document.getElementById('v-escaner-resumen');
+    if (resumen) {
+      const kilos = vItems.filter(i => i.unidad === 'kg').reduce((s, i) => s + (Number(i.cantidad) || 0), 0);
+      const total = vItems.reduce((s, i) => s + redondearImporte(i.cantidad * i.precio), 0);
+      resumen.innerHTML = vItems.length
+        ? `<span>${vItems.length} {% trans "paquetes" %} · ${fmtCantidad(kilos, 'kg')}</span><strong>${fmtMonto(redondearImporte(total))}</strong>`
+        : '';
+    }
+    const nuevo = list.querySelector('.escaner-item.nuevo');
+    if (nuevo) nuevo.scrollIntoView({ block: 'nearest' });
+  } else if (list) {
     list.innerHTML = vItems.map((i, idx) => `
       <div class="venta-summary-line">
         <span>${escHtml(i.nombre)} · ${fmtCantidad(i.cantidad, i.unidad)} × ${fmtMonto(i.precio)}</span>
@@ -3505,14 +3737,14 @@ function confirmarProducto() {
   vItems.push({
     productoId: vProdPendiente.id, nombre: vProdPendiente.nombre, unidad: vProdPendiente.unidad,
     categoriaId: vProdPendiente.categoria_id, categoria: vProdPendiente.categoria,
-    cantidad, precio: vProdPendiente.precio,
+    cantidad, precio: vProdPendiente.precio, agregadoEn: Date.now(),
   });
   const buscador = document.getElementById('v-prod-buscar');
   if (buscador) buscador.value = '';
   cancelarProducto();
   sincronizarCategoriasDesdeItems();
   actualizarVueltoMulti();
-  if (buscador) setTimeout(() => buscador.focus(), 30);
+  if (buscador) volverAlBuscador(buscador);
   return true;
 }
 
@@ -3567,7 +3799,7 @@ function sincronizarCategoriasDesdeItems() {
     else if (e.key === 'Escape') { e.stopImmediatePropagation(); cancelarProducto(); buscador.focus(); }
   });
   renderChipsProductos();
-  renderProductosVenta();
+  aplicarModoEscaner();
 })();
 
 /* Escaneo con la venta cerrada: el lector "tipea" muy rápido y termina en Enter.
@@ -3588,7 +3820,9 @@ function sincronizarCategoriasDesdeItems() {
       buffer = '';
       const botonVenta = document.querySelector('.btn-accion.venta');
       if (codigo.length < 3 || !botonVenta || botonVenta.offsetParent === null || botonVenta.disabled) return;
-      if (!productoPorCodigo(codigo) && !idComandaDeCodigo(codigo)) { toast(`{% trans "No hay ningún producto con el código ${codigo}" %}`, 'error'); return; }
+      const etiqueta = productoPorCodigo(codigo) ? null : etiquetaBalanza(codigo);
+      if (etiqueta && etiqueta.error) { toast(etiqueta.error, 'error'); return; }
+      if (!productoPorCodigo(codigo) && !idComandaDeCodigo(codigo) && !etiqueta) { toast(`{% trans "No hay ningún producto con el código ${codigo}" %}`, 'error'); return; }
       e.preventDefault();
       abrirModal('venta');
       setTimeout(() => cargarProductoPorCodigo(codigo), 80);
@@ -3596,6 +3830,34 @@ function sincronizarCategoriasDesdeItems() {
       buffer += e.key;
     }
   });
+})();
+
+/* Escaneo con la venta abierta pero el foco fuera del buscador (ej. después de tocar un
+   medio de pago): la ráfaga del lector se carga igual, y su Enter no "aprieta" el botón
+   que tenga el foco. Si el foco está en un campo de texto, ese campo manda. */
+(function initEscaneoEnVenta() {
+  if (!document.getElementById('v-prod-buscar')) return;
+  let buffer = '';
+  let ultimo = 0;
+  document.addEventListener('keydown', e => {
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
+    const abiertos = document.querySelectorAll('.modal-backdrop.visible');
+    if (abiertos.length !== 1 || abiertos[0].id !== 'modal-venta') { buffer = ''; return; }
+    const ahora = Date.now();
+    if (ahora - ultimo > 80) buffer = '';
+    ultimo = ahora;
+    if (e.key === 'Enter') {
+      const codigo = buffer;
+      buffer = '';
+      if (codigo.length < 3) return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (!cargarProductoPorCodigo(codigo)) toast(`{% trans "No hay ningún producto con el código ${codigo}" %}`, 'error');
+    } else if (e.key.length === 1) {
+      buffer += e.key;
+    }
+  }, true);
 })();
 
 /* ── Comandas del mostrador ──
@@ -3705,19 +3967,118 @@ function activarPagoMixtoVenta() {
   actualizarVueltoMulti();
 }
 
+/* ── Teclas rápidas de medios de pago (1–9) ──
+   Por defecto Efectivo es la 1 y el resto sigue en el orden de la grilla. El cajero las
+   reasigna con "Teclas" tocando los medios en orden; se recuerdan por PC. */
+const TECLAS_MEDIOS_KEY = 'pos.venta.teclasMedios';
+let vTeclasMedios = null;      // {medioId: tecla} guardado, o null = por defecto
+let vAsignandoTeclas = null;   // ids tocados en orden mientras se asignan, o null
+try {
+  const guardadas = JSON.parse(localStorage.getItem(TECLAS_MEDIOS_KEY) || 'null');
+  if (guardadas && typeof guardadas === 'object') vTeclasMedios = guardadas;
+} catch (e) { /* sin storage: teclas por defecto */ }
+
+function mediosVentaVisibles() {
+  const tieneCliente = Boolean(document.getElementById('v-cliente').value);
+  return MEDIOS.filter(m => !(m.categoria === 'Cuenta Corriente' && !tieneCliente));
+}
+
+function teclaDeMedio(medioId, visibles) {
+  const id = String(medioId);
+  if (vTeclasMedios) {
+    const n = Number(vTeclasMedios[id]);
+    return n >= 1 && n <= 9 ? n : null;
+  }
+  const orden = [...visibles.filter(m => m.categoria === 'Efectivo'), ...visibles.filter(m => m.categoria !== 'Efectivo')];
+  const pos = orden.findIndex(m => String(m.id) === id);
+  return pos >= 0 && pos < 9 ? pos + 1 : null;
+}
+
+function medioDeTecla(n) {
+  const visibles = mediosVentaVisibles();
+  return visibles.find(m => teclaDeMedio(m.id, visibles) === n) || null;
+}
+
 function renderMediosGrid() {
   const grid = document.getElementById('v-medios-grid');
-  const tieneCliente = Boolean(document.getElementById('v-cliente').value);
-  const visibles = MEDIOS.filter(m => !(m.categoria === 'Cuenta Corriente' && !tieneCliente));
-  grid.innerHTML = visibles.map(m => `
+  const visibles = mediosVentaVisibles();
+  const asignando = Array.isArray(vAsignandoTeclas);
+  grid.classList.toggle('asignando', asignando);
+  grid.innerHTML = visibles.map(m => {
+    const tecla = asignando
+      ? (vAsignandoTeclas.indexOf(String(m.id)) + 1 || null)
+      : teclaDeMedio(m.id, visibles);
+    return `
     <button type="button"
-      class="medio-btn${vMedioSel === String(m.id) ? ' selected' : ''}"
-      onclick="seleccionarMedioVenta('${m.id}')">
+      class="medio-btn${vMedioSel === String(m.id) && !asignando ? ' selected' : ''}"
+      onclick="clickMedioVenta('${m.id}')">
+      <span class="medio-tecla${tecla ? '' : ' vacia'}">${tecla || '·'}</span>
       <span class="medio-emoji">${getMedioEmoji(m.categoria)}</span>
       <span>${escHtml(m.nombre)}</span>
-    </button>
-  `).join('');
+    </button>`;
+  }).join('');
+  const btn = document.getElementById('v-teclas-btn');
+  if (btn) {
+    btn.innerHTML = asignando
+      ? '<i class="fa-solid fa-check"></i> {% trans "Listo" %}'
+      : '<i class="fa-regular fa-keyboard"></i> {% trans "Teclas" %}';
+    btn.title = '{% trans "Elegir qué número del teclado elige cada medio de pago" %}';
+  }
+  const reset = document.getElementById('v-teclas-reset');
+  if (reset) reset.style.display = asignando ? '' : 'none';
+  const hint = document.getElementById('v-teclas-hint');
+  if (hint) hint.style.display = asignando ? '' : 'none';
 }
+
+function clickMedioVenta(medioId) {
+  if (!Array.isArray(vAsignandoTeclas)) { seleccionarMedioVenta(medioId); return; }
+  const id = String(medioId);
+  const pos = vAsignandoTeclas.indexOf(id);
+  if (pos >= 0) vAsignandoTeclas.splice(pos, 1);
+  else if (vAsignandoTeclas.length < 9) vAsignandoTeclas.push(id);
+  renderMediosGrid();
+}
+
+function alternarAsignarTeclas() {
+  if (!Array.isArray(vAsignandoTeclas)) {
+    vAsignandoTeclas = [];
+  } else {
+    if (vAsignandoTeclas.length) {   // sin tocar ninguno, quedan las de antes
+      vTeclasMedios = Object.fromEntries(vAsignandoTeclas.map((id, i) => [id, i + 1]));
+      try { localStorage.setItem(TECLAS_MEDIOS_KEY, JSON.stringify(vTeclasMedios)); } catch (e) { /* solo esta sesión */ }
+    }
+    vAsignandoTeclas = null;
+  }
+  renderMediosGrid();
+}
+
+function restablecerTeclasMedios() {
+  vTeclasMedios = null;
+  vAsignandoTeclas = null;
+  try { localStorage.removeItem(TECLAS_MEDIOS_KEY); } catch (e) { /* nada guardado */ }
+  renderMediosGrid();
+}
+
+/* Una tecla 1–9 sola (fuera de un campo de texto) elige el medio. Espera un instante:
+   si enseguida llega otra tecla es el lector tipeando una etiqueta, no el cajero. */
+(function initTeclasMedios() {
+  let pendiente = null;
+  document.addEventListener('keydown', e => {
+    if (pendiente) { clearTimeout(pendiente); pendiente = null; return; }
+    if (!/^[1-9]$/.test(e.key) || e.ctrlKey || e.altKey || e.metaKey) return;
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
+    const abiertos = document.querySelectorAll('.modal-backdrop.visible');
+    if (abiertos.length !== 1 || abiertos[0].id !== 'modal-venta' || Array.isArray(vAsignandoTeclas)) return;
+    const n = Number(e.key);
+    pendiente = setTimeout(() => {
+      pendiente = null;
+      const medio = medioDeTecla(n);
+      if (medio) seleccionarMedioVenta(medio.id);
+      else toast(`{% trans "La tecla ${n} no tiene medio de pago" %}`, 'error');
+    }, 90);
+  });
+})();
 
 function seleccionarMedioVenta(medioId) {
   vMedioSel = String(medioId);
@@ -3735,18 +4096,33 @@ function seleccionarMedioVenta(medioId) {
   }
   renderMediosGrid();
   if (pagoRow) pagoRow.style.display = '';
-  /* pre-rellena con el monto pendiente */
+  /* Electrónico / cuenta corriente: pre-rellena con lo pendiente. Efectivo: vacío, para
+     escribir con cuánto paga y ver el vuelto (Enter sin escribir = paga justo). */
+  const pendiente = pendienteVenta();
+  const inp = document.getElementById('v-pago-importe');
+  if (medio.categoria === 'Efectivo') {
+    inp.value = '';
+    inp.placeholder = pendiente > 0
+      ? `{% trans "¿Con cuánto paga? Enter = justo" %} ${fmtMonto(pendiente)}`
+      : '0';
+  } else {
+    inp.value = pendiente > 0 ? formatImporteInput(pendiente) : '';
+    inp.placeholder = '0';
+  }
+  setTimeout(() => { inp.focus(); inp.select(); }, 60);
+}
+
+function pendienteVenta() {
   const importe = totalVentaActual();
   const pagado  = vPagos.reduce((s, p) => s + p.importe, 0);
-  const pendiente = Math.max(0, importe - pagado);
-  const inp = document.getElementById('v-pago-importe');
-  inp.value = pendiente > 0 ? (Number.isInteger(pendiente) ? pendiente : pendiente.toFixed(2)) : '';
-  setTimeout(() => inp.focus(), 60);
+  return Math.max(0, redondearImporte(importe - pagado));
 }
 
 function agregarPagoVenta() {
   if (!vMedioSel) { toast('{% trans "Seleccioná un medio de pago" %}', 'error'); return; }
-  const pagoImporte = parseImporteEscrito(document.getElementById('v-pago-importe').value);
+  const escrito = document.getElementById('v-pago-importe').value;
+  // Vacío = paga justo lo que falta (útil en efectivo: "1" + Enter).
+  const pagoImporte = escrito.trim() ? parseImporteEscrito(escrito) : pendienteVenta();
   if (pagoImporte <= 0) { toast('{% trans "Ingresá un importe válido" %}', 'error'); return; }
   const medio = MEDIOS.find(m => String(m.id) === vMedioSel);
   if (!medio) return;
@@ -3758,6 +4134,10 @@ function agregarPagoVenta() {
   renderMediosGrid();
   renderPagosList();
   actualizarVueltoMulti();
+  // Cubierto: Enter emite. Si falta, el foco sale del campo para elegir otro medio con 1–9.
+  const emitir = document.getElementById('v-btn-emitir');
+  if (pendienteVenta() <= 0 && emitir && emitir.offsetParent !== null) setTimeout(() => emitir.focus(), 30);
+  else if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
 }
 
 function removerPagoVenta(idx) {
@@ -4866,6 +5246,8 @@ function resetPagoCuentaProveedorUi() {
 function parseImporteEscrito(value) {
   const raw = String(value || '').trim().replace(/\s/g, '');
   if (!raw) return 0;
+  // "20.316" o "1.250.000": puntos de miles (grupos de 3), no decimales.
+  if (/^\d{1,3}(\.\d{3})+$/.test(raw)) return Number(raw.replace(/\./g, ''));
   const decimalSep = raw.lastIndexOf(',') > raw.lastIndexOf('.') ? ',' : '.';
   const normalized = raw
     .replace(new RegExp(decimalSep === ',' ? '\\.' : ',', 'g'), '')

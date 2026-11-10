@@ -18,6 +18,7 @@ Flujo: tocar categoría -> importe -> Enter -> tocar otra categoría -> importe.
   </div>
   <div class="catpad-head">
     <span class="catpad-title">{% trans "Cortes y productos" %}</span>
+    <button type="button" class="btn-mini" id="v-modo-escaner-btn" onclick="alternarModoEscaner()"></button>
   </div>
   <div class="prod-buscar-wrap">
     <i class="fa-solid fa-barcode"></i>
@@ -37,6 +38,7 @@ Flujo: tocar categoría -> importe -> Enter -> tocar otra categoría -> importe.
       <i class="fa-solid fa-times"></i>
     </button>
   </div>
+  <div class="escaner-resumen" id="v-escaner-resumen"></div>
   <div class="venta-cat-lines" id="v-prod-lines"></div>
 </div>
 {% endif %}

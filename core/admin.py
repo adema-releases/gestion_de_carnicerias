@@ -35,6 +35,9 @@ class ConfiguracionAdmin(SingletonModelAdmin):
         (_('POS — General'), {
             'fields': ('nombre_impresora', 'importes_rapidos_venta', 'permitir_turnos_multi_dia'),
         }),
+        (_('POS — Balanza etiquetadora'), {
+            'fields': ('formatos_etiqueta_balanza',),
+        }),
         (_('Tesorería — Cuentas del sistema'), {
             'description': 'Cuentas estructurales del flujo de caja: drawer del POS, caja central, diferencias de arqueo y Mercado Pago.',
             'fields': (

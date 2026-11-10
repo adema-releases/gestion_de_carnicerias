@@ -34,6 +34,7 @@ class ConfiguracionForm(ModelForm):
             'nombre_impresora',
             'permitir_turnos_multi_dia',
             'importes_rapidos_venta',
+            'formatos_etiqueta_balanza',
             'cobro_automatico_deudas',
             'pago_automatico_deudas_proveedores',
             'compensar_deudas_mas_antiguas_primero',
