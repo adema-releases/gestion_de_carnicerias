@@ -1,10 +1,20 @@
 # Changelog
 
-## Sin publicar
+## 0.0.9 - 2026-11-12
 
 ### Added
 
+- **Etiquetas de la balanza en la caja** (Systel Cuora Max): el escáner lee la etiqueta `20PPPPCCCCCC` (por peso, gramos) o `21PPPPCCCCCC` (por unidad) y carga el producto por su código (PLU) con la cantidad de la etiqueta. Una etiqueta repetida en la misma venta se bloquea. Formatos en *Configuración → POS — Balanza etiquetadora*.
+- **Archivo para la balanza**: *Admin → Productos → Archivo para balanza* baja el CSV que importa Qendra (todos los productos activos con código, nombres de hasta 18 letras sin tildes ni ñ, precio entero). Al cambiar precio, nombre, código, rubro, unidad o activo, el admin avisa que la balanza quedó desactualizada, con el link para bajarlo.
+- **Lista de precios para imprimir** (*Lista de precios* en el mostrador, la caja y Admin → Productos): tabla por secciones de colores en 1 hoja A4, tabla con fotitos en 1 hoja, o catálogo de tarjetas con foto, PLU y precio. Arriba, el paso a paso para vender con la balanza.
+- **Logo del negocio** en *Configuración → Datos de la empresa*, para el encabezado de la lista de precios.
+- **Importar y exportar productos en Excel por código**: el mismo Excel sirve en la PC y en la nube; las columnas que no vienen (fotos, código de barras) no se tocan.
 - Primer deploy en la nube con datos: `DATOS_INICIALES=frigorifico_uno` + `CLAVE_INICIAL_PERSONAL` hacen que el contenedor, con la base vacía, cargue Frigorífico Uno (`inicializar_nube`: `init_system` + `seed_frigorifico_uno`, fotos en `/data/media`). En los redeploys no toca nada. En la nube no quedan claves conocidas: el personal usa `CLAVE_INICIAL_PERSONAL` y `ADEMASISTEMAS` toma `DJANGO_SUPERUSER_PASSWORD` o queda sin clave. Guía: sección 10 de `docs/DESPLIEGUE_COOLIFY.md`.
+
+### Changed
+
+- **Caja: cargar y cobrar van separados.** Mientras se cargan productos, las teclas 1–9 no eligen medio de pago (un escaneo entrecortado llegó a quedar como pago). Enter con el buscador vacío pasa a cobrar: 1–9 elige el medio (otro número lo cambia), Enter confirma (en efectivo pide con cuánto paga) y Esc vuelve a cargar. Un escaneo que cae en el importe se carga como producto, y se rechazan importes con forma de código de barras o desproporcionados.
+- Catálogo de Frigorífico Uno: congelados y bolsa de hueso por kilo; Milanesa de carne con precio; nuevos Roast beef (674), Paty de pollo (675) y Paty de carne (676).
 
 ## 0.0.8 - 2026-11-04
 
