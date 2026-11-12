@@ -74,7 +74,7 @@ PERSONAL = [
 ]
 CAJEROS_GENERICOS = ['cajero1', 'cajero2']
 
-# Lista de precios de venta de Frigorífico Uno (lista-de-precios.xlsx, 73 productos).
+# Lista de precios de venta de Frigorífico Uno (lista-de-precios.xlsx, 73 productos + 3 anotados a mano).
 # (código de la lista, rubro, producto, precio por kg o unidad, unidad)
 # Precio None = pendiente: el producto se carga inactivo hasta que tenga precio.
 KG, U = Producto.UNIDAD_KG, Producto.UNIDAD_UNIDAD
@@ -108,7 +108,7 @@ CATALOGO = [
     (627, 'Carne vacuna', 'Bife de chorizo', 14500, KG),
     (628, 'Carne vacuna', 'Grasa', 2500, KG),
     (629, 'Carne vacuna', 'Arañita', None, KG),
-    (630, 'Carne vacuna', 'Bolsa de hueso', 1200, U),
+    (630, 'Carne vacuna', 'Bolsa de hueso', 1200, KG),
     (631, 'Achuras y embutidos', 'Chinchulín', 4700, KG),
     (632, 'Achuras y embutidos', 'Riñón', 4900, KG),
     (633, 'Achuras y embutidos', 'Centro de entraña', 8500, KG),
@@ -135,7 +135,7 @@ CATALOGO = [
     (654, 'Granja', 'Alitas', 3000, KG),
     (655, 'Granja', 'Trozado', None, KG),
     (656, 'Granja', 'Milanesa de pollo', 6500, KG),
-    (657, 'Granja', 'Milanesa de carne', None, KG),
+    (657, 'Granja', 'Milanesa de carne', 12900, KG),     # anotado a mano en la lista
     (658, 'Granja', 'Carcasa', None, KG),
     (659, 'Cerdo', 'Matambre de cerdo', 10000, KG),
     (660, 'Cerdo', 'Carré', 8900, KG),
@@ -144,14 +144,18 @@ CATALOGO = [
     (663, 'Cerdo', 'Jamón', 7200, KG),
     (664, 'Cerdo', 'Paleta de cerdo', 6300, KG),       # en la lista: "Paleta" (repetido con vacuna)
     (665, 'Cerdo', 'Anqueta', 5300, KG),               # confirmar nombre
-    (666, 'Congelados', 'Patitas de pollo Grangys', 7600, U),           # nombre cortado en la lista
-    (667, 'Congelados', 'Caritas de papa', 11500, U),
-    (668, 'Congelados', 'Papas bastón', 6000, U),
-    (669, 'Congelados', 'Nuggets 3 Arroyos', 8700, U),
-    (670, 'Congelados', 'Nuggets gigantes', 12500, U),
-    (671, 'Congelados', 'Medallón de pollo Grangys', 7600, U),          # nombre cortado en la lista
-    (672, 'Congelados', 'Medallón de pollo relleno Grangys', 8400, U),  # nombre cortado en la lista
-    (673, 'Congelados', 'Ricosaurios', 7600, U),
+    (666, 'Congelados', 'Patitas de pollo Grangys', 7600, KG),           # nombre cortado en la lista
+    (667, 'Congelados', 'Caritas de papa', 11500, KG),
+    (668, 'Congelados', 'Papas bastón', 6000, KG),
+    (669, 'Congelados', 'Nuggets 3 Arroyos', 8700, KG),
+    (670, 'Congelados', 'Nuggets gigantes', 12500, KG),
+    (671, 'Congelados', 'Medallón de pollo Grangys', 7600, KG),          # nombre cortado en la lista
+    (672, 'Congelados', 'Medallón de pollo relleno Grangys', 8400, KG),  # nombre cortado en la lista
+    (673, 'Congelados', 'Ricosaurios', 7600, KG),
+    # Agregados a mano al final de la lista impresa.
+    (674, 'Carne vacuna', 'Roast beef', 12900, KG),
+    (675, 'Granja', 'Paty de pollo', 8500, KG),
+    (676, 'Carne vacuna', 'Paty de carne', 12900, KG),
 ]
 
 # Foto de los botones del mostrador: producto -> archivo de inventario/fotos_catalogo

@@ -298,3 +298,49 @@ class ListaPreciosConFotosTests(TestCase):
         producto = Producto.objects.first()
         os.remove(producto.foto.path)
         self.assertTrue(generar_lista_precios(formato='catalogo').startswith(b'%PDF'))
+
+
+class ImportarProductosPorCodigoTests(TestCase):
+    """El Excel del catálogo se importa por código (PLU), igual en la PC y en la nube."""
+
+    def setUp(self):
+        self.vacuno = Categoria.objects.create(nombre='Carne vacuna')
+        self.congelados = Categoria.objects.create(nombre='Congelados')
+        self.asado = Producto.objects.create(
+            nombre='Asado', codigo='601', precio=Decimal('10000'), categoria=self.vacuno, codigo_barras='7790001',
+        )
+        self.nuggets = Producto.objects.create(
+            nombre='Nuggets gigantes', codigo='670', precio=Decimal('12500'), categoria=self.congelados,
+            unidad=Producto.UNIDAD_UNIDAD,
+        )
+
+    def importar(self, filas, dry_run=False):
+        import tablib
+        from .resources import ProductoResource
+
+        datos = tablib.Dataset(headers=['codigo', 'nombre', 'categoria', 'unidad', 'precio', 'activo'])
+        for fila in filas:
+            datos.append(fila)
+        return ProductoResource().import_data(datos, dry_run=dry_run)
+
+    def test_actualiza_por_codigo_y_crea_los_nuevos(self):
+        resultado = self.importar([
+            ['601', 'Asado', 'Carne vacuna', 'kg', '13900', '1'],
+            ['670', 'Nuggets gigantes', 'Congelados', 'kg', '12500', '1'],
+            ['674', 'Roast beef', 'Carne vacuna', 'kg', '12900', '1'],
+        ])
+
+        self.assertFalse(resultado.has_errors())
+        self.asado.refresh_from_db()
+        self.nuggets.refresh_from_db()
+        self.assertEqual(self.asado.precio, Decimal('13900'))
+        self.assertEqual(self.asado.codigo_barras, '7790001')  # no venía en el Excel: queda igual
+        self.assertEqual(self.nuggets.unidad, Producto.UNIDAD_KG)
+        self.assertEqual(Producto.objects.get(codigo='674').nombre, 'Roast beef')
+        self.assertEqual(Producto.objects.count(), 3)
+
+    def test_rubro_inexistente_es_error_y_no_cambia_nada(self):
+        resultado = self.importar([['601', 'Asado', 'Rubro que no existe', 'kg', '13900', '1']], dry_run=True)
+        self.assertTrue(resultado.has_validation_errors() or resultado.has_errors())
+        self.asado.refresh_from_db()
+        self.assertEqual(self.asado.precio, Decimal('10000'))

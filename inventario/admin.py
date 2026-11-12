@@ -9,6 +9,7 @@ from django.utils.translation import gettext, gettext_lazy as _
 from import_export.admin import ImportExportModelAdmin
 from . import balanza
 from .models import Categoria, MovimientoStock, Producto
+from .resources import ProductoResource
 
 
 class AvisoBalanzaMixin:
@@ -78,6 +79,7 @@ class ProductoAdmin(AvisoBalanzaMixin, ImportExportModelAdmin):
     list_editable = ("precio", "activo")
     search_fields = ("nombre", "codigo", "codigo_barras")
     campos_balanza = {"codigo", "nombre", "categoria", "unidad", "precio", "activo"}
+    resource_classes = [ProductoResource]  # importa/exporta por código (PLU)
     import_export_change_list_template = "admin/inventario/producto/change_list_balanza.html"
 
     def get_urls(self):

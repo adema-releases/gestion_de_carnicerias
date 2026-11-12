@@ -40,17 +40,18 @@ class SeedFrigorificoUnoTests(TestCase):
 
     def test_catalogo_real(self):
         self._seed()
-        self.assertEqual(Producto.objects.count(), 73)
+        self.assertEqual(Producto.objects.count(), 76)
         bife = Producto.objects.get(nombre='Bife de chorizo')
         self.assertEqual((bife.precio, bife.unidad, bife.categoria.nombre), (14500, 'kg', 'Carne vacuna'))
         self.assertEqual(bife.codigo, '627')
         self.assertEqual(Producto.objects.get(codigo='601').nombre, 'Asado')
         self.assertEqual(Producto.objects.get(nombre='Paleta').categoria.nombre, 'Carne vacuna')
         self.assertEqual(Producto.objects.get(nombre='Paleta de cerdo').categoria.nombre, 'Cerdo')
-        self.assertEqual(Producto.objects.get(nombre='Bolsa de hueso').unidad, 'u')
+        self.assertEqual(Producto.objects.get(nombre='Bolsa de hueso').unidad, 'kg')
+        self.assertEqual(Producto.objects.get(codigo='674').nombre, 'Roast beef')
         # sin precio: inactivos hasta que se cargue
         sin_precio = set(Producto.objects.filter(activo=False).values_list('nombre', flat=True))
-        self.assertEqual(sin_precio, {'Arañita', 'Trozado', 'Milanesa de carne', 'Carcasa'})
+        self.assertEqual(sin_precio, {'Arañita', 'Trozado', 'Carcasa'})
         # nada del catálogo de ejemplo
         self.assertFalse(Producto.objects.filter(nombre='Carbón 5 kg').exists())
 
@@ -106,7 +107,7 @@ class CargarDatosDesdeElAdminTests(TestCase):
 
         self.assertContains(res, 'Catan listo para vender')
         self.assertContains(res, 'cajera1')
-        self.assertEqual(Producto.objects.count(), 73)
+        self.assertEqual(Producto.objects.count(), 76)
         self.assertEqual(Configuracion.objects.first().sucursal.nombre, 'Diana Catan')
 
     def test_un_usuario_comun_no_puede(self):
