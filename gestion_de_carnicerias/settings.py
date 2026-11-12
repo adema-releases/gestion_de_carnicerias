@@ -358,6 +358,12 @@ JAZZMIN_SETTINGS = {
             "permissions": ["auth.view_user"],
         },
         {
+            "name": _("Respaldo de la base"),
+            "url": "/admin/system/respaldo/",
+            "icon": "fas fa-file-archive",
+            "permissions": ["auth.view_user"],
+        },
+        {
             "name": _("Resetear de fabrica"),
             "url": "/admin/system/factory-reset/",
             "icon": "fas fa-power-off",

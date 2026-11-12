@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.3 - 2026-11-12
+
+### Added
+
+- **Respaldo completo de la base**: un `.zip` con todos los datos (con sus identificadores) y las fotos. Se baja desde *admin → Respaldo de la base* o, en la PC, desde *Inicio → GestionDeCarnicerias → Exportar respaldo* (`GestionDeCarnicerias.exe --exportar-base`, deja el archivo en `C:\GestionDeCarnicerias\respaldos`). Por consola: `exportar_base`.
+- **Restaurar un respaldo** desde el mismo menú (solo superusuario, hay que escribir `BORRAR TODO`) o con `restaurar_base archivo.zip --borrar-todo`: reemplaza todos los datos en una transacción, copia las fotos, deja la sincronización en cero y, en la nube, muestra el `config.env` de cada sucursal con su token. Sirve para pasar a la nube una sucursal que ya trabajaba sola y conectarlas (ver *Manual de la central*). Usa `dumpdata`/`loaddata`, así que no depende de la versión de PostgreSQL (la PC trae 18 y la nube 17).
+
+### Fixed
+
+- Al guardar un usuario cargado desde un respaldo ya no se le crea un perfil repetido.
+
 ## 0.1.2 - 2026-11-12
 
 ### Changed

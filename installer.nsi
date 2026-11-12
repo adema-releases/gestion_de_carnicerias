@@ -9,10 +9,10 @@
 !define APP_NAME "GestionDeCarnicerias"
 !define APP_EXE "GestionDeCarnicerias.exe"
 !ifndef APP_VERSION
-    !define APP_VERSION "0.1.2"
+    !define APP_VERSION "0.1.3"
 !endif
 !ifndef APP_BUILD
-    !define APP_BUILD "0.1.2.0"
+    !define APP_BUILD "0.1.3.0"
 !endif
 !define COMPANY_NAME "Adema Sistemas"
 !define APP_PORT "8250"
@@ -94,6 +94,8 @@ Section "Instalar ${APP_NAME}" SEC_INSTALL
     CreateShortCut "$DESKTOP\${APP_NAME}.lnk" "$INSTDIR\${APP_EXE}" "" "$INSTDIR\${APP_EXE}" 0
     CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk" "$INSTDIR\${APP_EXE}" "" "$INSTDIR\${APP_EXE}" 0
     CreateShortCut "$SMPROGRAMS\${APP_NAME}\Desinstalar ${APP_NAME}.lnk" "$INSTDIR\Uninstall.exe"
+    ; Respaldo en un clic: deja un .zip con datos y fotos en ${DATA_ROOT}\respaldos y abre la carpeta.
+    CreateShortCut "$SMPROGRAMS\${APP_NAME}\Exportar respaldo.lnk" "$INSTDIR\${APP_EXE}" "--exportar-base" "$INSTDIR\${APP_EXE}" 0
     ; Arranca sola al iniciar sesion: la sucursal no depende de que alguien abra la app.
     CreateShortCut "$SMSTARTUP\${APP_NAME}.lnk" "$INSTDIR\${APP_EXE}" "" "$INSTDIR\${APP_EXE}" 0
 
@@ -118,6 +120,7 @@ Section "Uninstall"
     Delete "$DESKTOP\${APP_NAME}.lnk"
     Delete "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk"
     Delete "$SMPROGRAMS\${APP_NAME}\Desinstalar ${APP_NAME}.lnk"
+    Delete "$SMPROGRAMS\${APP_NAME}\Exportar respaldo.lnk"
     RMDir "$SMPROGRAMS\${APP_NAME}"
 
     DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}"

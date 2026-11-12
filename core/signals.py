@@ -6,13 +6,16 @@ from .models import UserProfile, PermisosCajero
 User = get_user_model()
 
 @receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
+def create_user_profile(sender, instance, created, raw=False, **kwargs):
+    # raw: se está restaurando un respaldo y el perfil y los permisos ya vienen en él.
+    if created and not raw:
         UserProfile.objects.create(user=instance)
         PermisosCajero.objects.get_or_create(user=instance)
 
 @receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
+def save_user_profile(sender, instance, raw=False, **kwargs):
+    if raw:
+        return
     # ensure profile exists
     if not hasattr(instance, 'profile'):
         UserProfile.objects.create(user=instance)

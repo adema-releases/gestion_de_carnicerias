@@ -428,6 +428,8 @@ def main():
     parser.add_argument("--servidor", action="store_true", help="Corre sin bandeja ni navegador, en primer plano")
     parser.add_argument("--alta-frigorifico-uno", "--alta-catan", dest="alta_catan", action="store_true",
                         help="Prepara la base y carga los datos de Frigorífico Uno (seed_frigorifico_uno)")
+    parser.add_argument("--exportar-base", action="store_true",
+                        help="Guarda un respaldo completo (datos y fotos) en la carpeta respaldos y la abre")
     args = parser.parse_args()
 
     if args.version:
@@ -442,6 +444,18 @@ def main():
         finally:
             if arrancado:
                 detener_postgres(logger)
+        return 0
+    if args.exportar_base:
+        # Funciona con la app abierta o cerrada: si el PostgreSQL lo arranca esta llamada, lo apaga al terminar.
+        arrancado = bootstrap_database(logger)
+        try:
+            run_management_command(["exportar_base"], logger)
+        finally:
+            if arrancado:
+                detener_postgres(logger)
+        carpeta = DATA_ROOT / "respaldos"
+        if carpeta.is_dir() and hasattr(os, "startfile"):
+            os.startfile(carpeta)   # muestra el .zip recién hecho
         return 0
     if args.migrate_only:
         if bootstrap_database(logger):

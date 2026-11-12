@@ -74,6 +74,22 @@ Todo cambio baja a todas las sucursales en la próxima sincronización. Los cré
 
 Si la PC ya tenía datos de antes, sin sincronizar, corré una vez `python manage.py sincronizar --inicial` para subirlos.
 
+## Pasar a la nube una sucursal que ya trabaja sola
+
+Cuando la sucursal arrancó con su propia base (sin central) y después se quiere conectar a una nube que se cargó por separado, **no alcanza con poner el token**: cada base tiene sus propios identificadores (uuid) y la sincronización choca. Se copia la base de la sucursal a la nube, pisando lo que haya, y después se conectan:
+
+1. **Con el local cerrado**, en la PC de la sucursal: menú Inicio → *GestionDeCarnicerias* → **Exportar respaldo**. Deja un `.zip` en `C:\GestionDeCarnicerias\respaldos` y abre esa carpeta. (También: admin → menú del usuario → *Respaldo de la base* → **Descargar respaldo**.)
+2. En Coolify, **Redeploy** de la nube, para que tenga la misma versión que la sucursal (o más nueva).
+3. En la nube: admin → menú del usuario → **Respaldo de la base** → subí el `.zip`, escribí `BORRAR TODO` y **Restaurar**. Se borra todo lo de la nube (también usuarios y claves) y queda igual a la sucursal, con las fotos.
+4. La pantalla muestra, para cada sucursal, las tres líneas para su `config.env` (`SYNC_MODO`, `SYNC_URL`, `SYNC_TOKEN`). Copialas en `C:\GestionDeCarnicerias\config.env` de la PC de la sucursal.
+5. Cerrá la app desde el ícono de la bandeja y abrila de nuevo. En un minuto sincroniza; desde ahí suben solas las ventas y cajas.
+
+Desde ese momento los **precios y productos se cambian en la nube** (bajan solos a la sucursal); un precio cambiado en la sucursal no sube.
+
+Lo que hace la restauración: reemplaza todos los datos dentro de una transacción (si algo falla, la base queda como estaba), copia las fotos, vacía la cola de cambios pendientes y pone en cero el cursor de sincronización (lo restaurado es el punto de partida), y en la nube genera el token de cada sucursal que no tenga. Un respaldo de una versión más nueva que la instalación de destino se rechaza sin tocar nada.
+
+Por consola: `python manage.py exportar_base [--salida archivo.zip]` y `python manage.py restaurar_base archivo.zip --borrar-todo`.
+
 ## Revisar las liquidaciones
 
 Admin → Recepción → **Conteos y liquidaciones**, filtrando por sucursal. Cada liquidación guarda el balance de kilos, la merma total, el valor de lo tirado y de la diferencia, y el detalle por cámara de lo que se contó y tiró, con su motivo. Es de solo lectura: el cierre se hace en la sucursal.

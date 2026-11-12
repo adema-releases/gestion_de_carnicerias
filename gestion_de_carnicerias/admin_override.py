@@ -340,6 +340,66 @@ def frigorifico_uno_view(request):
     })
 
 
+CONFIRMACION_RESTAURAR = 'BORRAR TODO'
+
+
+def respaldo_view(request):
+    """Descargar un respaldo completo (datos + fotos) o restaurar uno, desde el admin.
+
+    Solo superadmin. Restaurar reemplaza TODO y pide escribir BORRAR TODO.
+    Sirve para pasar los datos del local a la nube (o a otra PC) sin consola.
+    """
+    import io
+    import tempfile
+    from pathlib import Path
+
+    from django.contrib import admin as django_admin
+    from django.http import HttpResponse
+    from django.shortcuts import render
+
+    from core import respaldo
+
+    if not request.user.is_superuser:
+        raise PermissionDenied('Solo un superusuario puede hacer respaldos.')
+
+    if request.method == 'GET' and request.GET.get('descargar'):
+        contenido = io.BytesIO()
+        respaldo.exportar(contenido)
+        response = HttpResponse(contenido.getvalue(), content_type='application/zip')
+        response['Content-Disposition'] = f'attachment; filename="{respaldo.nombre_sugerido()}"'
+        return response
+
+    error, info, restaurado = '', None, False
+    if request.method == 'POST':
+        subido = request.FILES.get('archivo')
+        if request.POST.get('confirmacion', '').strip().upper() != CONFIRMACION_RESTAURAR:
+            error = f'Para restaurar escribí {CONFIRMACION_RESTAURAR} en el campo de confirmación.'
+        elif not subido:
+            error = 'Elegí el archivo .zip del respaldo.'
+        else:
+            with tempfile.TemporaryDirectory() as carpeta:
+                ruta = Path(carpeta) / 'respaldo.zip'
+                with ruta.open('wb') as destino:
+                    for parte in subido.chunks():
+                        destino.write(parte)
+                try:
+                    info = respaldo.restaurar(ruta)
+                    restaurado = True
+                except respaldo.RespaldoError as exc:
+                    error = str(exc)
+                except Exception as exc:  # noqa: BLE001 - se muestra en pantalla; la base quedó como estaba
+                    error = f'{exc.__class__.__name__}: {exc}'
+
+    return render(request, 'admin/respaldo.html', {
+        **django_admin.site.each_context(request),
+        'title': 'Respaldo de la base',
+        'confirmacion': CONFIRMACION_RESTAURAR,
+        'error': error,
+        'info': info,
+        'restaurado': restaurado,
+    })
+
+
 # ─── Helpers para exportaciones ───────────────────────────────────────────────
 
 def _parse_export_params(request):
