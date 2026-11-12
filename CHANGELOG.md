@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0 - 2026-11-12
+
+Mismo contenido que 0.0.9, recompilado desde cero: el instalador de 0.0.9 salió dañado porque dos compilaciones escribieron el mismo archivo a la vez. Usar 0.1.0.
+
 ## 0.0.9 - 2026-11-12
 
 ### Added
