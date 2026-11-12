@@ -30,6 +30,16 @@ DIRS_TO_INCLUDE = [
     os.path.join("ayuda", "assets"),
 ]
 
+# Las plantillas de cada app se buscan solas: una carpeta <app>/templates nueva
+# no puede quedar afuera del instalador (en 0.0.9/0.1.0 faltó inventario/templates
+# y Productos y la lista de precios daban error 500).
+for app_dir in sorted(os.listdir(PROJECT_ROOT)):
+    plantillas = os.path.join(app_dir, "templates")
+    if (app_dir not in ("venv", "dist", "build", "staticfiles")
+            and os.path.isdir(os.path.join(PROJECT_ROOT, plantillas))
+            and plantillas not in DIRS_TO_INCLUDE):
+        DIRS_TO_INCLUDE.append(plantillas)
+
 for directory in DIRS_TO_INCLUDE:
     source = os.path.join(PROJECT_ROOT, directory)
     if os.path.exists(source):

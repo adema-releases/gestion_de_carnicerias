@@ -9,10 +9,10 @@
 !define APP_NAME "GestionDeCarnicerias"
 !define APP_EXE "GestionDeCarnicerias.exe"
 !ifndef APP_VERSION
-    !define APP_VERSION "0.1.0"
+    !define APP_VERSION "0.1.1"
 !endif
 !ifndef APP_BUILD
-    !define APP_BUILD "0.1.0.0"
+    !define APP_BUILD "0.1.1.0"
 !endif
 !define COMPANY_NAME "Adema Sistemas"
 !define APP_PORT "8250"

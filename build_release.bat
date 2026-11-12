@@ -22,6 +22,10 @@ if errorlevel 1 exit /b 1
 python -m PyInstaller gestion_de_carnicerias.spec --clean --noconfirm
 if errorlevel 1 exit /b 1
 
+rem Verificacion: toda carpeta <app>\templates del proyecto tiene que estar en el paquete.
+python verificar_build.py
+if errorlevel 1 exit /b 1
+
 rem Binarios de PostgreSQL que viajan en el instalador (vendor\pgsql: bin, lib, share).
 rem Se copian de PGSQL_HOME o, si no esta definida, de un PostgreSQL 18 instalado en esta PC.
 if exist "vendor\pgsql\bin\pg_ctl.exe" goto pgsql_listo

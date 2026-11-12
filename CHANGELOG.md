@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1 - 2026-11-12
+
+### Fixed
+
+- **Error 500 en Admin → Productos y en la lista de precios** de la app instalada: al instalador le faltaban las plantillas de `inventario` (0.0.9 y 0.1.0). Ahora el `.spec` incluye solas todas las carpetas `<app>/templates`, y `build_release.bat` corre `verificar_build.py`, que hace fallar el build si alguna plantilla no quedó en el paquete.
+
 ## 0.1.0 - 2026-11-12
 
 Mismo contenido que 0.0.9, recompilado desde cero: el instalador de 0.0.9 salió dañado porque dos compilaciones escribieron el mismo archivo a la vez. Usar 0.1.0.
