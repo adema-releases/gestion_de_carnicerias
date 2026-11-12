@@ -3187,7 +3187,7 @@ function totalVentaActual() {
 function aplicarImporteVenta(valor) {
   const inp = document.getElementById('v-importe');
   if (!inp || inp.readOnly) return;
-  inp.value = valor;
+  inp.value = formatImporteInput(parseImporteEscrito(valor));
   vImporteObjetivo = parseImporteEscrito(inp.value);
   renderCategoriasVenta();
   actualizarVueltoMulti();
@@ -3254,10 +3254,85 @@ function totalCategoriasVenta() {
   return redondearImporte(vCategorias.reduce((s, c) => s + c.importe, 0));
 }
 
+/* Importe para poner en un campo, a la argentina: 12.500 o 12.500,50 (parseImporteEscrito lo lee igual). */
 function formatImporteInput(valor) {
   const v = redondearImporte(valor);
-  return Number.isInteger(v) ? String(v) : v.toFixed(2);
+  const [entero, decimales] = Math.abs(v).toFixed(2).split('.');
+  return (v < 0 ? '-' : '') + puntosDeMiles(entero) + (decimales === '00' ? '' : ',' + decimales);
 }
+
+function puntosDeMiles(digitos) {
+  return String(digitos).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+/* ── Importes con puntos de miles mientras se escribe ──
+   "1200000" se ve "1.200.000" y la coma empieza los decimales (hasta 2): "1.500,50".
+   Los puntos los pone el sistema: un punto tipeado se ignora (así "1.200" escrito a mano
+   sigue siendo mil doscientos). El cursor queda en su lugar aunque se agreguen o quiten
+   puntos, y Retroceso/Suprimir saltan los puntos. Solo cambia cómo se ve:
+   parseImporteEscrito lee igual "1200000", "1.200.000" y "1.200.000,50".
+   Si el campo tiene letras (un escaneo de comanda) no se toca. */
+const CAMPOS_IMPORTE = [
+  'v-pago-importe', 'v-importe', 'v-cat-importe', 'g-importe', 'p-importe', 'r-importe',
+  'ad-monto', 'aprov-monto', 'cob-importe-pagado', 'cp-importe-pagado',
+];
+
+function reformatearImporte(inp) {
+  const valor = inp.value;
+  const limpio = valor.replace(/[\s$]/g, '');
+  if (!/^[\d.,]*$/.test(limpio)) return;   // letras u otros signos: no es un importe tipeado
+  const cursor = inp.selectionStart == null ? valor.length : inp.selectionStart;
+  const antes = valor.slice(0, cursor);
+  const comaAntes = antes.includes(',');
+
+  const iComa = valor.indexOf(',');
+  const enteroOriginal = (iComa >= 0 ? valor.slice(0, iComa) : valor).replace(/\D/g, '');
+  let decimales = iComa >= 0 ? valor.slice(iComa + 1).replace(/\D/g, '').slice(0, 2) : null;
+  let entero = enteroOriginal.replace(/^0+(?=\d)/, '');   // sin ceros adelante ("007" → "7")
+  if (decimales !== null && !entero) entero = '0';        // ",5" → "0,5"
+  const nuevo = puntosDeMiles(entero) + (decimales !== null ? ',' + decimales : '');
+  if (nuevo === valor) return;
+
+  // Cursor: si estaba después de la coma, mismos decimales detrás de la coma;
+  // si no, después de la misma cantidad de dígitos de la parte entera.
+  let posicion;
+  if (comaAntes) {
+    const decimalesAntes = (antes.slice(antes.indexOf(',') + 1).match(/\d/g) || []).length;
+    posicion = nuevo.indexOf(',') + 1 + Math.min(decimalesAntes, decimales.length);
+  } else {
+    const cerosQuitados = enteroOriginal.length - (entero === '0' && !enteroOriginal ? 0 : entero.length);
+    let faltan = Math.max(0, (antes.match(/\d/g) || []).length - cerosQuitados);
+    posicion = 0;
+    while (faltan > 0 && posicion < nuevo.length) {
+      if (/\d/.test(nuevo[posicion])) faltan -= 1;
+      posicion += 1;
+    }
+  }
+  inp.value = nuevo;
+  if (document.activeElement === inp) inp.setSelectionRange(posicion, posicion);
+}
+
+(function initCamposImporte() {
+  CAMPOS_IMPORTE.forEach(id => {
+    const inp = document.getElementById(id);
+    if (!inp) return;
+    inp.addEventListener('keydown', e => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const inicio = inp.selectionStart;
+      const fin = inp.selectionEnd;
+      if (e.key === '.') { e.preventDefault(); return; }   // los puntos de miles los pone el sistema
+      if (e.key === ',' && inp.value.includes(',') && !inp.value.slice(inicio, fin).includes(',')) {
+        e.preventDefault();   // una sola coma decimal
+        return;
+      }
+      if (inicio !== fin || inicio == null) return;
+      // Retroceso/Suprimir al lado de un punto: borra el dígito, no el punto.
+      if (e.key === 'Backspace' && inp.value[inicio - 1] === '.') inp.setSelectionRange(inicio - 1, inicio - 1);
+      if (e.key === 'Delete' && inp.value[inicio] === '.') inp.setSelectionRange(inicio + 1, inicio + 1);
+    });
+    inp.addEventListener('input', e => { if (!e.isComposing) reformatearImporte(inp); });
+  });
+})();
 
 /* Total calculado (no editable) a la argentina: 20.316,50 o 20.316 si es redondo. */
 function formatImporteTotal(valor) {
@@ -4158,7 +4233,7 @@ function enterEnCobro() {
    desproporcionado para la venta (más de 20 veces el total y más de $100.000 por encima)
    no se acepta. Un billete grande para una compra chica sí pasa. */
 function importeDePagoSospechoso(escrito, importe) {
-  if (/^\s*\d{10,}\s*$/.test(String(escrito || ''))) return true;
+  if (/^\d{10,}$/.test(String(escrito || '').replace(/[.\s]/g, ''))) return true;   // con o sin puntos de miles
   const total = totalVentaActual();
   return total > 0 && importe > Math.max(total * 20, total + 100000);
 }
@@ -4396,7 +4471,7 @@ document.getElementById('v-cliente').addEventListener('change', actualizarMedios
       e.stopImmediatePropagation();
       e.preventDefault();
       if (rafaga >= 4) {
-        const codigo = inp.value.trim();
+        const codigo = inp.value.trim().replace(/\./g, '');   // sin los puntos de miles que se le pusieron
         inp.value = '';
         rafaga = 0;
         inp.blur();
@@ -5542,7 +5617,7 @@ function actualizarTotalCobro() {
   const autoPrevio = Number(inputPagado?.dataset.autoValue || 0);
   const pagadoActual = parseImporteEscrito(inputPagado?.value);
   if (inputPagado && document.activeElement !== inputPagado && (!inputPagado.value || Math.abs(pagadoActual - autoPrevio) < 0.005)) {
-    inputPagado.value = faltante > 0 ? faltante.toFixed(2) : '';
+    inputPagado.value = faltante > 0 ? formatImporteInput(faltante) : '';
     inputPagado.dataset.autoValue = String(faltante);
   }
   const importePagado = parseImporteEscrito(inputPagado?.value);
@@ -5735,7 +5810,7 @@ function actualizarTotalPagoCuentaProveedor() {
   const autoPrevio = Number(inputPagado?.dataset.autoValue || 0);
   const pagadoActual = parseImporteEscrito(inputPagado?.value);
   if (inputPagado && document.activeElement !== inputPagado && (!inputPagado.value || Math.abs(pagadoActual - autoPrevio) < 0.005)) {
-    inputPagado.value = faltante > 0 ? faltante.toFixed(2) : '';
+    inputPagado.value = faltante > 0 ? formatImporteInput(faltante) : '';
     inputPagado.dataset.autoValue = String(faltante);
   }
   const importePagado = parseImporteEscrito(inputPagado?.value);

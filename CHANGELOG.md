@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2 - 2026-11-12
+
+### Changed
+
+- **Importes con puntos de miles mientras se escriben** en la caja (pago, importe total, rubros, gastos, pagos a proveedores, retiros, adelantos y cobros): `1200000` se ve `1.200.000` y la coma empieza los decimales (hasta 2, `1.500,50`). El cursor queda en su lugar al escribir o borrar en el medio, Retroceso y Suprimir saltan los puntos, y un punto tipeado se ignora (los pone el sistema). Los importes que completa la caja (lo que falta pagar, el sugerido por rubro) salen con el mismo formato. Las protecciones del escáner en el importe siguen andando con los puntos.
+
 ## 0.1.1 - 2026-11-12
 
 ### Fixed
